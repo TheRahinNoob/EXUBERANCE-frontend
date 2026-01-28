@@ -1,0 +1,57 @@
+:root {
+  --background: #eeeeee;
+  --foreground: #171717;
+}
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Rajdhani&display=swap');
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #d1cece;
+  }
+}
+
+/* 🔥 CRITICAL FIX */
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  font-family: "Google Sans Flex", sans-serif;
+  font-weight: 400;
+  
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+

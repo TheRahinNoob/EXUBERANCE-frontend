@@ -1,0 +1,67 @@
+.featured-page {
+  padding: 24px 0;
+  color: var(--text-primary);
+}
+
+/* ==================================================
+   HEADER
+================================================== */
+
+.featured-header {
+  margin-bottom: 24px;
+}
+
+.featured-header h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.featured-header p {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ==================================================
+   CONTENT STATES
+================================================== */
+
+.featured-content {
+  margin-top: 24px;
+}
+
+.featured-loading,
+.featured-empty {
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--glass-0);
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+
+.featured-error {
+  padding: 14px 16px;
+  font-size: 0.85rem;
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  border-radius: var(--radius-sm);
+}
+
+/* ==================================================
+   FUTURE-PROOF HELPERS (optional reuse)
+================================================== */
+
+.glass-card {
+  background: var(--glass-0);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(10px);
+}
+
+.glass-card:hover {
+  background: var(--glass-1);
+  border-color: var(--border-strong);
+}

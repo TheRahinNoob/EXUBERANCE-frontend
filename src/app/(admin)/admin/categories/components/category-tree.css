@@ -1,0 +1,48 @@
+/* ==================================================
+   CATEGORY TREE — ARCHIVAL ADMIN
+================================================== */
+
+.category-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  padding: 8px;
+  border-radius: var(--radius-lg);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.015)
+  );
+
+  border: 1px solid var(--rule-soft);
+}
+
+/* ================= EMPTY STATE ================= */
+
+.category-tree-empty {
+  padding: 16px;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+  font-style: italic;
+
+  border: 1px dashed var(--rule-soft);
+  border-radius: var(--radius-md);
+
+  background: var(--glass-0);
+}
+
+/* ================= TREE ROLE ================= */
+
+.category-tree[role="tree"] {
+  outline: none;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .category-tree {
+    padding: 6px;
+  }
+}

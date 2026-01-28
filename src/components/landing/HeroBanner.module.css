@@ -1,0 +1,21 @@
+/* Root hero container */
+.hero {
+  width: 100vw;          /* FULL viewport width */
+  margin-left: calc(50% - 50vw); /* Escape any parent max-width */
+  margin-right: calc(50% - 50vw);
+  overflow: hidden;
+}
+
+/* Clickable wrapper */
+.hero a {
+  display: block;
+  width: 100vw;
+}
+
+/* Image itself */
+.image {
+  width: 100vw;          /* MUST be viewport width */
+  height: auto;          /* Preserve aspect ratio */
+  display: block;
+  object-fit: contain;   /* ❗ NO CROPPING */
+}

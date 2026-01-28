@@ -1,0 +1,152 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getCategories } from "@/lib/api";
+import { useCartStore } from "@/store/cartStore";
+import styles from "./Navbar.module.css";
+
+type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  children?: Category[];
+};
+
+export default function Navbar() {
+  const router = useRouter();
+
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
+
+  const totalItems = useCartStore((state) =>
+    state.items.reduce((sum, i) => sum + i.quantity, 0)
+  );
+
+  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    getCategories().then(setCategories).catch(console.error);
+  }, []);
+
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+    setSearchQuery("");
+  }
+
+  if (!mounted) return null;
+
+  return (
+    <>
+      <header className={styles.nav}>
+        <div className={styles.container}>
+
+          {/* LEFT */}
+          <div className={styles.left}>
+            <button
+              className={styles.mobileMenuBtn}
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              <i className="fa fa-bars" />
+            </button>
+
+            <Link href="/" className={styles.logo}>
+              FABRILIFE
+            </Link>
+
+            {/* SHOP */}
+            <div
+              className={styles.shop}
+              onMouseEnter={() => setMegaOpen(true)}
+              onMouseLeave={() => setMegaOpen(false)}
+            >
+              <button className={styles.shopBtn} type="button">
+                Shop <i className="fa fa-angle-down" />
+              </button>
+
+              <div
+                className={`${styles.mega} ${
+                  megaOpen ? styles.megaOpen : ""
+                }`}
+              >
+                <div className={styles.megaGrid}>
+                  {categories.map((cat) => (
+                    <div key={cat.id} className={styles.megaCol}>
+                      <Link
+                        href={`/category/${cat.slug}`}
+                        className={styles.megaTitle}
+                      >
+                        {cat.name}
+                      </Link>
+
+                      {cat.children?.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          href={`/category/${sub.slug}`}
+                          className={styles.megaLink}
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CENTER SEARCH */}
+          <div className={styles.center}>
+            <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+              <input
+                type="search"
+                placeholder="Search Products by Titles or Tags"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
+              <button className={styles.searchBtn}>
+                <i className="fa fa-search" />
+              </button>
+            </form>
+          </div>
+
+          {/* RIGHT */}
+          <div className={styles.right}>
+            <Link href="/cart" className={styles.cart}>
+              <i className="fa fa-shopping-cart" />
+              {totalItems > 0 && (
+                <span className={styles.cartBadge}>
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+          </div>
+
+        </div>
+      </header>
+
+      {/* MOBILE MENU */}
+      {mobileOpen && (
+        <div className={styles.mobileMenu}>
+          {categories.map((cat) => (
+            <Link
+              key={cat.id}
+              href={`/category/${cat.slug}`}
+              className={styles.mobileLink}
+              onClick={() => setMobileOpen(false)}
+            >
+              {cat.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </>
+  );
+}

@@ -1,0 +1,82 @@
+/* ==================================================
+   HERO BANNER IMAGE FIELD — DARK GLASS
+================================================== */
+
+.hero-image-field {
+  display: grid;
+  gap: 10px;
+}
+
+/* LABEL */
+.hero-image-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* PREVIEW CONTAINER */
+.hero-image-preview {
+  height: 130px;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--rule-soft);
+  background: var(--glass-0);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.hero-image-preview:hover {
+  border-color: var(--accent);
+}
+
+/* IMAGE */
+.hero-image-preview img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+/* PLACEHOLDER */
+.hero-image-placeholder {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* FILE INPUT */
+.hero-image-input {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* REMOVE BUTTON */
+.hero-image-remove {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+
+  color: var(--danger);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+
+  opacity: 0.85;
+}
+
+.hero-image-remove:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* HINT */
+.hero-image-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}

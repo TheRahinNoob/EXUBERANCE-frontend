@@ -1,0 +1,21 @@
+.summary {
+  border: 1px solid #eee;
+  padding: 24px;
+  height: fit-content;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.checkout {
+  display: block;
+  margin-top: 20px;
+  padding: 12px;
+  background: black;
+  color: white;
+  text-align: center;
+  font-weight: 600;
+}

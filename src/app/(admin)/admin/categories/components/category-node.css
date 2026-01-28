@@ -1,0 +1,201 @@
+/* ==================================================
+   CATEGORY NODE — ADMIN GLASS
+================================================== */
+
+.category-node-wrapper {
+  margin-bottom: 4px;
+}
+
+/* ================= ROW ================= */
+
+.category-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+
+  transition: background 0.12s ease,
+              border-color 0.12s ease;
+}
+
+.category-node:hover {
+  background: var(--glass-1);
+}
+
+/* ================= DEPTH ================= */
+
+.depth-0 { margin-left: 0; }
+.depth-1 { margin-left: 16px; }
+.depth-2 { margin-left: 32px; }
+.depth-3 { margin-left: 48px; }
+.depth-4 { margin-left: 64px; }
+
+/* ================= INACTIVE ================= */
+
+.category-node.inactive {
+  opacity: 0.6;
+}
+
+/* ================= EXPAND ================= */
+
+.category-expand {
+  width: 20px;
+  height: 20px;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 12px;
+  color: var(--text-mute);
+}
+
+.category-expand:hover {
+  color: var(--text-main);
+}
+
+.category-expand-spacer {
+  width: 20px;
+}
+
+/* ================= NAME ================= */
+
+.category-name {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+/* ================= BADGES ================= */
+
+.category-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.category-badge.campaign {
+  color: #7c2d12;
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+}
+
+.category-badge.inactive {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+/* ================= ACTIONS ================= */
+
+/* ================= ACTIONS — FUTURISTIC DARK ================= */
+
+.category-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Base button */
+.category-actions button {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 6px 10px;
+  min-height: 28px;
+
+  color: var(--text-main);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--glass-0);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+/* Hover — glow + lift */
+.category-actions button:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14),
+      rgba(255, 255, 255, 0.05)
+    ),
+    var(--glass-1);
+
+  border-color: rgba(255, 255, 255, 0.35);
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 8px 20px rgba(0, 0, 0, 0.45);
+
+  transform: translateY(-1px);
+}
+
+/* Active (press) */
+.category-actions button:active {
+  transform: translateY(0);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ================= DANGER ================= */
+
+.category-actions .danger {
+  color: #fecaca;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239, 68, 68, 0.18),
+      rgba(239, 68, 68, 0.06)
+    ),
+    rgba(239, 68, 68, 0.08);
+
+  border: 1px solid rgba(239, 68, 68, 0.45);
+}
+
+/* Danger hover — red glow */
+.category-actions .danger:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239, 68, 68, 0.28),
+      rgba(239, 68, 68, 0.1)
+    ),
+    rgba(239, 68, 68, 0.12);
+
+  border-color: rgba(239, 68, 68, 0.75);
+
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.45),
+    0 10px 26px rgba(239, 68, 68, 0.25);
+}
+
+/* ================= CHILDREN ================= */
+
+.category-children {
+  margin-top: 4px;
+}

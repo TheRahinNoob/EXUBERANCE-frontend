@@ -1,0 +1,183 @@
+/* ==================================================
+   PRODUCT IMAGE MANAGER — ARCHIVAL GLASS (FINAL)
+================================================== */
+
+.admin-image-section {
+  margin-top: 36px;
+}
+
+/* ================= UPLOAD ================= */
+
+.admin-image-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.admin-upload-btn {
+  padding: 7px 14px;
+  font-size: 0.75rem;
+  color: var(--text-main);
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition: border-color 0.12s ease;
+}
+
+.admin-upload-btn:hover {
+  border-color: var(--rule-hard);
+}
+
+.admin-uploading {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+/* ================= GRID ================= */
+
+.admin-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+/* ================= CARD ================= */
+
+.admin-image-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: transparent;
+
+  box-shadow: 0 0 0 1px var(--rule-soft);
+  transition: box-shadow 0.15s ease;
+}
+
+/* No scale — keeps grid stable */
+.admin-image-card.primary {
+  box-shadow:
+    0 0 0 1px rgba(91, 140, 255, 0.6),
+    0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ================= IMAGE ================= */
+
+.admin-image-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+/* ================= PRIMARY BADGE ================= */
+
+.admin-image-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+
+  padding: 3px 8px;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  background: rgba(0, 0, 0, 0.65);
+  color: #c7d2fe;
+
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+/* ================= ACTION OVERLAY ================= */
+
+.admin-image-actions {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+
+  padding: 10px;
+
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.15) 55%,
+    transparent
+  );
+
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Desktop hover */
+@media (hover: hover) {
+  .admin-image-card:hover .admin-image-actions {
+    opacity: 1;
+  }
+}
+
+/* Mobile / touch — always visible */
+@media (hover: none) {
+  .admin-image-actions {
+    opacity: 1;
+  }
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.admin-image-actions .admin-action {
+  font-size: 0.65rem;
+  padding: 5px 9px;
+
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-main);
+
+  border-radius: 7px;
+  cursor: pointer;
+
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.admin-image-actions .admin-action:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Delete — quiet until hover */
+.admin-image-actions .danger {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+}
+
+.admin-image-actions .danger:hover {
+  color: var(--danger);
+}
+
+/* ================= RESPONSIVE TWEAKS ================= */
+
+@media (max-width: 640px) {
+  .admin-image-grid {
+    gap: 12px;
+  }
+
+  .admin-image-actions {
+    padding: 8px;
+  }
+
+  .admin-image-actions .admin-action {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+}

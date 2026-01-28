@@ -1,0 +1,64 @@
+/* ==================================================
+   FEATURED CATEGORY GRID — ADMIN
+================================================== */
+
+:root {
+  --glass-0: rgba(255, 255, 255, 0.03);
+  --glass-1: rgba(255, 255, 255, 0.06);
+
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+}
+
+/* ==================================================
+   GRID LAYOUT
+================================================== */
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(240px, 1fr)
+  );
+  gap: 18px;
+
+  padding: 4px;
+}
+
+/* ==================================================
+   RESPONSIVE TUNING
+================================================== */
+
+@media (max-width: 768px) {
+  .featured-grid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(180px, 1fr)
+    );
+    gap: 14px;
+  }
+}
+
+/* ==================================================
+   OPTIONAL: CARD NORMALIZATION
+   (safe even if card has its own styles)
+================================================== */
+
+.featured-grid > * {
+  background: var(--glass-0);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.featured-grid > *:hover {
+  background: var(--glass-1);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}

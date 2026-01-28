@@ -1,0 +1,25 @@
+/* ==================================================
+   PRODUCT PURCHASE (MOBILE-FIRST, FLAT FLOW)
+   --------------------------------------------------
+   - NO borders
+   - NO card look
+   - NO section separation
+   - Matches reference PDP design
+================================================== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  /* light spacing from price */
+
+}
+
+/* ==================================================
+   ADD TO CART CONTAINER
+   (INTENTIONALLY MINIMAL)
+================================================== */
+.cartBox {
+  margin-top: 4px;
+}

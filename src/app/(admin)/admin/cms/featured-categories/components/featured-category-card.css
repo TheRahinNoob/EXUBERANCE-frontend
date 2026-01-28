@@ -1,0 +1,135 @@
+/* ==================================================
+   FEATURED CATEGORY CARD — DARK ADMIN
+================================================== */
+
+.featured-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+
+  padding: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.featured-card:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+  transform: translateY(-2px);
+}
+
+.featured-card[aria-busy="true"] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ==================================================
+   IMAGE
+================================================== */
+
+.featured-card-image {
+  height: 140px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--ink-2);
+  border: 1px solid var(--rule-soft);
+}
+
+.featured-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==================================================
+   BODY
+================================================== */
+
+.featured-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.featured-card-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.featured-card-slug {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+/* ==================================================
+   FILE INPUT
+================================================== */
+
+.file-replace {
+  font-size: 12px;
+  color: var(--accent);
+  cursor: pointer;
+  width: fit-content;
+}
+
+.file-replace input {
+  display: none;
+}
+
+/* ==================================================
+   ACTIONS
+================================================== */
+
+.featured-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.featured-card-actions .btn {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+
+  background: var(--glass-1);
+  color: var(--text-main);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.featured-card-actions .btn:hover {
+  background: var(--glass-2);
+  border-color: var(--rule-hard);
+}
+
+.featured-card-actions .btn.danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ==================================================
+   INACTIVE STATE
+================================================== */
+
+.featured-card.is-inactive {
+  opacity: 0.75;
+}
+
+.featured-card.is-inactive .featured-card-title {
+  text-decoration: line-through;
+}

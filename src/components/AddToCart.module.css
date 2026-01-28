@@ -1,0 +1,95 @@
+/* ==================================================
+   ADD TO CART (REFERENCE MATCH)
+================================================== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ==================================================
+   MAIN ROW
+================================================== */
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ==================================================
+   QUANTITY BOX
+================================================== */
+.qtyBox {
+  display: flex;
+  align-items: center;
+  height: 30px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.qtyBtn {
+  width: 36px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.qtyBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.qtyValue {
+  width: 36px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* ==================================================
+   ADD TO CART BUTTON
+================================================== */
+/* ==================================================
+   ADD TO CART BUTTON (FIXED BUT RESPONSIVE)
+================================================== */
+.addBtn {
+  width: 160px;          /* 🔒 base fixed width */
+  max-width: 100%;      /* responsive safety */
+  height: 30px;
+
+  background: #111827;
+  color: #ffffff;
+
+  border: none;
+  border-radius: 2px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  flex-shrink: 0;        /* 🔥 prevents flex stretch */
+}
+
+.addBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+
+/* ==================================================
+   HELPER TEXT
+================================================== */
+.helper {
+  font-size: 12px;
+  color: #dc2626;
+}

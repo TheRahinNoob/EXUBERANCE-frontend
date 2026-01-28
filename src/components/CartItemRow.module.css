@@ -1,0 +1,41 @@
+.row {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 40px;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+}
+
+.image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.variant {
+  font-size: 13px;
+  color: #666;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.qty {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.qty button {
+  width: 32px;
+  height: 32px;
+}
+
+.remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}

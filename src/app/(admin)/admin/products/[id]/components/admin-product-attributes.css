@@ -1,0 +1,109 @@
+/* ==================================================
+   ATTRIBUTE MANAGER — PRODUCTION
+================================================== */
+
+.admin-error {
+  margin: 12px 0;
+  font-size: 0.8rem;
+  color: var(--danger);
+}
+
+.admin-muted {
+  font-size: 0.8rem;
+  color: var(--text-mute);
+}
+
+/* ================= TABLE ================= */
+
+.drag-col {
+  width: 32px;
+}
+
+.actions-col {
+  text-align: right;
+}
+
+/* ================= DRAG HANDLE ================= */
+
+.admin-drag-handle {
+  cursor: grab;
+  text-align: center;
+  user-select: none;
+  color: var(--text-mute);
+}
+
+.admin-drag-handle:hover {
+  color: var(--text-main);
+}
+
+/* ================= INPUT ================= */
+
+.admin-input-sm {
+  width: 100%;
+  padding: 5px 7px;
+  font-size: 0.75rem;
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+}
+
+.admin-input-sm:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ================= ACTIONS ================= */
+
+.admin-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.admin-action {
+  padding: 5px 8px;
+  font-size: 0.7rem;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  color: var(--text-main);
+  cursor: pointer;
+
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+
+.admin-action:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+}
+
+.admin-action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* PRIMARY */
+
+.admin-action-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-action-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* DANGER */
+
+.admin-action-danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.admin-action-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+}

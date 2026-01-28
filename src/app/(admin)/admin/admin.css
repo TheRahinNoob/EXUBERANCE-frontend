@@ -1,0 +1,1493 @@
+/* ==================================================
+   ARCHIVAL GLASS — INTERNAL ADMIN SYSTEM
+   Version: 1.1 (STABLE / LEDGER FIXED)
+================================================== */
+
+/* ==================================================
+   DESIGN TOKENS
+================================================== */
+
+:root {
+  /* Base surfaces */
+  --ink-0: #0a0c10;
+  --ink-1: #0f1218;
+  --ink-2: #141823;
+
+  /* Glass layers (extremely subtle) */
+  --glass-0: rgba(255, 255, 255, 0.02);
+  --glass-1: rgba(255, 255, 255, 0.035);
+  --glass-2: rgba(255, 255, 255, 0.05);
+
+  /* Rules / borders */
+  --rule-soft: rgba(255, 255, 255, 0.08);
+  --rule-hard: rgba(255, 255, 255, 0.14);
+
+  /* Typography */
+  --text-main: #f1f5f9;
+  --text-sub: #a8b0bd;
+  --text-mute: #6b7280;
+
+  /* Semantic accents */
+  --accent: #5b8cff;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+
+  /* Geometry */
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
+
+  /* Layout */
+  --sidebar-width: 268px;
+}
+
+/* ==================================================
+   GLOBAL RESET
+================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--ink-0);
+  color: var(--text-main);
+  font-family: Inter, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==================================================
+   ROOT LAYOUT
+================================================== */
+
+.admin-root {
+  min-height: 100vh;
+  display: flex;
+  background: linear-gradient(
+    180deg,
+    var(--ink-0),
+    var(--ink-1)
+  );
+}
+
+/* ==================================================
+   SIDEBAR
+================================================== */
+
+.admin-sidebar {
+  width: var(--sidebar-width);
+  padding: 22px 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.015)
+  );
+  border-right: 1px solid var(--rule-soft);
+}
+
+/* ==================================================
+   NAVIGATION
+================================================== */
+
+.admin-nav-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 20px;
+}
+
+.admin-nav-list,
+.admin-nav-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-nav-group {
+  margin-bottom: 14px;
+}
+
+.admin-nav-group-title {
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin: 18px 0 6px;
+}
+
+.admin-nav-link {
+  display: block;
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  font-size: 0.84rem;
+  color: var(--text-sub);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: all 0.12s ease;
+}
+
+.admin-nav-link:hover {
+  color: var(--text-main);
+  background: var(--glass-0);
+}
+
+.admin-nav-link.active {
+  color: var(--text-main);
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+}
+
+/* ==================================================
+   MAIN CONTENT
+================================================== */
+
+.admin-main {
+  flex: 1;
+  padding: 28px;
+}
+
+.admin-surface {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+}
+
+.admin-page {
+  display: block;
+}
+
+/* ==================================================
+   TABLES (BASE)
+================================================== */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  padding: 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 14px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.admin-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-table-state {
+  padding: 32px;
+  text-align: center;
+  color: var(--text-sub);
+}
+
+.admin-table-error {
+  color: var(--danger);
+}
+
+/* ==================================================
+   TABLE STRUCTURE — HIERARCHY & RHYTHM
+================================================== */
+
+.admin-table-wrapper {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--rule-soft);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.015)
+  );
+}
+
+/* Header authority */
+.admin-table thead th {
+  background: rgba(255,255,255,0.02);
+  backdrop-filter: blur(6px);
+}
+
+/* Checkbox column discipline */
+.admin-table th:first-child,
+.admin-table td:first-child {
+  width: 36px;
+  text-align: center;
+}
+
+/* Numeric columns feel financial */
+.admin-table td:nth-child(3),
+.admin-table td:nth-child(4),
+.admin-table td:nth-child(6) {
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+}
+
+/* Name column restraint */
+.admin-table td:nth-child(2) {
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Row hover = subtle scan assist */
+.admin-table tbody tr:hover td {
+  background: rgba(255,255,255,0.025);
+}
+
+/* ==================================================
+   ORDER ITEMS TABLE (LEDGER STYLE)
+================================================== */
+
+.admin-items-table table {
+  table-layout: fixed;
+}
+
+.admin-items-table th:nth-child(1),
+.admin-items-table td:nth-child(1) {
+  width: 46%;
+}
+
+.admin-items-table th:nth-child(2),
+.admin-items-table td:nth-child(2) {
+  width: 18%;
+}
+
+.admin-items-table th:nth-child(3),
+.admin-items-table td:nth-child(3),
+.admin-items-table th:nth-child(4),
+.admin-items-table td:nth-child(4),
+.admin-items-table th:nth-child(5),
+.admin-items-table td:nth-child(5) {
+  width: 12%;
+  text-align: right;
+}
+
+/* Product cell discipline */
+.admin-items-table td:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+/* ==================================================
+   DETAIL PAGE PRIMITIVES
+================================================== */
+
+.admin-section {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.admin-section-title {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 14px;
+}
+
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 10px 18px;
+}
+
+.admin-detail-key {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+.admin-detail-value {
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.admin-actions-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* ==================================================
+   TIMELINE (ORDER AUDIT)
+================================================== */
+
+.admin-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-timeline-item {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--rule-soft);
+}
+
+.admin-timeline-item:last-child {
+  border-bottom: none;
+}
+
+/* ==================================================
+   CELL UTILITIES
+================================================== */
+
+.cell-primary {
+  color: var(--text-main);
+}
+
+.cell-secondary {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+.cell-muted {
+  color: var(--text-mute);
+}
+
+.cell-strong {
+  font-weight: 500;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+}
+
+.align-right {
+  text-align: right;
+}
+
+/* ==================================================
+   PAGINATION
+================================================== */
+
+.admin-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+
+.admin-pagination-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-pagination button {
+  background: transparent;
+  color: var(--text-sub);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.admin-pagination button:hover:not(:disabled) {
+  color: var(--text-main);
+  border-color: var(--rule-hard);
+}
+
+.admin-pagination button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* ==================================================
+   STATUS COLORS
+================================================== */
+
+.status-pending { color: var(--warning); }
+.status-confirmed { color: var(--accent); }
+.status-shipped { color: #38bdf8; }
+.status-delivered { color: var(--success); }
+.status-cancelled { color: var(--danger); }
+
+/* ==================================================
+   STATUS BADGES — TYPOGRAPHIC AUTHORITY
+================================================== */
+
+.admin-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  border: 1px solid var(--rule-soft);
+  color: var(--text-main);
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* ---- Status semantics (NO FILLS) ---- */
+
+.admin-status-pending {
+  color: var(--warning);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.admin-status-confirmed {
+  color: var(--accent);
+  border-color: rgba(91, 140, 255, 0.35);
+}
+
+.admin-status-shipped {
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.admin-status-delivered {
+  color: var(--success);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.admin-status-cancelled {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* ==================================================
+   ROW ACTIONS — DECISION CONTROLS
+================================================== */
+
+.admin-row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-action {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  background: transparent;
+  color: var(--text-main);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    border-color 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease;
+}
+
+.admin-action:hover:not(:disabled) {
+  border-color: var(--rule-hard);
+  background: var(--glass-0);
+}
+
+.admin-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- Danger actions ---- */
+
+.admin-action-danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.admin-action-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* ==================================================
+   CONFIRM MODAL — LAST LINE OF DEFENSE
+================================================== */
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  background: rgba(0, 0, 0, 0.65);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+}
+
+.admin-modal {
+  width: 100%;
+  max-width: 420px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.045),
+    rgba(255, 255, 255, 0.015)
+  );
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+
+  padding: 22px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.admin-modal-danger {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* ---------- Typography ---------- */
+
+.admin-modal-title {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.admin-modal-description {
+  margin: 0 0 22px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text-sub);
+}
+
+/* ---------- Actions ---------- */
+
+.admin-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.admin-modal-button {
+  padding: 6px 12px;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  background: transparent;
+  color: var(--text-main);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.admin-modal-button:hover:not(:disabled) {
+  border-color: var(--rule-hard);
+  background: var(--glass-0);
+}
+
+.admin-modal-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- Primary / Danger ---------- */
+
+.admin-modal-button-primary {
+  border-color: rgba(91, 140, 255, 0.35);
+  color: var(--accent);
+}
+
+.admin-modal-button-primary:hover:not(:disabled) {
+  background: rgba(91, 140, 255, 0.08);
+}
+
+.admin-modal-button-danger {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--danger);
+}
+
+.admin-modal-button-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* ==================================================
+   ADMIN TOOLBAR — CONTROL PANEL
+================================================== */
+
+.admin-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 18px;
+}
+
+.admin-toolbar-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ---------- Groups ---------- */
+
+.admin-toolbar-left,
+.admin-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ==================================================
+   INPUTS — MECHANICAL STYLE
+================================================== */
+
+.admin-input,
+.admin-select {
+  height: 34px;
+  padding: 0 10px;
+
+  font-size: 0.78rem;
+  color: var(--text-main);
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.015)
+  );
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  outline: none;
+  appearance: none;
+}
+
+.admin-input {
+  min-width: 220px;
+}
+
+.admin-input::placeholder {
+  color: var(--text-mute);
+}
+
+/* ---------- Focus ---------- */
+
+.admin-input:focus,
+.admin-select:focus {
+  border-color: var(--rule-hard);
+}
+
+/* ---------- Hover ---------- */
+
+.admin-input:hover,
+.admin-select:hover {
+  border-color: var(--rule-hard);
+}
+
+/* ---------- Select caret ---------- */
+
+.admin-select {
+  padding-right: 30px;
+
+  /* Dark, high-contrast caret */
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      rgba(255, 255, 255, 0.9) 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 50%
+    );
+
+  background-position:
+    calc(100% - 16px) 15px,
+    calc(100% - 10px) 15px;
+
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* ==================================================
+   SELECT OPTIONS — READABILITY FIX
+================================================== */
+
+/* Dropdown list background */
+.admin-select option {
+  background-color: #0f1218; /* dark panel */
+  color: #e5e7eb;            /* light text */
+}
+
+/* Hovered option (some browsers) */
+.admin-select option:hover {
+  background-color: #1a1f2b;
+}
+
+/* Selected option */
+.admin-select option:checked {
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+/* ==================================================
+   ADMIN LINK — TABLE NAVIGATION
+================================================== */
+
+.admin-link {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font: inherit;
+  color: var(--text-main);
+
+  text-align: left;
+  cursor: pointer;
+
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  opacity: 0.88;
+
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease;
+}
+
+.admin-link:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+.admin-link:focus-visible {
+  outline: none;
+  text-decoration: underline;
+}
+
+/* ==================================================
+   MODAL — ARCHIVAL GLASS
+================================================== */
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 8, 14, 0.65);
+  backdrop-filter: blur(6px);
+}
+
+.admin-modal {
+  width: 100%;
+  max-width: 420px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.6);
+
+  overflow: hidden;
+}
+
+/* Header */
+.admin-modal-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.admin-modal-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Body */
+.admin-modal-body {
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+/* Form groups */
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-form-group label {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+.admin-form-group input {
+  height: 36px;
+  padding: 0 12px;
+
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-main);
+  font-size: 0.85rem;
+
+  outline: none;
+}
+
+.admin-form-group input:focus {
+  border-color: var(--accent);
+}
+
+/* Footer */
+.admin-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--rule-soft);
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Buttons */
+.admin-action {
+  padding: 8px 14px;
+  font-size: 0.8rem;
+
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+.admin-action:hover:not(:disabled) {
+  color: var(--text-main);
+  border-color: var(--rule-hard);
+}
+
+.admin-action-primary {
+  background: rgba(91,140,255,0.12);
+  border-color: rgba(91,140,255,0.4);
+  color: var(--text-main);
+}
+
+.admin-action-primary:hover:not(:disabled) {
+  background: rgba(91,140,255,0.18);
+}
+
+/* ==================================================
+   RICH TEXT EDITOR — ADMIN DOCUMENT SURFACE
+================================================== */
+
+.admin-section .border.rounded-md {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.015)
+  );
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Toolbar */
+.admin-section .border.rounded-md > .flex {
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid var(--rule-soft);
+  gap: 6px;
+}
+
+/* Toolbar buttons */
+.admin-section .border.rounded-md button,
+.admin-section .border.rounded-md select {
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-sub);
+  font-size: 0.75rem;
+
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.admin-section .border.rounded-md button:hover,
+.admin-section .border.rounded-md select:hover {
+  color: var(--text-main);
+  border-color: var(--rule-hard);
+}
+
+/* Active editor buttons (TipTap often adds aria-pressed) */
+.admin-section .border.rounded-md button[aria-pressed="true"] {
+  background: rgba(91,140,255,0.15);
+  border-color: rgba(91,140,255,0.5);
+  color: var(--text-main);
+}
+
+/* Editor body */
+.tiptap.ProseMirror {
+  color: var(--text-main);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.tiptap.ProseMirror p {
+  margin-bottom: 1em;
+}
+
+/* Editor focus ring */
+.tiptap.ProseMirror:focus {
+  outline: none;
+}
+
+/* ==================================================
+   PRODUCT EDIT FORM — ADMIN SETTINGS PANEL
+================================================== */
+
+.admin-section section {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.015)
+  );
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+/* Headings inside product edit */
+.admin-section h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+/* Inputs */
+.admin-section input[type="number"],
+.admin-section input[type="text"] {
+  height: 36px;
+  padding: 0 12px;
+
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-main);
+  font-size: 0.85rem;
+}
+
+/* Labels */
+.admin-section label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+/* Checkbox row */
+.admin-section input[type="checkbox"] {
+  accent-color: var(--accent);
+  margin-right: 6px;
+}
+
+/* Action button */
+.admin-section button {
+  margin-top: 12px;
+}
+
+/* Disabled state clarity */
+.admin-section button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ==================================================
+   SELECT + OPTION — DARK ADMIN SAFE STYLING
+================================================== */
+
+.admin-select {
+  background-color: rgba(0, 0, 0, 0.45);
+  color: var(--text-main);
+  border: 1px solid var(--rule-soft);
+}
+
+/* Force readable option list */
+.admin-select option {
+  background-color: #0f1218; /* solid dark */
+  color: #e5e7eb;           /* light text */
+}
+
+/* Selected option */
+.admin-select option:checked {
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+/* Hover (only some browsers support this) */
+.admin-select option:hover {
+  background-color: #1a1f2b;
+  color: #ffffff;
+}
+
+/* ==================================================
+   PRODUCT EDIT — FINANCIAL / FLAGS PANEL
+================================================== */
+
+/* Section container */
+.admin-section section {
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.035),
+    rgba(255,255,255,0.015)
+  );
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+/* Section title */
+.admin-section section > h3 {
+  margin: 0 0 18px;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+/* Inner column constraint */
+.admin-section section > div {
+  max-width: 360px;
+}
+
+/* Field blocks */
+.admin-section section > div > div {
+  margin-bottom: 14px;
+}
+
+/* Labels */
+.admin-section section label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+/* Numeric inputs */
+.admin-section section input[type="number"] {
+  height: 36px;
+  padding: 0 12px;
+
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  outline: none;
+}
+
+/* Focus */
+.admin-section section input[type="number"]:focus {
+  border-color: var(--accent);
+}
+
+/* Checkbox row */
+.admin-section section label > input[type="checkbox"] {
+  accent-color: var(--accent);
+  margin-right: 6px;
+}
+
+/* Checkbox label row layout */
+.admin-section section label:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-sub);
+}
+
+/* Action button */
+.admin-section section button {
+  margin-top: 16px;
+
+  padding: 8px 14px;
+  font-size: 0.8rem;
+
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+/* Disabled clarity */
+.admin-section section button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ==================================================
+   ADMIN RICH TEXT EDITOR — ARCHIVAL GLASS
+================================================== */
+
+/* ================= CONTAINER ================= */
+
+.admin-editor {
+  background: linear-gradient(
+    180deg,
+    var(--glass-1),
+    var(--glass-0)
+  );
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ================= TOOLBAR ================= */
+
+.admin-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 10px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+/* ================= BUTTONS ================= */
+
+.admin-editor-toolbar button {
+  min-width: 28px;
+  height: 28px;
+
+  padding: 0 8px;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  color: var(--text-sub);
+  background: transparent;
+
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.admin-editor-toolbar button:hover {
+  background: var(--glass-0);
+  color: var(--text-main);
+}
+
+.admin-editor-toolbar button:active {
+  background: var(--glass-1);
+  border-color: var(--rule-soft);
+}
+
+/* ================= SELECTS ================= */
+
+.admin-editor-toolbar select {
+  height: 28px;
+  padding: 0 26px 0 8px;
+
+  font-size: 12px;
+  color: var(--text-main);
+
+  background-color: rgba(0, 0, 0, 0.35);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: 6px;
+
+  cursor: pointer;
+  appearance: none;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-mute) 50%),
+    linear-gradient(135deg, var(--text-mute) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 9px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.admin-editor-toolbar select:focus {
+  outline: none;
+  border-color: var(--rule-hard);
+}
+
+/* ================= COLOR INPUTS ================= */
+
+.admin-editor-toolbar input[type="color"] {
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.admin-editor-toolbar input[type="color"]::-webkit-color-swatch {
+  border-radius: 4px;
+  border: 1px solid var(--rule-soft);
+}
+
+.admin-editor-toolbar input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+/* ================= SEPARATOR ================= */
+
+.editor-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--rule-soft);
+  margin: 0 4px;
+}
+
+/* ================= EDITOR CONTENT ================= */
+
+.admin-editor-content {
+  min-height: 320px;
+  padding: 16px;
+
+  font-size: 0.9rem;
+  line-height: 1.7;
+
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.25);
+
+  outline: none;
+}
+
+/* ================= PROSEMIRROR BASE ================= */
+
+.admin-editor-content .ProseMirror {
+  outline: none;
+}
+
+.admin-editor-content .ProseMirror p {
+  margin-bottom: 1em;
+}
+
+.admin-editor-content .ProseMirror h1,
+.admin-editor-content .ProseMirror h2,
+.admin-editor-content .ProseMirror h3 {
+  font-weight: 600;
+  margin: 1.2em 0 0.6em;
+  color: var(--text-main);
+}
+
+.admin-editor-content .ProseMirror ul,
+.admin-editor-content .ProseMirror ol {
+  padding-left: 1.4em;
+  margin-bottom: 1em;
+}
+
+.admin-editor-content .ProseMirror li {
+  margin-bottom: 0.4em;
+}
+
+.admin-editor-content .ProseMirror a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.admin-editor-content .ProseMirror blockquote {
+  border-left: 2px solid var(--rule-soft);
+  padding-left: 12px;
+  opacity: 0.85;
+}
+
+/* ================= FOCUS STATE ================= */
+
+.admin-editor:focus-within {
+  border-color: var(--rule-hard);
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-form-group label {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+.admin-form-group input {
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 6px 8px;
+
+  font-size: 0.8rem;
+  color: var(--text-main);
+
+  outline: none;
+  transition: border 0.12s ease;
+}
+
+.admin-form-group input:focus {
+  border-color: var(--accent);
+}
+
+.admin-action {
+  font-size: 0.72rem;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  color: var(--text-main);
+
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.admin-action:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+}
+
+.admin-action-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-action-primary:hover {
+  filter: brightness(1.05);
+}
+
+.admin-action-danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.admin-action-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.admin-table-empty {
+  padding: 16px;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+  text-align: center;
+}
+
+.admin-input-sm {
+  width: 72px;
+  padding: 4px 6px;
+
+  font-size: 0.75rem;
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  color: var(--text-main);
+}
+
+.admin-input-sm:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+

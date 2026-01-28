@@ -1,0 +1,112 @@
+/* ==================================================
+   ADMIN ATTRIBUTES PAGE
+================================================== */
+
+.admin-attributes-page {
+  padding: 24px;
+}
+
+/* ================= HEADER ================= */
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-page-header h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.admin-page-header p {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+  font-size: 0.75rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btn.primary {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.18),
+      rgba(255, 255, 255, 0.08)
+    ),
+    var(--glass-1);
+
+  color: #f9fafb;
+  border-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+.btn.primary:hover {
+  border-color: #60a5fa;
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.6),
+    0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* ================= ERROR ================= */
+
+.admin-error-box {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 8px;
+
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+
+  font-size: 0.8rem;
+}
+
+/* ================= LOADING ================= */
+
+.admin-loading {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.attribute-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.attribute-actions button {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+
+  background: var(--glass-0);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+
+  color: #e5e7eb;
+  cursor: pointer;
+}
+
+.attribute-actions button:hover {
+  background: var(--glass-1);
+  border-color: #60a5fa;
+}
+
+.attribute-actions .danger {
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.45);
+}

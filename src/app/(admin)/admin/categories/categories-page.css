@@ -1,0 +1,51 @@
+/* ==================================================
+   ADMIN CATEGORIES PAGE
+================================================== */
+
+.categories-surface {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ================= HEADER ================= */
+
+.categories-header h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-main);
+}
+
+.categories-header p {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+}
+
+/* ================= CONTENT ================= */
+
+.categories-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= EMPTY ================= */
+
+.categories-empty {
+  padding: 18px;
+  font-size: 0.8rem;
+  color: var(--text-mute);
+  border: 1px dashed var(--rule-soft);
+  border-radius: var(--radius-md);
+  background: var(--glass-0);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .categories-surface {
+    padding: 16px;
+  }
+}

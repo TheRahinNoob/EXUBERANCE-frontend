@@ -1,0 +1,128 @@
+/* ==================================================
+   ADD PRODUCT ATTRIBUTE FORM — PRO
+================================================== */
+
+.admin-attr-add {
+  margin-bottom: 24px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+}
+
+/* ================= TITLE ================= */
+
+.admin-attr-add-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+/* ================= ROW ================= */
+
+.admin-attr-add-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ================= INPUTS ================= */
+
+.admin-input {
+  padding: 6px 8px;
+  font-size: 0.75rem;
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+
+  min-width: 160px;
+}
+
+.admin-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.admin-input-xs {
+  width: 80px;
+}
+
+/* ================= SELECT ================= */
+
+.admin-select {
+  padding: 6px 28px 6px 8px;
+  font-size: 0.75rem;
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+
+  cursor: pointer;
+}
+
+/* 🔥 CRITICAL: OPTION VISIBILITY FIX */
+.admin-select option {
+  background: #0b0b0b;
+  color: #e5e7eb;
+}
+
+/* Disabled options */
+.admin-select option:disabled {
+  color: #6b7280;
+}
+
+/* ================= BUTTON ================= */
+
+.admin-action {
+  padding: 6px 10px;
+  font-size: 0.7rem;
+
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule-soft);
+  background: transparent;
+  color: var(--text-main);
+
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.admin-action:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+}
+
+.admin-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* PRIMARY */
+
+.admin-action-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-action-primary:hover {
+  filter: brightness(1.05);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 640px) {
+  .admin-attr-add-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-input,
+  .admin-select {
+    width: 100%;
+  }
+}

@@ -1,0 +1,66 @@
+/* ==================================================
+   CREATE COMFORT RAIL — ADMIN CMS
+================================================== */
+
+.create-comfort-rail {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+
+  padding: 14px;
+  margin-bottom: 24px;
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+}
+
+/* ================= SELECT ================= */
+
+.create-comfort-rail select {
+  min-width: 220px;
+
+  background: var(--ink-1);
+  color: var(--text-main);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  padding: 8px 10px;
+  font-size: 13px;
+
+  outline: none;
+}
+
+.create-comfort-rail select:focus {
+  border-color: var(--accent);
+}
+
+/* ================= IMAGE PICKER ================= */
+/* ImagePicker already handles preview — we just align it */
+
+.create-comfort-rail .image-picker {
+  flex-shrink: 0;
+}
+
+/* ================= BUTTON ================= */
+
+.create-comfort-rail .btn.primary {
+  background: var(--accent);
+  color: white;
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.create-comfort-rail .btn.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

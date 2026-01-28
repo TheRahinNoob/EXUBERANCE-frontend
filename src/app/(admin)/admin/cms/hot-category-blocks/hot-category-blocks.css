@@ -1,0 +1,147 @@
+/* ==================================================
+   HOT CATEGORY BLOCKS — ADMIN
+================================================== */
+
+.hot-blocks-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ================= HEADER ================= */
+
+.hot-blocks-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.hot-blocks-header p {
+  margin-top: 6px;
+  color: var(--text-sub);
+  font-size: 14px;
+}
+
+/* ================= CREATE ================= */
+
+.hot-block-create {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  padding: 14px;
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+}
+
+.hot-block-create input {
+  flex: 1;
+  background: var(--ink-1);
+  color: var(--text-main);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+/* ================= GRID ================= */
+
+.hot-blocks-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  );
+  gap: 16px;
+}
+
+/* ================= CARD ================= */
+
+.hot-block-card {
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* TITLE */
+
+.hot-block-card .block-title {
+  font-size: 14px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--text-main);
+  border: none;
+  border-bottom: 1px dashed var(--rule-soft);
+  padding: 4px 0;
+}
+
+/* CONTROLS */
+
+.block-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.block-controls input[type="number"] {
+  width: 70px;
+  background: var(--ink-1);
+  color: var(--text-main);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+}
+
+/* LINK */
+
+.manage-link {
+  font-size: 13px;
+  color: var(--accent);
+  text-decoration: none;
+  margin-top: 4px;
+}
+
+.manage-link:hover {
+  text-decoration: underline;
+}
+
+/* BUTTONS */
+
+.btn.primary {
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.hot-block-card .danger {
+  align-self: flex-start;
+  margin-top: 6px;
+
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ================= TEXT ================= */
+
+.muted {
+  color: var(--text-sub);
+}
+
+.italic {
+  font-style: italic;
+}

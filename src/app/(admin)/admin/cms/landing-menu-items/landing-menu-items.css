@@ -1,0 +1,160 @@
+/* ==================================================
+   LANDING MENU ITEMS — DARK GLASS
+================================================== */
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-page-header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.admin-page-header p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.admin-muted {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.admin-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.admin-empty {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ================= TABLE ================= */
+
+.glass-table-wrap {
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+  background: var(--glass-0);
+  overflow: hidden;
+}
+
+.glass-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.glass-table thead {
+  background: var(--glass-1);
+}
+
+.glass-table th {
+  padding: 10px;
+  text-align: left;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.glass-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--rule-soft);
+  color: var(--text-primary);
+}
+
+.glass-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ================= CELLS ================= */
+
+.category-name {
+  font-weight: 500;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* ================= ACTIONS ================= */
+
+.row-actions {
+  text-align: right;
+}
+
+.row-actions .link {
+  font-size: 0.7rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.row-actions .link:hover {
+  text-decoration: underline;
+}
+
+/* ================= SWITCH ================= */
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch span {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--glass-1);
+  border-radius: 999px;
+  border: 1px solid var(--rule-soft);
+  transition: 0.2s;
+}
+
+.switch span::before {
+  content: "";
+  position: absolute;
+  height: 12px;
+  width: 12px;
+  left: 2px;
+  top: 2px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.switch input:checked + span {
+  background: rgba(37, 99, 235, 0.25);
+}
+
+.switch input:checked + span::before {
+  transform: translateX(16px);
+  background: var(--accent);
+}
+
+/* ================= BUTTONS ================= */
+
+.btn.primary {
+  padding: 8px 14px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  text-decoration: none;
+}

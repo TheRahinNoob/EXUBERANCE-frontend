@@ -1,0 +1,97 @@
+/* ==================================================
+   CATEGORY TOOLBAR — ADMIN GLASS
+================================================== */
+
+.category-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+
+  padding: 14px;
+  border-radius: var(--radius-md);
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+}
+
+/* ================= FIELD ================= */
+
+.toolbar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toolbar-field label {
+  font-size: 0.7rem;
+  color: var(--text-mute);
+}
+
+.toolbar-field label span {
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+/* ================= INPUT ================= */
+
+.toolbar-field input {
+  min-width: 220px;
+  padding: 6px 8px;
+
+  font-size: 0.75rem;
+  color: var(--text-main);
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  outline: none;
+}
+
+.toolbar-field input:focus {
+  border-color: var(--accent);
+}
+
+/* ================= SLUG PREVIEW ================= */
+
+.slug-preview {
+  font-size: 0.65rem;
+  color: var(--text-mute);
+}
+
+.slug-preview code {
+  background: var(--glass-1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+}
+
+/* ================= ACTION BUTTON ================= */
+
+.toolbar-action {
+  height: 32px;
+  padding: 0 16px;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  background: var(--accent);
+  color: #fff;
+
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+
+  transition: opacity 0.12s ease,
+              transform 0.12s ease;
+}
+
+.toolbar-action:hover {
+  transform: translateY(-1px);
+}
+
+.toolbar-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

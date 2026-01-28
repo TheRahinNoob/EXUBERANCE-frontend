@@ -1,0 +1,125 @@
+/* ==================================================
+   FEATURED CATEGORY TOOLBAR
+================================================== */
+
+.featured-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+
+  padding: 14px;
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+}
+
+/* ==================================================
+   FIELD
+================================================== */
+
+.toolbar-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.toolbar-field label {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+/* ==================================================
+   SELECT
+================================================== */
+
+.toolbar-field select {
+  background: var(--ink-1);
+  color: var(--text-main);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  padding: 8px 10px;
+  font-size: 13px;
+
+  outline: none;
+}
+
+.toolbar-field select:hover {
+  border-color: var(--rule-hard);
+}
+
+.toolbar-field select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 🔥 OPTION STYLING (WORKS IN MOST MODERN BROWSERS) */
+.toolbar-field option {
+  background: var(--ink-1);
+  color: var(--text-main);
+}
+
+.toolbar-field option:disabled {
+  color: var(--text-mute);
+}
+
+/* ==================================================
+   FILE INPUT
+================================================== */
+
+.file-input {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 8px 10px;
+  font-size: 13px;
+
+  background: var(--glass-1);
+  color: var(--text-main);
+
+  border: 1px dashed var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+}
+
+.file-input:hover {
+  background: var(--glass-2);
+  border-color: var(--rule-hard);
+}
+
+.file-input input {
+  display: none;
+}
+
+/* ==================================================
+   BUTTON
+================================================== */
+
+.featured-toolbar .btn.primary {
+  align-self: flex-end;
+
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+
+  background: var(--accent);
+  color: white;
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.featured-toolbar .btn.primary:hover {
+  opacity: 0.9;
+}
+
+.featured-toolbar .btn.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

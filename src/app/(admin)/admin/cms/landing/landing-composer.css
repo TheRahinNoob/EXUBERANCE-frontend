@@ -1,0 +1,117 @@
+/* ==================================================
+   LANDING COMPOSER — ADMIN PRO UI
+================================================== */
+
+.landing-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= HEADER ================= */
+
+.composer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.composer-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.composer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ================= TABLE ================= */
+
+.landing-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.landing-table thead th {
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-sub);
+  padding: 8px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.landing-row {
+  background: linear-gradient(
+    180deg,
+    var(--glass-1),
+    var(--glass-0)
+  );
+}
+
+.landing-row td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-mute);
+  width: 32px;
+  user-select: none;
+}
+
+.block-type {
+  font-weight: 500;
+}
+
+.block-linked {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--glass-2);
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.accent {
+  color: var(--accent);
+  border-color: rgba(91, 140, 255, 0.35);
+}
+
+.btn.success {
+  color: var(--success);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.btn.danger {
+  color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* ================= TEXT ================= */
+
+.muted {
+  color: var(--text-sub);
+  font-size: 14px;
+}

@@ -1,0 +1,68 @@
+/* =========================
+   PRODUCT GRID
+   Editorial / Controlled Layout
+========================= */
+
+.grid {
+  display: grid;
+
+  /* 🔥 DESKTOP DEFAULT: 3 CARDS */
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 36px;
+  width: 100%;
+
+  max-width: 1400px;   /* 🔒 keeps cards large & classy */
+  margin: 0 auto;
+}
+
+/* =========================
+   VERY LARGE SCREENS
+   (still 3, just more air)
+========================= */
+@media (min-width: 1600px) {
+  .grid {
+    max-width: 1500px;
+    gap: 42px;
+  }
+}
+
+/* =========================
+   LAPTOP / SMALL DESKTOP
+========================= */
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+}
+
+/* =========================
+   TABLET
+========================= */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty {
+  padding: 56px 0;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}

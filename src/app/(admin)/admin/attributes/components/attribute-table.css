@@ -1,0 +1,100 @@
+/* ==================================================
+   ATTRIBUTE TABLE — DARK GLASS UI
+================================================== */
+
+.attribute-table {
+  background: transparent;
+}
+
+/* ================= EMPTY ================= */
+
+.attribute-empty {
+  padding: 16px;
+  font-size: 0.85rem;
+  color: var(--text-mute);
+  border: 1px dashed var(--rule-soft);
+  border-radius: var(--radius-md);
+}
+
+/* ================= INPUTS ================= */
+
+.attribute-input,
+.attribute-order {
+  width: 100%;
+  padding: 6px 8px;
+
+  font-size: 0.8rem;
+  color: var(--text-main);
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  outline: none;
+}
+
+.attribute-order {
+  width: 80px;
+}
+
+.attribute-input:focus,
+.attribute-order:focus {
+  border-color: var(--accent);
+  background: var(--glass-1);
+}
+
+/* ================= ROW STATE ================= */
+
+tr.is-saving {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ================= ACTIONS ================= */
+
+.attribute-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+}
+
+/* Glass button */
+.btn.glass {
+  color: var(--text-main);
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+}
+
+.btn.glass:hover {
+  background: var(--glass-2);
+  border-color: var(--rule-hard);
+}
+
+/* Danger */
+.btn.danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.btn.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Disabled */
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

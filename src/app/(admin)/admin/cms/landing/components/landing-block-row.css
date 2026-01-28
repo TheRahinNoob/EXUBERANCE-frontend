@@ -1,0 +1,85 @@
+/* ==================================================
+   LANDING BLOCK ROW — ADMIN CMS
+================================================== */
+
+.landing-block-row {
+  background: linear-gradient(
+    180deg,
+    var(--glass-1),
+    var(--glass-0)
+  );
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.landing-block-row td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--rule-soft);
+  font-size: 13px;
+}
+
+/* ================= STATES ================= */
+
+.landing-block-row.inactive {
+  opacity: 0.55;
+}
+
+.landing-block-row:hover {
+  background: var(--glass-2);
+}
+
+/* ================= DRAG ================= */
+
+.drag-cell {
+  width: 32px;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  color: var(--text-mute);
+}
+
+.drag-cell:active {
+  cursor: grabbing;
+}
+
+/* ================= TYPE ================= */
+
+.block-type {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--text-main);
+}
+
+/* ================= LINKED ================= */
+
+.block-linked {
+  color: var(--text-sub);
+  font-size: 12.5px;
+}
+
+/* ================= TOGGLE ================= */
+
+.block-toggle input {
+  cursor: pointer;
+}
+
+/* ================= ACTIONS ================= */
+
+.block-actions {
+  text-align: right;
+}
+
+.block-actions .ghost {
+  background: transparent;
+  border: none;
+  padding: 4px 6px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.block-actions .danger {
+  color: var(--danger);
+}
+
+.block-actions .danger:hover {
+  text-decoration: underline;
+}

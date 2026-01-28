@@ -1,0 +1,321 @@
+/* ==================================================
+   PRODUCT DETAIL — ARCHIVAL GLASS
+================================================== */
+
+.admin-page {
+  display: block;
+}
+
+/* ==================================================
+   BACK LINK
+================================================== */
+
+.admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+
+  font-size: 0.85rem;
+  color: var(--text-sub);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  transition: color 0.12s ease;
+}
+
+.admin-link:hover {
+  color: var(--text-main);
+}
+
+/* ==================================================
+   SECTION CONTAINER
+================================================== */
+
+.admin-section {
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.admin-section-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  margin-bottom: 14px;
+}
+
+/* ==================================================
+   DETAIL GRID (READ MODE)
+================================================== */
+
+.admin-detail-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 10px 18px;
+}
+
+.admin-detail-key {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+.admin-detail-value {
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+}
+
+/* ==================================================
+   FORM GROUPS (EDIT MODE)
+================================================== */
+
+.admin-form-group {
+  max-width: 420px;
+  margin-bottom: 14px;
+}
+
+.admin-form-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-mute);
+  margin-bottom: 4px;
+}
+
+.admin-form-group input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+
+  font-size: 0.85rem;
+  color: var(--text-main);
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  outline: none;
+}
+
+.admin-form-group input:focus {
+  border-color: var(--rule-hard);
+}
+
+/* ==================================================
+   ACTION BAR
+================================================== */
+
+.admin-actions-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* ==================================================
+   BUTTON SYSTEM
+================================================== */
+
+.admin-action {
+  height: 34px;
+  padding: 0 14px;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-sub);
+
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition:
+    color 0.12s ease,
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.admin-action:hover:not(:disabled) {
+  color: var(--text-main);
+  border-color: var(--rule-hard);
+  background: var(--glass-0);
+}
+
+.admin-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-action-primary {
+  color: var(--text-main);
+  background: linear-gradient(
+    180deg,
+    rgba(91, 140, 255, 0.18),
+    rgba(91, 140, 255, 0.08)
+  );
+  border-color: rgba(91, 140, 255, 0.45);
+}
+
+.admin-action-primary:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    rgba(91, 140, 255, 0.28),
+    rgba(91, 140, 255, 0.12)
+  );
+}
+
+/* ==================================================
+   TABLE STATES
+================================================== */
+
+.admin-table-state {
+  padding: 28px;
+  font-size: 0.85rem;
+  color: var(--text-sub);
+}
+
+.admin-table-error {
+  padding: 28px;
+  font-size: 0.85rem;
+  color: var(--danger);
+}
+
+/* ==================================================
+   DESCRIPTION EDITOR WRAPPER
+================================================== */
+
+.admin-section .tiptap {
+  min-height: 260px;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.admin-section .ProseMirror {
+  padding: 18px;
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-md);
+}
+
+.admin-section .ProseMirror:focus {
+  outline: none;
+  border-color: var(--rule-hard);
+}
+
+/* ==================================================
+   PRODUCT EDIT FORM (PRICE / FEATURED)
+================================================== */
+
+.product-edit-card {
+  margin-top: 32px;
+  padding-top: 22px;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.product-edit-card h3 {
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.product-edit-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  margin-bottom: 12px;
+}
+
+.product-edit-form {
+  max-width: 360px;
+}
+
+.product-edit-field {
+  margin-bottom: 12px;
+}
+
+.product-edit-field label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+.product-edit-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+
+  font-size: 0.85rem;
+  color: var(--text-main);
+
+  background: var(--glass-1);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-sm);
+}
+
+.product-edit-input:focus {
+  outline: none;
+  border-color: var(--rule-hard);
+}
+
+/* ==================================================
+   FEATURED CHECKBOX
+================================================== */
+
+.product-edit-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  margin-bottom: 16px;
+}
+
+.product-edit-checkbox input {
+  accent-color: var(--accent);
+}
+
+/* ==================================================
+   SAVE BUTTON
+================================================== */
+
+.product-edit-save {
+  height: 36px;
+  padding: 0 16px;
+
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  color: var(--text-main);
+  background: linear-gradient(
+    180deg,
+    rgba(91, 140, 255, 0.18),
+    rgba(91, 140, 255, 0.08)
+  );
+
+  border: 1px solid rgba(91, 140, 255, 0.45);
+  border-radius: var(--radius-sm);
+
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.product-edit-save:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    rgba(91, 140, 255, 0.28),
+    rgba(91, 140, 255, 0.12)
+  );
+}
+
+.product-edit-save:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+/* ==================================================
+   WRAPPER
+================================================== */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* ==================================================
+   PRODUCT NAME
+================================================== */
+.name {
+  font-family: 'Rajdhani', sans-serif; /* 🔥 REQUIRED */
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #111827;
+  margin: 0;
+}
+
+/* ==================================================
+   PRICE ROW
+================================================== */
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+/* OLD PRICE */
+.oldPrice {
+  font-size: 14px;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+/* CURRENT PRICE */
+.price {
+  font-size: 30px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* CURRENCY SYMBOL */
+.currency {
+  font-size: 14px;
+  font-weight: 50;
+  margin-right: 2px;
+}
+
+/* ==================================================
+   DESKTOP ENHANCEMENT
+================================================== */
+@media (min-width: 1024px) {
+  .wrapper {
+    max-width: 420px;
+  }
+
+  .name {
+    font-size: 24px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+}

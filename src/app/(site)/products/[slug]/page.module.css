@@ -1,0 +1,276 @@
+/* =========================
+   PAGE WRAPPER (GLOBAL WIDTH CONTROL)
+========================= */
+.page {
+  padding: 20px;
+  max-width: 1080px; /* mobile + tablet default */
+  margin: 0 auto;
+}
+
+/* =========================
+   NOT FOUND
+========================= */
+.notFound {
+  padding: 64px;
+  text-align: center;
+}
+
+/* =========================
+   PDP MAIN (MOBILE FIRST)
+========================= */
+.pdpMain {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Right column (info + purchase + details) */
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* =========================
+   MOBILE: FULL-BLEED IMAGE
+========================= */
+@media (max-width: 640px) {
+  .pdpMain > :first-child {
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+}
+
+/* =========================
+   PRODUCT DESCRIPTION (INLINE)
+========================= */
+.description {
+  margin-top: 6px;
+}
+
+.descriptionText {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+/* =========================================================
+   🔥 DESKTOP LAYOUT (EXPANDED & PREMIUM)
+========================================================= */
+@media (min-width: 1024px) {
+  .page {
+    padding-left: 40px;
+    padding-right: 40px;
+    max-width: 1320px; /* 🔥 EXPANDED DESKTOP WIDTH */
+  }
+
+  .pdpMain {
+    display: grid;
+    grid-template-columns: minmax(520px, 1fr) 480px;
+    gap: 64px; /* 🔥 MORE AIR */
+    align-items: start;
+  }
+
+  .pdpMain > :first-child {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* =========================
+   RELATED PRODUCTS SECTION
+========================= */
+.related {
+  margin-top: 56px;
+}
+
+.relatedTitle {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
+}
+
+/* =========================
+   RELATED GRID (MOBILE FIRST)
+========================= */
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+/* =========================
+   PRODUCT CARD
+========================= */
+.card {
+  position: relative;
+  background: transparent;
+  border-radius: 5px;
+  box-shadow:
+    0 7px 15px rgb(0 0 0 / 13%),
+    0 1px 4px rgb(0 0 0 / 11%);
+  text-decoration: none;
+  color: #000;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   IMAGE AREA
+========================= */
+.imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: transparent;
+}
+
+/* 🔥 VISUAL GAP (NO WHITE BLOCK) */
+.imageWrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -28px;
+  height: 28px;
+  pointer-events: none;
+  background: transparent;
+}
+
+.imageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* =========================
+   ACTION ICON
+========================= */
+.actionIcon {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+
+  width: 26px;
+  height: 26px;
+
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* =========================
+   PRICE FLOAT (HALF OVER IMAGE)
+========================= */
+.priceBar {
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: center;
+  z-index: 4;
+
+  /* 🔥 dominant elevation */
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+
+.priceBarInner {
+  background: #ffffff;
+  color: #000;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 5px;
+
+  display: flex;
+  gap: 6px;
+}
+
+.price {
+  font-weight: 700;
+}
+
+.oldPrice {
+  color: #a9a9a9;
+  font-size: 11px;
+  text-decoration: line-through;
+}
+
+/* =========================
+   ADD TO CART (NO WHITE GAP)
+========================= */
+.addToCart {
+  width: 100%;
+  height: 30px;
+
+  background: #000;
+  color: #fffffff1;
+
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transform: translateY(13px);
+
+  /* 🔥 subtle depth */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+
+/* =========================
+   MOBILE ONLY
+========================= */
+@media (max-width: 640px) {
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================
+   🔒 TABLET / SMALL DESKTOP (UNCHANGED)
+========================================================= */
+@media (min-width: 604px) and (max-width: 1023px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, 180px);
+    gap: 18px;
+    justify-content: start;
+  }
+
+  .card {
+    width: 180px;
+  }
+
+  .imageWrap {
+    width: 180px;
+    height: 240px;
+  }
+}
+
+/* =========================================================
+   🔥 LARGE DESKTOP RELATED PRODUCTS (EXPANDED)
+========================================================= */
+@media (min-width: 1024px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+  }
+
+  .imageWrap {
+    height: 300px;
+  }
+}

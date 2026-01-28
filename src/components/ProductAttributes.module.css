@@ -1,0 +1,84 @@
+.wrapper {
+  margin-top: 40px;
+  padding-top: 28px;
+     border-top: 1px solid #000000;
+}
+
+/* =========================
+   DESCRIPTION TEXT
+========================= */
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   TABLE
+========================= */
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================
+   ROW — LABEL + VALUE SAME LINE (ALWAYS)
+========================= */
+.row {
+  display: grid;
+  grid-template-columns: 160px 1fr; /* 👈 fixed two-column layout */
+  align-items: center;
+
+  gap: 16px;
+  padding: 12px 0;
+
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+/* =========================
+   LABEL
+========================= */
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+
+  white-space: nowrap; /* 👈 prevents wrapping */
+}
+
+/* =========================
+   VALUE
+========================= */
+.value {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.6;
+
+  word-break: break-word;
+}
+
+/* =========================
+   MOBILE — STILL SAME LINE
+========================= */
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 140px 1fr; /* slightly tighter */
+    gap: 12px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .value {
+    font-size: 13px;
+  }
+}

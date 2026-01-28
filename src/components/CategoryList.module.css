@@ -1,0 +1,26 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  text-decoration: none;
+  color: #111827;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.card:hover {
+  border-color: #111827;
+  background: #f9fafb;
+}
+
+.name {
+  font-size: 15px;
+}

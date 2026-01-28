@@ -1,0 +1,47 @@
+/* =========================
+   DESKTOP LAYOUT
+========================= */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 32px;
+
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+/* SIDEBAR (DESKTOP ONLY) */
+.sidebar {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+}
+
+/* CONTENT */
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* =========================
+   MOBILE — FULL FIX
+========================= */
+@media (max-width: 1024px) {
+  .layout {
+    /* 🔥 REMOVE SIDEBAR FROM LAYOUT */
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  /* 🔥 SIDEBAR DOES NOT EXIST IN PAGE FLOW */
+  .sidebar {
+    display: none;
+  }
+}
