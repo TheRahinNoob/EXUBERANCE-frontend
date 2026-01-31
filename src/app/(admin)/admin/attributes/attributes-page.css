@@ -1,9 +1,12 @@
 /* ==================================================
-   ADMIN ATTRIBUTES PAGE
+   ADMIN ATTRIBUTES PAGE — ARCHIVAL GLASS
+   Optimized • Mobile-First • Production
 ================================================== */
 
+/* ================= PAGE ================= */
+
 .admin-attributes-page {
-  padding: 24px;
+  padding: clamp(14px, 3vw, 24px);
 }
 
 /* ================= HEADER ================= */
@@ -13,92 +16,105 @@
   justify-content: space-between;
   align-items: flex-end;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .admin-page-header h2 {
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: clamp(1.05rem, 3vw, 1.25rem);
   font-weight: 600;
   color: #f9fafb;
 }
 
 .admin-page-header p {
   margin-top: 4px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #9ca3af;
+  line-height: 1.4;
 }
 
 /* ================= BUTTONS ================= */
 
 .btn {
-  font-size: 0.75rem;
-  padding: 8px 14px;
+  font-size: 0.72rem;
+  padding: 7px 14px;
   border-radius: 8px;
+
   cursor: pointer;
   border: 1px solid transparent;
+
   transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    background 120ms ease,
+    border-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .btn.primary {
   background:
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.18),
-      rgba(255, 255, 255, 0.08)
+      rgba(255, 255, 255, 0.16),
+      rgba(255, 255, 255, 0.06)
     ),
     var(--glass-1);
 
   color: #f9fafb;
-  border-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
+  border-color: rgba(255, 255, 255, 0.22);
+
+  /* blur kept but lighter = better perf */
+  backdrop-filter: blur(6px);
 }
 
 .btn.primary:hover {
   border-color: #60a5fa;
   box-shadow:
-    0 0 0 1px rgba(96, 165, 250, 0.6),
-    0 12px 24px rgba(0, 0, 0, 0.5);
+    0 0 0 1px rgba(96, 165, 250, 0.5),
+    0 8px 18px rgba(0, 0, 0, 0.45);
 }
 
 /* ================= ERROR ================= */
 
 .admin-error-box {
-  margin-bottom: 16px;
-  padding: 12px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+
   border-radius: 8px;
+  font-size: 0.78rem;
 
   background: rgba(239, 68, 68, 0.08);
   border: 1px solid rgba(239, 68, 68, 0.35);
   color: #fca5a5;
-
-  font-size: 0.8rem;
 }
 
 /* ================= LOADING ================= */
 
 .admin-loading {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #9ca3af;
 }
+
+/* ================= ATTRIBUTE ACTIONS ================= */
 
 .attribute-actions {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .attribute-actions button {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   padding: 4px 10px;
 
   background: var(--glass-0);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 6px;
 
   color: #e5e7eb;
   cursor: pointer;
+
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
 }
 
 .attribute-actions button:hover {
@@ -109,4 +125,49 @@
 .attribute-actions .danger {
   color: #fca5a5;
   border-color: rgba(239, 68, 68, 0.45);
+}
+
+/* ==================================================
+   MOBILE — GOD MODE
+================================================== */
+
+@media (max-width: 768px) {
+  .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .admin-page-header button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ==================================================
+   EXTREME SMALL DEVICES (≤ 420px)
+================================================== */
+
+@media (max-width: 420px) {
+  .admin-attributes-page {
+    padding: 12px;
+  }
+
+  .admin-page-header h2 {
+    font-size: 1rem;
+  }
+
+  .btn.primary {
+    padding: 8px 12px;
+    font-size: 0.7rem;
+  }
+
+  .attribute-actions {
+    gap: 4px;
+  }
+
+  .attribute-actions button {
+    padding: 4px 8px;
+    font-size: 0.66rem;
+  }
 }

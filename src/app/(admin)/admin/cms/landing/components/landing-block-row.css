@@ -1,5 +1,5 @@
 /* ==================================================
-   LANDING BLOCK ROW — ADMIN CMS
+   LANDING BLOCK ROW — ADMIN CMS (TOUCH SAFE)
 ================================================== */
 
 .landing-block-row {
@@ -8,13 +8,17 @@
     var(--glass-1),
     var(--glass-0)
   );
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .landing-block-row td {
   padding: 10px 8px;
   border-bottom: 1px solid var(--rule-soft);
-  font-size: 13px;
+  font-size: 0.8rem;
+  vertical-align: middle;
 }
 
 /* ================= STATES ================= */
@@ -27,14 +31,23 @@
   background: var(--glass-2);
 }
 
-/* ================= DRAG ================= */
+/* ================= DRAG HANDLE (CRITICAL) ================= */
 
 .drag-cell {
-  width: 32px;
+  width: 36px;
   text-align: center;
+
   cursor: grab;
   user-select: none;
+
   color: var(--text-mute);
+  font-size: 1.1rem;
+
+  /* 🔥 REQUIRED FOR MOBILE DND */
+  touch-action: none;
+
+  /* Finger-friendly */
+  padding: 6px 0;
 }
 
 .drag-cell:active {
@@ -53,26 +66,30 @@
 
 .block-linked {
   color: var(--text-sub);
-  font-size: 12.5px;
+  font-size: 0.78rem;
 }
 
 /* ================= TOGGLE ================= */
 
 .block-toggle input {
   cursor: pointer;
+  transform: scale(1.05);
 }
 
 /* ================= ACTIONS ================= */
 
 .block-actions {
   text-align: right;
+  white-space: nowrap;
 }
 
 .block-actions .ghost {
   background: transparent;
   border: none;
+
   padding: 4px 6px;
-  font-size: 12.5px;
+  font-size: 0.78rem;
+
   cursor: pointer;
 }
 
@@ -82,4 +99,62 @@
 
 .block-actions .danger:hover {
   text-decoration: underline;
+}
+
+/* ==================================================
+   MOBILE — CARD MODE SUPPORT
+================================================== */
+
+@media (max-width: 768px) {
+  .landing-block-row {
+    display: block;
+    margin-bottom: 14px;
+
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--radius-md);
+
+    padding: 10px 12px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.015)
+    );
+  }
+
+  .landing-block-row td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 6px 0;
+    border: none;
+  }
+
+  .landing-block-row td::before {
+    content: attr(data-label);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+
+  /* Drag handle — BIG & CLEAR */
+  .drag-cell {
+    font-size: 1.3rem;
+    justify-content: flex-start;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .landing-block-row td {
+    font-size: 0.75rem;
+  }
+
+  .block-actions .ghost {
+    font-size: 0.72rem;
+  }
 }

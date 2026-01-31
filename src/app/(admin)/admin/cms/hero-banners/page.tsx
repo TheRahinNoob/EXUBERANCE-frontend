@@ -2,7 +2,7 @@
 
 /**
  * ==================================================
- * ADMIN CMS — HERO BANNERS
+ * ADMIN CMS — HERO BANNERS (RESPONSIVE READY)
  * ==================================================
  */
 
@@ -33,9 +33,7 @@ export default function AdminHeroBannerPage() {
 
   const abortRef = useRef<AbortController | null>(null);
 
-  /* ==================================================
-     LOAD
-  ================================================== */
+  /* ================= LOAD ================= */
 
   const loadBanners = useCallback(async () => {
     abortRef.current?.abort();
@@ -47,12 +45,19 @@ export default function AdminHeroBannerPage() {
 
     try {
       const data = await fetchAdminHeroBanners();
+
       if (!Array.isArray(data)) {
         throw new Error("Invalid hero banner response");
       }
+
       setBanners(data);
     } catch (err) {
-      if (err instanceof DOMException && err.name === "AbortError") return;
+      if (
+        err instanceof DOMException &&
+        err.name === "AbortError"
+      ) {
+        return;
+      }
 
       const message =
         err instanceof Error
@@ -71,9 +76,7 @@ export default function AdminHeroBannerPage() {
     return () => abortRef.current?.abort();
   }, [loadBanners]);
 
-  /* ==================================================
-     DELETE
-  ================================================== */
+  /* ================= DELETE ================= */
 
   const handleDelete = async (
     banner: AdminHeroBanner,
@@ -101,25 +104,29 @@ export default function AdminHeroBannerPage() {
     }
   };
 
-  /* ==================================================
-     STATES
-  ================================================== */
+  /* ================= STATES ================= */
 
   if (loading) {
-    return <div className="admin-muted">Loading hero banners…</div>;
+    return (
+      <div className="admin-muted">
+        Loading hero banners…
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="admin-error">{error}</div>;
+    return (
+      <div className="admin-error">
+        {error}
+      </div>
+    );
   }
 
-  /* ==================================================
-     RENDER
-  ================================================== */
+  /* ================= RENDER ================= */
 
   return (
     <section className="hero-page">
-      {/* ================= HEADER ================= */}
+      {/* ===== HEADER ===== */}
       <header className="hero-header">
         <div>
           <h1>Hero Banners</h1>
@@ -129,21 +136,23 @@ export default function AdminHeroBannerPage() {
         <button
           className="btn primary"
           onClick={() =>
-            router.push("/admin/cms/hero-banners/create")
+            router.push(
+              "/admin/cms/hero-banners/create"
+            )
           }
         >
           + Create Banner
         </button>
       </header>
 
-      {/* ================= EMPTY ================= */}
+      {/* ===== EMPTY ===== */}
       {banners.length === 0 && (
         <div className="admin-muted italic">
           No hero banners configured.
         </div>
       )}
 
-      {/* ================= TABLE ================= */}
+      {/* ===== TABLE ===== */}
       {banners.length > 0 && (
         <div className="hero-table-wrap">
           <table className="hero-table">
@@ -163,35 +172,57 @@ export default function AdminHeroBannerPage() {
               {banners.map((banner) => (
                 <tr
                   key={banner.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() =>
                     router.push(
                       `/admin/cms/hero-banners/${banner.id}/edit`
                     )
                   }
                 >
-                  <td className="mono">{banner.id}</td>
+                  <td data-label="ID" className="mono">
+                    {banner.id}
+                  </td>
 
-                  <ImageCell src={banner.image_desktop} />
-                  <ImageCell src={banner.image_tablet} />
-                  <ImageCell src={banner.image_mobile} />
+                  <ImageCell
+                    src={banner.image_desktop}
+                    label="Desktop"
+                  />
+                  <ImageCell
+                    src={banner.image_tablet}
+                    label="Tablet"
+                  />
+                  <ImageCell
+                    src={banner.image_mobile}
+                    label="Mobile"
+                  />
 
-                  <td>
+                  <td data-label="Status">
                     {banner.is_active ? (
-                      <span className="badge active">Active</span>
+                      <span className="badge active">
+                        Active
+                      </span>
                     ) : (
-                      <span className="badge muted">Inactive</span>
+                      <span className="badge muted">
+                        Inactive
+                      </span>
                     )}
                   </td>
 
-                  <td>
+                  <td data-label="Live">
                     {banner.is_live ? (
-                      <span className="badge live">Live</span>
+                      <span className="badge live">
+                        Live
+                      </span>
                     ) : (
                       "—"
                     )}
                   </td>
 
-                  <td className="actions">
+                  <td
+                    data-label="Actions"
+                    className="actions"
+                  >
                     <button
                       className="danger"
                       onClick={(e) =>
@@ -215,16 +246,30 @@ export default function AdminHeroBannerPage() {
    IMAGE CELL
 ================================================== */
 
-function ImageCell({ src }: { src: string | null }) {
+function ImageCell({
+  src,
+  label,
+}: {
+  src: string | null;
+  label: string;
+}) {
   const resolved = resolveMediaUrl(src);
 
   if (!resolved) {
-    return <td className="empty">—</td>;
+    return (
+      <td data-label={label} className="empty">
+        —
+      </td>
+    );
   }
 
   return (
-    <td>
-      <img src={resolved} alt="Hero banner preview" />
+    <td data-label={label}>
+      <img
+        src={resolved}
+        alt={`${label} hero banner`}
+        loading="lazy"
+      />
     </td>
   );
 }

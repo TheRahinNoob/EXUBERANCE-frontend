@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./edit-product-form.css";
 
 import { useAdminToast } from "@/hooks/useAdminToast";
-import { updateAdminProduct } from "@/lib/admin-api/products";
+import { updateAdminProduct } from "@/lib/admin-api";
 
 /* ==================================================
    TYPES — STRICT BACKEND CONTRACT
@@ -18,7 +18,7 @@ type Props = {
 
   /**
    * Called after successful update
-   * Parent should sync its own state
+   * Parent MUST sync its own state
    */
   onUpdated?: (data: {
     price: string;
@@ -31,9 +31,19 @@ type Props = {
    HELPERS
 ================================================== */
 
-function normalizeNumber(value: string | null): string | null {
-  if (value === null || value === "") return null;
-  return String(Number(value));
+function normalizeDecimal(
+  value: string | null
+): string | null {
+  if (value === null) return null;
+
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+
+  const num = Number(trimmed);
+  if (!Number.isFinite(num)) return null;
+
+  // Canonical money format (backend-safe)
+  return num.toFixed(2);
 }
 
 /* ==================================================
@@ -49,22 +59,24 @@ export default function EditProductForm({
 }: Props) {
   const { showToast } = useAdminToast();
 
-  /* ==================================================
-     FORM STATE
-  ================================================== */
+  /* ================= FORM STATE ================= */
 
-  const [formPrice, setFormPrice] = useState(price);
+  const [formPrice, setFormPrice] =
+    useState<string>(price);
+
   const [formOldPrice, setFormOldPrice] =
     useState<string | null>(old_price);
+
   const [formFeatured, setFormFeatured] =
-    useState(is_featured);
+    useState<boolean>(is_featured);
 
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] =
+    useState<boolean>(false);
 
-  /* ==================================================
-     SYNC FROM PARENT (SOURCE OF TRUTH)
-  ================================================== */
+  const [error, setError] =
+    useState<string | null>(null);
+
+  /* ================= SYNC FROM PARENT ================= */
 
   useEffect(() => {
     setFormPrice(price);
@@ -72,16 +84,14 @@ export default function EditProductForm({
     setFormFeatured(is_featured);
   }, [price, old_price, is_featured]);
 
-  /* ==================================================
-     DIRTY CHECK (NORMALIZED)
-  ================================================== */
+  /* ================= DIRTY CHECK ================= */
 
   const isDirty = useMemo(() => {
     return (
-      normalizeNumber(formPrice) !==
-        normalizeNumber(price) ||
-      normalizeNumber(formOldPrice) !==
-        normalizeNumber(old_price) ||
+      normalizeDecimal(formPrice) !==
+        normalizeDecimal(price) ||
+      normalizeDecimal(formOldPrice) !==
+        normalizeDecimal(old_price) ||
       formFeatured !== is_featured
     );
   }, [
@@ -93,9 +103,7 @@ export default function EditProductForm({
     is_featured,
   ]);
 
-  /* ==================================================
-     SUBMIT
-  ================================================== */
+  /* ================= SUBMIT ================= */
 
   const handleSubmit = async () => {
     if (saving || !isDirty) return;
@@ -104,53 +112,54 @@ export default function EditProductForm({
     setError(null);
 
     try {
-      const numericPrice = Number(formPrice);
-      const numericOldPrice =
-        formOldPrice !== null
-          ? Number(formOldPrice)
-          : null;
+      const normalizedPrice =
+        normalizeDecimal(formPrice);
 
-      if (!Number.isFinite(numericPrice)) {
+      const normalizedOldPrice =
+        normalizeDecimal(formOldPrice);
+
+      if (normalizedPrice === null) {
         throw new Error("Price must be a valid number");
       }
 
-      if (numericPrice < 0) {
-        throw new Error("Price cannot be negative");
-      }
-
       if (
-        numericOldPrice !== null &&
-        !Number.isFinite(numericOldPrice)
-      ) {
-        throw new Error("Old price must be a valid number");
-      }
-
-      if (
-        numericOldPrice !== null &&
-        numericOldPrice < 0
-      ) {
-        throw new Error("Old price cannot be negative");
-      }
-
-      if (
-        numericOldPrice !== null &&
-        numericOldPrice <= numericPrice
+        normalizedOldPrice !== null &&
+        Number(normalizedOldPrice) <=
+          Number(normalizedPrice)
       ) {
         throw new Error(
           "Old price must be greater than price"
         );
       }
 
+      /* ================= BUILD PATCH PAYLOAD ================= */
+
+      const payload: {
+        price?: string;
+        old_price?: string | null;
+        is_featured?: boolean;
+      } = {};
+
+      if (
+        normalizeDecimal(price) !== normalizedPrice
+      ) {
+        payload.price = normalizedPrice;
+      }
+
+      if (
+        normalizeDecimal(old_price) !==
+        normalizedOldPrice
+      ) {
+        payload.old_price = normalizedOldPrice;
+      }
+
+      if (formFeatured !== is_featured) {
+        payload.is_featured = formFeatured;
+      }
+
       const updated = await updateAdminProduct(
         productId,
-        {
-          price: numericPrice.toString(),
-          old_price:
-            numericOldPrice !== null
-              ? numericOldPrice.toString()
-              : null,
-          is_featured: formFeatured,
-        }
+        payload
       );
 
       showToast("Product updated", "success");
@@ -173,9 +182,7 @@ export default function EditProductForm({
     }
   };
 
-  /* ==================================================
-     RENDER
-  ================================================== */
+  /* ================= RENDER ================= */
 
   return (
     <section className="product-edit-card">

@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import "./product-detail.css";
 
@@ -14,9 +19,9 @@ import ProductDescriptionEditor from "./components/ProductDescriptionEditor";
 
 import {
   fetchAdminProductDetail,
-  toggleAdminProductStatus,
   updateAdminProductBasicInfo,
   updateAdminProductDescription,
+  deactivateAdminProduct,
   type AdminProductDetail,
 } from "@/lib/admin-api";
 
@@ -31,24 +36,32 @@ export default function AdminProductDetailPage() {
   const router = useRouter();
   const { showToast } = useAdminToast();
 
+  /* ================= PRODUCT ID ================= */
+
   const productId = useMemo<number | null>(() => {
     const parsed = Number(params?.id);
     return Number.isFinite(parsed) ? parsed : null;
   }, [params?.id]);
 
+  /* ================= STATE ================= */
+
   const [product, setProduct] =
     useState<AdminProductDetail | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] =
+    useState<string | null>(null);
 
-  const [toggling, setToggling] = useState(false);
-  const [savingBasic, setSavingBasic] = useState(false);
+  const [savingBasic, setSavingBasic] =
+    useState(false);
   const [savingDescription, setSavingDescription] =
+    useState(false);
+  const [changingStatus, setChangingStatus] =
     useState(false);
 
   const [editingBasic, setEditingBasic] =
     useState(false);
+
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [description, setDescription] =
@@ -67,17 +80,8 @@ export default function AdminProductDetailPage() {
     setError(null);
 
     try {
-      const data = await fetchAdminProductDetail(
-        productId
-      );
-
-      if (
-        typeof data !== "object" ||
-        !Array.isArray(data.variants) ||
-        !Array.isArray(data.attributes)
-      ) {
-        throw new Error("Invalid product response");
-      }
+      const data =
+        await fetchAdminProductDetail(productId);
 
       setProduct(data);
       setName(data.name);
@@ -111,10 +115,14 @@ export default function AdminProductDetailPage() {
     setSavingBasic(true);
 
     try {
-      const updated = await updateAdminProductBasicInfo(
-        product.id,
-        { name: name.trim(), slug: slug.trim() }
-      );
+      const updated =
+        await updateAdminProductBasicInfo(
+          product.id,
+          {
+            name: name.trim(),
+            slug: slug.trim(),
+          }
+        );
 
       setProduct((prev) =>
         prev
@@ -165,32 +173,31 @@ export default function AdminProductDetailPage() {
     }
   };
 
-  /* ================= STATUS TOGGLE ================= */
+  /* ================= DEACTIVATION ================= */
 
-  const handleToggleStatus = async () => {
-    if (!product || toggling) return;
+  const handleDeactivate = async () => {
+    if (!product || changingStatus || !product.is_active)
+      return;
 
-    const previous = product.is_active;
-
-    setToggling(true);
-    setProduct((prev) =>
-      prev ? { ...prev, is_active: !previous } : prev
-    );
+    setChangingStatus(true);
 
     try {
-      const res = await toggleAdminProductStatus(
-        product.id
-      );
+      await deactivateAdminProduct(product.id);
+
       setProduct((prev) =>
-        prev ? { ...prev, is_active: res.is_active } : prev
+        prev ? { ...prev, is_active: false } : prev
       );
-    } catch {
-      setProduct((prev) =>
-        prev ? { ...prev, is_active: previous } : prev
+
+      showToast("Product deactivated", "success");
+    } catch (err) {
+      showToast(
+        err instanceof Error
+          ? err.message
+          : "Failed to deactivate product",
+        "error"
       );
-      showToast("Failed to update status", "error");
     } finally {
-      setToggling(false);
+      setChangingStatus(false);
     }
   };
 
@@ -256,15 +263,15 @@ export default function AdminProductDetailPage() {
                     Edit
                   </button>
 
-                  <button
-                    className="admin-action"
-                    onClick={handleToggleStatus}
-                    disabled={toggling}
-                  >
-                    {product.is_active
-                      ? "Deactivate"
-                      : "Activate"}
-                  </button>
+                  {product.is_active && (
+                    <button
+                      className="admin-action admin-action-danger"
+                      onClick={handleDeactivate}
+                      disabled={changingStatus}
+                    >
+                      Deactivate
+                    </button>
+                  )}
                 </div>
               </>
             ) : (
@@ -295,9 +302,7 @@ export default function AdminProductDetailPage() {
                     onClick={handleSaveBasicInfo}
                     disabled={savingBasic}
                   >
-                    {savingBasic
-                      ? "Saving…"
-                      : "Save"}
+                    {savingBasic ? "Saving…" : "Save"}
                   </button>
 
                   <button

@@ -1,5 +1,5 @@
 import { API_BASE } from "./config";
-import type { APICategory, Category } from "./types";
+import type { APICategory } from "./types";
 import { normalizeCategory } from "./normalizers";
 
 /**
@@ -20,6 +20,28 @@ import { normalizeCategory } from "./normalizers";
  *        ↓
  * UI Category
  */
+
+/* ==================================================
+   UI TYPE (LOCAL, NOT BACKEND CONTRACT)
+================================================== */
+
+/**
+ * UI-safe Category shape.
+ * This MUST NOT live in `types.ts`.
+ */
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  image: string | null;
+
+  is_campaign?: boolean;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  show_countdown?: boolean;
+
+  children?: Category[];
+};
 
 const BASE = `${API_BASE}/api/categories`;
 

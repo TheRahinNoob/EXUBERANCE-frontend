@@ -1,9 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  parseErrorResponse,
+} from "@/lib/admin-api";
 import { fetchAdminCategoryTree } from "@/lib/admin-api/categories";
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "@/lib/admin-api";
 import { getCSRFToken } from "@/lib/admin-api/csrf";
 
 import type { AdminCategoryTreeNode } from "@/lib/admin-api/types";
@@ -30,32 +40,40 @@ export default function ProductCategoryManager({
 }: Props) {
   const { showToast } = useAdminToast();
 
-  /* ==================================================
-     STATE
-  ================================================== */
+  /* ================= STATE ================= */
 
   const [tree, setTree] = useState<AdminCategoryTreeNode[]>([]);
+
   const [selected, setSelected] = useState<Set<number>>(
     () => new Set(initialCategoryIds)
   );
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    null
+  );
 
   const mountedRef = useRef(true);
 
-  /* ==================================================
-     SYNC FROM BACKEND (SOURCE OF TRUTH)
-  ================================================== */
+  /* ================= SYNC FROM PARENT ================= */
 
   useEffect(() => {
     setSelected(new Set(initialCategoryIds));
   }, [initialCategoryIds]);
 
-  /* ==================================================
-     LOAD CATEGORY TREE
-  ================================================== */
+  /* ================= DIRTY CHECK ================= */
+
+  const isDirty = useMemo(() => {
+    const a = Array.from(selected).sort();
+    const b = [...initialCategoryIds].sort();
+
+    if (a.length !== b.length) return true;
+
+    return a.some((id, i) => id !== b[i]);
+  }, [selected, initialCategoryIds]);
+
+  /* ================= LOAD CATEGORY TREE ================= */
 
   useEffect(() => {
     mountedRef.current = true;
@@ -65,7 +83,9 @@ export default function ProductCategoryManager({
         const data = await fetchAdminCategoryTree();
 
         if (!Array.isArray(data)) {
-          throw new Error("Invalid category tree response");
+          throw new Error(
+            "Invalid category tree response"
+          );
         }
 
         if (mountedRef.current) {
@@ -92,9 +112,7 @@ export default function ProductCategoryManager({
     };
   }, []);
 
-  /* ==================================================
-     TOGGLE CATEGORY (LOCAL ONLY)
-  ================================================== */
+  /* ================= TOGGLE CATEGORY (LOCAL) ================= */
 
   const toggleCategory = useCallback((id: number) => {
     setSelected((prev) => {
@@ -104,12 +122,10 @@ export default function ProductCategoryManager({
     });
   }, []);
 
-  /* ==================================================
-     SAVE TO BACKEND
-  ================================================== */
+  /* ================= SAVE TO BACKEND ================= */
 
   const handleSave = async () => {
-    if (saving) return;
+    if (saving || !isDirty) return;
 
     setSaving(true);
 
@@ -117,7 +133,9 @@ export default function ProductCategoryManager({
       const csrfToken = getCSRFToken();
 
       if (!csrfToken) {
-        throw new Error("CSRF token missing. Please reload.");
+        throw new Error(
+          "CSRF token missing. Please reload."
+        );
       }
 
       const res = await fetch(
@@ -136,14 +154,15 @@ export default function ProductCategoryManager({
       );
 
       if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to update categories");
+        throw new Error(await parseErrorResponse(res));
       }
 
-      showToast("Categories updated successfully", "success");
+      showToast("Categories updated", "success");
     } catch (err) {
       showToast(
-        err instanceof Error ? err.message : "Update failed",
+        err instanceof Error
+          ? err.message
+          : "Failed to update categories",
         "error"
       );
     } finally {
@@ -151,13 +170,13 @@ export default function ProductCategoryManager({
     }
   };
 
-  /* ==================================================
-     RENDER
-  ================================================== */
+  /* ================= RENDER ================= */
 
   return (
     <div className="admin-section">
-      <div className="admin-section-title">Categories</div>
+      <div className="admin-section-title">
+        Categories
+      </div>
 
       {loading && (
         <div className="admin-table-state">
@@ -166,7 +185,9 @@ export default function ProductCategoryManager({
       )}
 
       {!loading && error && (
-        <div className="admin-table-error">{error}</div>
+        <div className="admin-table-error">
+          {error}
+        </div>
       )}
 
       {!loading && !error && (
@@ -181,9 +202,13 @@ export default function ProductCategoryManager({
             <button
               className="admin-action admin-action-primary"
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || !isDirty}
             >
-              {saving ? "Saving…" : "Save Categories"}
+              {saving
+                ? "Saving…"
+                : isDirty
+                ? "Save Categories"
+                : "No changes"}
             </button>
           </div>
         </>

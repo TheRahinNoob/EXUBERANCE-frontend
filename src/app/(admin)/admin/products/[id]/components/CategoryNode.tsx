@@ -3,6 +3,10 @@
 import { useState } from "react";
 import type { AdminCategoryTreeNode } from "@/lib/admin-api/types";
 
+/* ==================================================
+   PROPS — STRICT CONTRACT
+================================================== */
+
 type Props = {
   node: AdminCategoryTreeNode;
   selected: Set<number>;
@@ -10,18 +14,31 @@ type Props = {
   depth: number;
 };
 
+/* ==================================================
+   COMPONENT — CATEGORY NODE
+================================================== */
+
 export default function CategoryNode({
   node,
   selected,
   onToggle,
   depth,
 }: Props) {
-  const hasChildren = node.children.length > 0;
+  const children = Array.isArray(node.children)
+    ? node.children
+    : [];
+
+  const hasChildren = children.length > 0;
   const isChecked = selected.has(node.id);
+
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div>
+    <div
+      role="treeitem"
+      aria-expanded={hasChildren ? expanded : undefined}
+      aria-selected={isChecked}
+    >
       <div
         className={[
           "category-row",
@@ -32,20 +49,28 @@ export default function CategoryNode({
           .filter(Boolean)
           .join(" ")}
       >
-        {/* TOGGLE */}
+        {/* EXPAND / COLLAPSE */}
         {hasChildren ? (
           <button
             type="button"
             className="category-toggle"
-            onClick={() => setExpanded((v) => !v)}
             aria-label={
-              expanded ? "Collapse category" : "Expand category"
+              expanded
+                ? "Collapse category"
+                : "Expand category"
             }
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded((v) => !v);
+            }}
           >
             {expanded ? "−" : "+"}
           </button>
         ) : (
-          <span className="category-toggle-spacer" />
+          <span
+            className="category-toggle-spacer"
+            aria-hidden
+          />
         )}
 
         {/* CHECKBOX */}
@@ -53,15 +78,19 @@ export default function CategoryNode({
           type="checkbox"
           checked={isChecked}
           onChange={() => onToggle(node.id)}
+          aria-label={`Select category ${node.name}`}
         />
 
         {/* LABEL */}
-        <span className="category-label">{node.name}</span>
+        <span className="category-label">
+          {node.name}
+        </span>
       </div>
 
+      {/* CHILDREN */}
       {hasChildren && expanded && (
-        <div className="category-children">
-          {node.children.map((child) => (
+        <div role="group" className="category-children">
+          {children.map((child) => (
             <CategoryNode
               key={child.id}
               node={child}

@@ -1,10 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600&display=swap");
+
 /* =========================
-   PAGE WRAPPER (GLOBAL WIDTH CONTROL)
+   PAGE WRAPPER (UI ONLY)
 ========================= */
 .page {
   padding: 20px;
-  max-width: 1080px; /* mobile + tablet default */
+  max-width: 1080px;
   margin: 0 auto;
+
+  /* UI font only — CMS content is sandboxed elsewhere */
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111;
 }
 
 /* =========================
@@ -21,18 +27,17 @@
 .pdpMain {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
-/* Right column (info + purchase + details) */
 .right {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
 /* =========================
-   MOBILE: FULL-BLEED IMAGE
+   MOBILE: FULL BLEED GALLERY
 ========================= */
 @media (max-width: 640px) {
   .pdpMain > :first-child {
@@ -41,33 +46,26 @@
   }
 }
 
+/* ==================================================
+   🚫 NO TYPOGRAPHY FOR CMS HERE
+   Product description is styled ONLY
+   inside ProductAttributes.module.css
+================================================== */
+
 /* =========================
-   PRODUCT DESCRIPTION (INLINE)
+   DESKTOP LAYOUT
 ========================= */
-.description {
-  margin-top: 6px;
-}
-
-.descriptionText {
-  font-size: 14px;
-  line-height: 1.7;
-  color: #374151;
-}
-
-/* =========================================================
-   🔥 DESKTOP LAYOUT (EXPANDED & PREMIUM)
-========================================================= */
 @media (min-width: 1024px) {
   .page {
     padding-left: 40px;
     padding-right: 40px;
-    max-width: 1320px; /* 🔥 EXPANDED DESKTOP WIDTH */
+    max-width: 1320px;
   }
 
   .pdpMain {
     display: grid;
     grid-template-columns: minmax(520px, 1fr) 480px;
-    gap: 64px; /* 🔥 MORE AIR */
+    gap: 72px;
     align-items: start;
   }
 
@@ -78,47 +76,61 @@
 }
 
 /* =========================
-   RELATED PRODUCTS SECTION
+   RELATED SECTION (UI)
 ========================= */
 .related {
-  margin-top: 56px;
+  margin-top: 72px;
 }
 
 .relatedTitle {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: "Rajdhani", sans-serif;
   font-size: 20px;
-  font-weight: 500;
-  color: #000;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 
-  margin-bottom: 16px;
+  color: #000;
+  margin-bottom: 20px;
   padding-bottom: 8px;
   border-bottom: 1px solid #000;
 }
 
 /* =========================
-   RELATED GRID (MOBILE FIRST)
+   RELATED GRID
 ========================= */
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 
 /* =========================
-   PRODUCT CARD
+   PRODUCT CARD (UI)
 ========================= */
 .card {
   position: relative;
-  background: transparent;
-  border-radius: 5px;
-  box-shadow:
-    0 7px 15px rgb(0 0 0 / 13%),
-    0 1px 4px rgb(0 0 0 / 11%);
   text-decoration: none;
-  color: #000;
+  color: #111;
 
   display: flex;
   flex-direction: column;
+
+  border-radius: 8px;
+  background: #fff;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.18),
+    0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 /* =========================
@@ -128,19 +140,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  background: transparent;
-}
-
-/* 🔥 VISUAL GAP (NO WHITE BLOCK) */
-.imageWrap::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -28px;
-  height: 28px;
-  pointer-events: none;
-  background: transparent;
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
 }
 
 .imageWrap img {
@@ -155,49 +156,50 @@
 ========================= */
 .actionIcon {
   position: absolute;
-  top: 6px;
-  right: 6px;
+  top: 8px;
+  right: 8px;
 
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
 
   background: #ffffff;
-  border: 1px solid #d1d5db;
+  border: 1px solid #e5e7eb;
+  border-radius: 50%;
 
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 5;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* =========================
-   PRICE FLOAT (HALF OVER IMAGE)
+   PRICE BAR
 ========================= */
 .priceBar {
   position: absolute;
-  bottom: -7px;
+  bottom: 8px;
   left: 0;
   right: 0;
 
   display: flex;
   justify-content: center;
-  z-index: 4;
-
-  /* 🔥 dominant elevation */
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  z-index: 3;
 }
-
 
 .priceBarInner {
   background: #ffffff;
   color: #000;
   font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
 
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 .price {
@@ -205,35 +207,38 @@
 }
 
 .oldPrice {
-  color: #a9a9a9;
+  color: #9ca3af;
   font-size: 11px;
   text-decoration: line-through;
 }
 
 /* =========================
-   ADD TO CART (NO WHITE GAP)
+   ADD TO CART
 ========================= */
 .addToCart {
+  margin-top: 8px;
+  height: 34px;
   width: 100%;
-  height: 30px;
 
   background: #000;
-  color: #fffffff1;
+  color: #fff;
 
   border: none;
+  border-radius: 0 0 8px 8px;
+
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 
-  transform: translateY(13px);
-
-  /* 🔥 subtle depth */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease;
 }
 
+.addToCart:hover {
+  background: #111;
+}
 
 /* =========================
-   MOBILE ONLY
+   MOBILE
 ========================= */
 @media (max-width: 640px) {
   .relatedGrid {
@@ -241,13 +246,13 @@
   }
 }
 
-/* =========================================================
-   🔒 TABLET / SMALL DESKTOP (UNCHANGED)
-========================================================= */
+/* =========================
+   TABLET
+========================= */
 @media (min-width: 604px) and (max-width: 1023px) {
   .relatedGrid {
     grid-template-columns: repeat(auto-fill, 180px);
-    gap: 18px;
+    gap: 20px;
     justify-content: start;
   }
 
@@ -261,13 +266,13 @@
   }
 }
 
-/* =========================================================
-   🔥 LARGE DESKTOP RELATED PRODUCTS (EXPANDED)
-========================================================= */
+/* =========================
+   LARGE DESKTOP
+========================= */
 @media (min-width: 1024px) {
   .relatedGrid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 24px;
+    gap: 28px;
   }
 
   .imageWrap {

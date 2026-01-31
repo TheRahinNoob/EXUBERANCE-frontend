@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
+
 import StarterKit from "@tiptap/starter-kit";
 import Heading from "@tiptap/extension-heading";
 import Underline from "@tiptap/extension-underline";
@@ -13,15 +15,33 @@ import Superscript from "@tiptap/extension-superscript";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 
+/* 🔥 CUSTOM EXTENSIONS (CRITICAL) */
+import { FontSize } from "./extensions/FontSize";
+import { LineHeight } from "./extensions/LineHeight";
+
+/* ==================================================
+   TYPES
+================================================== */
+
 interface ProductDescriptionEditorProps {
   value: string;
   onChange: (html: string) => void;
 }
 
+/* ==================================================
+   COMPONENT
+================================================== */
+
 export default function ProductDescriptionEditor({
   value,
   onChange,
 }: ProductDescriptionEditorProps) {
+  /**
+   * Prevent infinite loops between:
+   * TipTap → onUpdate → API → parent → value → TipTap
+   */
+  const lastEmittedHTML = useRef<string>("");
+
   const editor = useEditor({
     immediatelyRender: false,
 
@@ -34,14 +54,25 @@ export default function ProductDescriptionEditor({
         },
       }),
 
-      Heading.configure({ levels: [1, 2, 3, 4] }),
+      Heading.configure({
+        levels: [1, 2, 3, 4],
+      }),
+
+      /* 🔑 TEXT STYLE CORE */
       TextStyle,
       Color,
-      Highlight.configure({ multicolor: true }),
       FontFamily,
+      FontSize,     // ✅ REQUIRED
+      LineHeight,   // ✅ REQUIRED
+
+      Highlight.configure({
+        multicolor: true,
+      }),
+
       Underline,
       Subscript,
       Superscript,
+
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
@@ -49,6 +80,7 @@ export default function ProductDescriptionEditor({
           target: "_blank",
         },
       }),
+
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
@@ -57,32 +89,78 @@ export default function ProductDescriptionEditor({
     content: value || "",
 
     onUpdate({ editor }) {
-      onChange(editor.getHTML());
+      const html = editor.getHTML();
+
+      if (html !== lastEmittedHTML.current) {
+        lastEmittedHTML.current = html;
+        onChange(html);
+      }
     },
   });
 
+  /* ==================================================
+     SYNC EXTERNAL VALUE → EDITOR
+  ================================================== */
+
+  useEffect(() => {
+    if (!editor) return;
+
+    const incoming = typeof value === "string" ? value : "";
+
+    if (incoming !== editor.getHTML()) {
+      editor.commands.setContent(incoming, {
+        emitUpdate: false,
+      });
+      lastEmittedHTML.current = incoming;
+    }
+  }, [value, editor]);
+
   if (!editor) return null;
 
-  /* =========================
+  /* ==================================================
      HELPERS
-  ========================= */
+  ================================================== */
 
   const setFontSize = (size: string) => {
-    editor.chain().focus().setMark("textStyle", { fontSize: size }).run();
+    if (!size) return;
+
+    editor
+      .chain()
+      .focus()
+      .setMark("textStyle", { fontSize: size })
+      .run();
   };
 
-  const setLineHeight = (value: string) => {
-    editor.chain().focus().setMark("textStyle", { lineHeight: value }).run();
+  const setLineHeight = (lineHeight: string) => {
+    if (!lineHeight) return;
+
+    editor
+      .chain()
+      .focus()
+      .setMark("textStyle", { lineHeight })
+      .run();
   };
+
+  /* ==================================================
+     RENDER
+  ================================================== */
 
   return (
     <div className="admin-editor">
       {/* ================= TOOLBAR ================= */}
       <div className="admin-editor-toolbar">
-        <button onClick={() => editor.chain().focus().toggleBold().run()}>B</button>
-        <button onClick={() => editor.chain().focus().toggleItalic().run()}>I</button>
-        <button onClick={() => editor.chain().focus().toggleUnderline().run()}>U</button>
-        <button onClick={() => editor.chain().focus().toggleStrike().run()}>S</button>
+        <button onClick={() => editor.chain().focus().toggleBold().run()}>
+          B
+        </button>
+        <button onClick={() => editor.chain().focus().toggleItalic().run()}>
+          I
+        </button>
+        <button onClick={() => editor.chain().focus().toggleUnderline().run()}>
+          U
+        </button>
+        <button onClick={() => editor.chain().focus().toggleStrike().run()}>
+          S
+        </button>
 
         <span className="editor-sep" />
 
@@ -92,26 +170,42 @@ export default function ProductDescriptionEditor({
 
         <span className="editor-sep" />
 
-        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>•</button>
-        <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>1.</button>
+        <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+          •
+        </button>
+        <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+          1.
+        </button>
 
         <span className="editor-sep" />
 
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+        <button
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+        >
           H2
         </button>
-        <button onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+        <button
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run()
+          }
+        >
           H3
         </button>
 
         <span className="editor-sep" />
 
-        <select onChange={(e) => editor.chain().focus().setFontFamily(e.target.value).run()}>
+        <select
+          onChange={(e) =>
+            editor.chain().focus().setFontFamily(e.target.value).run()
+          }
+        >
           <option value="">Font</option>
-          <option value="Arial">Arial</option>
+          <option value="Inter">Inter</option>
+          <option value="Manrope">Manrope</option>
           <option value="Georgia">Georgia</option>
           <option value="Times New Roman">Times</option>
-          <option value="Courier New">Courier</option>
         </select>
 
         <select onChange={(e) => setFontSize(e.target.value)}>
@@ -145,7 +239,11 @@ export default function ProductDescriptionEditor({
           type="color"
           title="Highlight"
           onChange={(e) =>
-            editor.chain().focus().toggleHighlight({ color: e.target.value }).run()
+            editor
+              .chain()
+              .focus()
+              .toggleHighlight({ color: e.target.value })
+              .run()
           }
         />
 

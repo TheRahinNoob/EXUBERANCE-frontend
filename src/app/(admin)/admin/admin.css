@@ -1,50 +1,32 @@
 /* ==================================================
    ARCHIVAL GLASS — INTERNAL ADMIN SYSTEM
-   Version: 1.1 (STABLE / LEDGER FIXED)
+   Version: 1.3 (OPTIMIZED / SMOOTH)
 ================================================== */
 
-/* ==================================================
-   DESIGN TOKENS
-================================================== */
+/* ================= DESIGN TOKENS ================= */
 
 :root {
-  /* Base surfaces */
   --ink-0: #0a0c10;
   --ink-1: #0f1218;
-  --ink-2: #141823;
 
-  /* Glass layers (extremely subtle) */
   --glass-0: rgba(255, 255, 255, 0.02);
   --glass-1: rgba(255, 255, 255, 0.035);
-  --glass-2: rgba(255, 255, 255, 0.05);
 
-  /* Rules / borders */
   --rule-soft: rgba(255, 255, 255, 0.08);
   --rule-hard: rgba(255, 255, 255, 0.14);
 
-  /* Typography */
   --text-main: #f1f5f9;
   --text-sub: #a8b0bd;
   --text-mute: #6b7280;
 
-  /* Semantic accents */
-  --accent: #5b8cff;
-  --danger: #ef4444;
-  --success: #22c55e;
-  --warning: #f59e0b;
-
-  /* Geometry */
   --radius-lg: 12px;
   --radius-md: 8px;
-  --radius-sm: 6px;
 
-  /* Layout */
   --sidebar-width: 268px;
+  --layout-gap: 22px;
 }
 
-/* ==================================================
-   GLOBAL RESET
-================================================== */
+/* ================= RESET ================= */
 
 * {
   box-sizing: border-box;
@@ -59,80 +41,101 @@ body {
 body {
   background: var(--ink-0);
   color: var(--text-main);
-  font-family: Inter, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ==================================================
-   ROOT LAYOUT
-================================================== */
+/* ================= ROOT LAYOUT ================= */
 
 .admin-root {
   min-height: 100vh;
   display: flex;
-  background: linear-gradient(
-    180deg,
-    var(--ink-0),
-    var(--ink-1)
-  );
+  gap: var(--layout-gap);
+  padding: var(--layout-gap);
+  background: linear-gradient(180deg, var(--ink-0), var(--ink-1));
 }
 
-/* ==================================================
-   SIDEBAR
-================================================== */
+/* ================= SIDEBAR ================= */
 
 .admin-sidebar {
   width: var(--sidebar-width);
+  flex-shrink: 0;
   padding: 22px 18px;
+
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.04),
     rgba(255, 255, 255, 0.015)
   );
-  border-right: 1px solid var(--rule-soft);
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-lg);
+
+  position: sticky;
+  top: var(--layout-gap);
+  height: calc(100vh - (var(--layout-gap) * 2));
+
+  overflow-y: auto;
 }
 
-/* ==================================================
-   NAVIGATION
-================================================== */
+/* scrollbar (lightweight) */
+.admin-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
 
-.admin-nav-title {
+/* ================= Z-INDEX ================= */
+
+.admin-sidebar,
+.admin-main {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================= NAV ================= */
+
+.admin-nav-title,
+.admin-nav-group-title {
   font-size: 0.65rem;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-mute);
+}
+
+.admin-nav-title {
   margin-bottom: 20px;
+}
+
+.admin-nav-group-title {
+  margin: 18px 0 6px;
 }
 
 .admin-nav-list,
 .admin-nav-sublist {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .admin-nav-group {
   margin-bottom: 14px;
 }
 
-.admin-nav-group-title {
-  font-size: 0.65rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--text-mute);
-  margin: 18px 0 6px;
-}
-
 .admin-nav-link {
   display: block;
   padding: 7px 10px;
-  border-radius: var(--radius-md);
   font-size: 0.84rem;
   color: var(--text-sub);
   text-decoration: none;
+
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
-  transition: all 0.12s ease;
+
+  transition: background 0.12s ease, color 0.12s ease,
+    border-color 0.12s ease;
 }
 
 .admin-nav-link:hover {
@@ -146,28 +149,129 @@ body {
   border-color: var(--rule-hard);
 }
 
-/* ==================================================
-   MAIN CONTENT
-================================================== */
+/* ================= MAIN ================= */
 
 .admin-main {
   flex: 1;
   padding: 28px;
+  min-width: 0;
 }
 
 .admin-surface {
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule-soft);
+
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.04),
     rgba(255, 255, 255, 0.015)
   );
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-lg);
-  padding: 26px;
 }
 
-.admin-page {
-  display: block;
+/* ================= MOBILE BAR ================= */
+
+.admin-mobile-bar {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-hamburger {
+  width: 42px;
+  height: 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.admin-hamburger span {
+  width: 18px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+}
+
+.admin-mobile-title {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+/* ================= OVERLAY ================= */
+
+.admin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+    --layout-gap: 16px;
+  }
+
+  .admin-main {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-root {
+    padding: 0;
+    gap: 0;
+  }
+
+  .admin-mobile-bar {
+    display: flex;
+  }
+
+  .admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(88vw, 300px);
+    height: 100vh;
+
+    border-radius: 0;
+    border-right: 1px solid var(--rule-soft);
+
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    z-index: 20;
+  }
+
+  .admin-root.sidebar-open .admin-sidebar {
+    transform: translateX(0);
+  }
+
+  /* GLASS BLUR MODE (ONLY WHEN OPEN) */
+  .admin-root.sidebar-open .admin-main {
+    filter: blur(14px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .admin-root.sidebar-open .admin-overlay {
+    background: rgba(10, 12, 16, 0.35);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
 }
 
 /* ==================================================
@@ -297,7 +401,127 @@ body {
 }
 
 /* ==================================================
-   DETAIL PAGE PRIMITIVES
+   RESPONSIVE TABLES — MOBILE OPTIMIZED
+================================================== */
+
+@media (max-width: 768px) {
+  /* Allow horizontal safety */
+  .admin-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide table header visually (but keep semantics) */
+  .admin-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  /* Each row becomes a card */
+  .admin-table tbody tr {
+    display: block;
+    margin-bottom: 14px;
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--radius-md);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.015)
+    );
+  }
+
+  .admin-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.82rem;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* Label (pseudo-header) */
+  .admin-table td::before {
+    content: attr(data-label);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Numeric fields stay aligned */
+  .admin-table td[data-numeric="true"] {
+    font-family: ui-monospace, SFMono-Regular, Menlo,
+      monospace;
+    justify-content: space-between;
+  }
+
+  /* Checkbox column centered */
+  .admin-table td:first-child {
+    justify-content: center;
+  }
+
+  /* Hover effects disabled on touch */
+  .admin-table tr:hover td {
+    background: none;
+  }
+}
+
+/* ==================================================
+   ORDER ITEMS TABLE — MOBILE STACK
+================================================== */
+
+@media (max-width: 768px) {
+  .admin-items-table table,
+  .admin-items-table tbody,
+  .admin-items-table tr,
+  .admin-items-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-items-table tr {
+    margin-bottom: 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--rule-soft);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.015)
+    );
+  }
+
+  .admin-items-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .admin-items-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin-items-table td::before {
+    content: attr(data-label);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+}
+
+/* ==================================================
+   DETAIL PAGE — SYSTEM PRIMITIVES (OPTIMIZED)
 ================================================== */
 
 .admin-section {
@@ -313,6 +537,8 @@ body {
   color: var(--text-mute);
   margin-bottom: 14px;
 }
+
+/* ================= DETAIL GRID ================= */
 
 .admin-detail-grid {
   display: grid;
@@ -330,24 +556,27 @@ body {
   color: var(--text-main);
 }
 
+/* ================= ACTION BAR ================= */
+
 .admin-actions-bar {
   display: flex;
   gap: 10px;
   margin-top: 18px;
+  flex-wrap: wrap;
 }
 
 /* ==================================================
-   TIMELINE (ORDER AUDIT)
+   TIMELINE (AUDIT LOG)
 ================================================== */
 
 .admin-timeline {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
 .admin-timeline-item {
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px dashed var(--rule-soft);
 }
 
@@ -356,37 +585,26 @@ body {
 }
 
 /* ==================================================
-   CELL UTILITIES
+   CELL UTILITIES (SHARED)
 ================================================== */
 
-.cell-primary {
-  color: var(--text-main);
-}
-
+.cell-primary { color: var(--text-main); }
 .cell-secondary {
   font-size: 0.75rem;
   color: var(--text-mute);
 }
-
-.cell-muted {
-  color: var(--text-mute);
-}
-
-.cell-strong {
-  font-weight: 500;
-}
+.cell-muted { color: var(--text-mute); }
+.cell-strong { font-weight: 500; }
 
 .mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.82rem;
 }
 
-.align-right {
-  text-align: right;
-}
+.align-right { text-align: right; }
 
 /* ==================================================
-   PAGINATION
+   PAGINATION (RESPONSIVE)
 ================================================== */
 
 .admin-pagination {
@@ -396,6 +614,7 @@ body {
   margin-top: 16px;
   font-size: 0.75rem;
   color: var(--text-sub);
+  gap: 12px;
 }
 
 .admin-pagination-actions {
@@ -404,14 +623,16 @@ body {
 }
 
 .admin-pagination button {
+  padding: 6px 10px;
+  font-size: 0.75rem;
   background: transparent;
   color: var(--text-sub);
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-sm);
-  padding: 6px 10px;
-  font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: border-color 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease;
 }
 
 .admin-pagination button:hover:not(:disabled) {
@@ -425,17 +646,7 @@ body {
 }
 
 /* ==================================================
-   STATUS COLORS
-================================================== */
-
-.status-pending { color: var(--warning); }
-.status-confirmed { color: var(--accent); }
-.status-shipped { color: #38bdf8; }
-.status-delivered { color: var(--success); }
-.status-cancelled { color: var(--danger); }
-
-/* ==================================================
-   STATUS BADGES — TYPOGRAPHIC AUTHORITY
+   STATUS BADGES — CLEAN & LIGHTWEIGHT
 ================================================== */
 
 .admin-status {
@@ -448,40 +659,33 @@ body {
   text-transform: uppercase;
   border-radius: 4px;
   border: 1px solid var(--rule-soft);
-  color: var(--text-main);
   background: transparent;
   white-space: nowrap;
 }
-
-/* ---- Status semantics (NO FILLS) ---- */
 
 .admin-status-pending {
   color: var(--warning);
   border-color: rgba(245, 158, 11, 0.35);
 }
-
 .admin-status-confirmed {
   color: var(--accent);
   border-color: rgba(91, 140, 255, 0.35);
 }
-
 .admin-status-shipped {
   color: #38bdf8;
   border-color: rgba(56, 189, 248, 0.35);
 }
-
 .admin-status-delivered {
   color: var(--success);
   border-color: rgba(34, 197, 94, 0.35);
 }
-
 .admin-status-cancelled {
   color: var(--danger);
   border-color: rgba(239, 68, 68, 0.35);
 }
 
 /* ==================================================
-   ROW ACTIONS — DECISION CONTROLS
+   ROW ACTIONS — RESPONSIVE CONTROLS
 ================================================== */
 
 .admin-row-actions {
@@ -506,9 +710,7 @@ body {
   cursor: pointer;
   user-select: none;
 
-  transition:
-    border-color 0.12s ease,
-    color 0.12s ease,
+  transition: border-color 0.12s ease,
     background 0.12s ease;
 }
 
@@ -522,8 +724,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ---- Danger actions ---- */
-
 .admin-action-danger {
   color: var(--danger);
   border-color: rgba(239, 68, 68, 0.35);
@@ -534,7 +734,46 @@ body {
 }
 
 /* ==================================================
-   CONFIRM MODAL — LAST LINE OF DEFENSE
+   MOBILE OPTIMIZATION
+================================================== */
+
+@media (max-width: 768px) {
+  /* Detail grid becomes stacked cards */
+  .admin-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-detail-key {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .admin-detail-value {
+    font-size: 0.85rem;
+  }
+
+  /* Pagination stacks */
+  .admin-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Actions fill width */
+  .admin-actions-bar,
+  .admin-row-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-action {
+    width: 100%;
+    text-align: center;
+  }
+}
+/* ==================================================
+   CONFIRM MODAL — SYSTEM GRADE (OPTIMIZED)
 ================================================== */
 
 .admin-modal-backdrop {
@@ -542,18 +781,19 @@ body {
   inset: 0;
   z-index: 1000;
 
-  background: rgba(0, 0, 0, 0.65);
-
   display: flex;
   align-items: center;
   justify-content: center;
 
   padding: 16px;
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .admin-modal {
   width: 100%;
   max-width: 420px;
+
+  padding: 22px;
 
   background: linear-gradient(
     180deg,
@@ -563,8 +803,6 @@ body {
 
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-lg);
-
-  padding: 22px;
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -596,11 +834,11 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .admin-modal-button {
   padding: 6px 12px;
-
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -613,12 +851,8 @@ body {
   border-radius: var(--radius-sm);
 
   cursor: pointer;
-  user-select: none;
-
-  transition:
-    border-color 0.12s ease,
-    background 0.12s ease,
-    color 0.12s ease;
+  transition: border-color 0.12s ease,
+    background 0.12s ease;
 }
 
 .admin-modal-button:hover:not(:disabled) {
@@ -631,11 +865,9 @@ body {
   cursor: not-allowed;
 }
 
-/* ---------- Primary / Danger ---------- */
-
 .admin-modal-button-primary {
-  border-color: rgba(91, 140, 255, 0.35);
   color: var(--accent);
+  border-color: rgba(91, 140, 255, 0.35);
 }
 
 .admin-modal-button-primary:hover:not(:disabled) {
@@ -643,8 +875,8 @@ body {
 }
 
 .admin-modal-button-danger {
-  border-color: rgba(239, 68, 68, 0.35);
   color: var(--danger);
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .admin-modal-button-danger:hover:not(:disabled) {
@@ -652,16 +884,15 @@ body {
 }
 
 /* ==================================================
-   ADMIN TOOLBAR — CONTROL PANEL
+   ADMIN TOOLBAR — RESPONSIVE CONTROL PANEL
 ================================================== */
 
 .admin-toolbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 16px;
-
   margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .admin-toolbar-disabled {
@@ -669,18 +900,15 @@ body {
   pointer-events: none;
 }
 
-/* ---------- Groups ---------- */
-
 .admin-toolbar-left,
 .admin-toolbar-right {
   display: flex;
-  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
 
 /* ==================================================
-   INPUTS — MECHANICAL STYLE
+   INPUTS & SELECTS — OPTIMIZED
 ================================================== */
 
 .admin-input,
@@ -712,17 +940,10 @@ body {
   color: var(--text-mute);
 }
 
-/* ---------- Focus ---------- */
-
+.admin-input:hover,
+.admin-select:hover,
 .admin-input:focus,
 .admin-select:focus {
-  border-color: var(--rule-hard);
-}
-
-/* ---------- Hover ---------- */
-
-.admin-input:hover,
-.admin-select:hover {
   border-color: var(--rule-hard);
 }
 
@@ -731,50 +952,23 @@ body {
 .admin-select {
   padding-right: 30px;
 
-  /* Dark, high-contrast caret */
   background-image:
-    linear-gradient(
-      45deg,
-      transparent 50%,
-      rgba(255, 255, 255, 0.9) 50%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.9) 50%,
-      transparent 50%
-    );
-
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,.9) 50%),
+    linear-gradient(135deg, rgba(255,255,255,.9) 50%, transparent 50%);
   background-position:
     calc(100% - 16px) 15px,
     calc(100% - 10px) 15px;
-
   background-size: 6px 6px;
   background-repeat: no-repeat;
 }
 
-/* ==================================================
-   SELECT OPTIONS — READABILITY FIX
-================================================== */
-
-/* Dropdown list background */
 .admin-select option {
-  background-color: #0f1218; /* dark panel */
-  color: #e5e7eb;            /* light text */
-}
-
-/* Hovered option (some browsers) */
-.admin-select option:hover {
-  background-color: #1a1f2b;
-}
-
-/* Selected option */
-.admin-select option:checked {
-  background-color: #1f2937;
-  color: #ffffff;
+  background-color: #0f1218;
+  color: #e5e7eb;
 }
 
 /* ==================================================
-   ADMIN LINK — TABLE NAVIGATION
+   ADMIN LINK
 ================================================== */
 
 .admin-link {
@@ -785,18 +979,14 @@ body {
   font: inherit;
   color: var(--text-main);
 
-  text-align: left;
   cursor: pointer;
+  opacity: 0.88;
 
-  line-height: 1.4;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
-  opacity: 0.88;
-
-  transition:
-    opacity 0.12s ease,
+  transition: opacity 0.12s ease,
     color 0.12s ease;
 }
 
@@ -805,13 +995,56 @@ body {
   color: var(--accent);
 }
 
-.admin-link:focus-visible {
-  outline: none;
-  text-decoration: underline;
-}
-
 /* ==================================================
-   MODAL — ARCHIVAL GLASS
+   MOBILE — ULTRA RESPONSIVE
+================================================== */
+
+@media (max-width: 768px) {
+  /* Modal becomes bottom sheet */
+  .admin-modal-backdrop {
+    align-items: flex-end;
+  }
+
+  .admin-modal {
+    max-width: none;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 18px;
+  }
+
+  /* Toolbar stacks cleanly */
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-toolbar-left,
+  .admin-toolbar-right {
+    width: 100%;
+  }
+
+  .admin-input,
+  .admin-select {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    font-size: 0.82rem;
+  }
+
+  /* Modal buttons full width */
+  .admin-modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .admin-modal-button {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+}
+/* ==================================================
+   MODAL — ARCHIVAL GLASS (OPTIMIZED)
 ================================================== */
 
 .admin-modal-backdrop {
@@ -823,7 +1056,7 @@ body {
   align-items: center;
   justify-content: center;
 
-  background: rgba(5, 8, 14, 0.65);
+  background: rgba(5, 8, 14, 0.6);
   backdrop-filter: blur(6px);
 }
 
@@ -840,13 +1073,12 @@ body {
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-lg);
 
-  box-shadow:
-    0 20px 60px rgba(0,0,0,0.6);
-
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   overflow: hidden;
 }
 
-/* Header */
+/* ---------- Modal Structure ---------- */
+
 .admin-modal-header {
   padding: 18px 20px;
   border-bottom: 1px solid var(--rule-soft);
@@ -858,14 +1090,24 @@ body {
   font-weight: 600;
 }
 
-/* Body */
 .admin-modal-body {
   padding: 20px;
   display: grid;
   gap: 14px;
 }
 
-/* Form groups */
+.admin-modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--rule-soft);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ==================================================
+   FORM PRIMITIVES (SHARED)
+================================================== */
+
 .admin-form-group {
   display: flex;
   flex-direction: column;
@@ -879,7 +1121,9 @@ body {
   color: var(--text-mute);
 }
 
-.admin-form-group input {
+.admin-form-group input,
+.admin-section input[type="text"],
+.admin-section input[type="number"] {
   height: 36px;
   padding: 0 12px;
 
@@ -889,25 +1133,18 @@ body {
 
   color: var(--text-main);
   font-size: 0.85rem;
-
   outline: none;
 }
 
-.admin-form-group input:focus {
+.admin-form-group input:focus,
+.admin-section input:focus {
   border-color: var(--accent);
 }
 
-/* Footer */
-.admin-modal-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--rule-soft);
+/* ==================================================
+   ACTION BUTTONS (SHARED)
+================================================== */
 
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* Buttons */
 .admin-action {
   padding: 8px 14px;
   font-size: 0.8rem;
@@ -936,7 +1173,7 @@ body {
 }
 
 /* ==================================================
-   RICH TEXT EDITOR — ADMIN DOCUMENT SURFACE
+   RICH TEXT EDITOR — TIPTAP
 ================================================== */
 
 .admin-section .border.rounded-md {
@@ -950,14 +1187,12 @@ body {
   overflow: hidden;
 }
 
-/* Toolbar */
 .admin-section .border.rounded-md > .flex {
   background: rgba(0,0,0,0.35);
   border-bottom: 1px solid var(--rule-soft);
   gap: 6px;
 }
 
-/* Toolbar buttons */
 .admin-section .border.rounded-md button,
 .admin-section .border.rounded-md select {
   background: transparent;
@@ -966,9 +1201,7 @@ body {
 
   color: var(--text-sub);
   font-size: 0.75rem;
-
   padding: 4px 8px;
-  cursor: pointer;
 }
 
 .admin-section .border.rounded-md button:hover,
@@ -977,14 +1210,13 @@ body {
   border-color: var(--rule-hard);
 }
 
-/* Active editor buttons (TipTap often adds aria-pressed) */
-.admin-section .border.rounded-md button[aria-pressed="true"] {
+.admin-section .border.rounded-md
+button[aria-pressed="true"] {
   background: rgba(91,140,255,0.15);
   border-color: rgba(91,140,255,0.5);
   color: var(--text-main);
 }
 
-/* Editor body */
 .tiptap.ProseMirror {
   color: var(--text-main);
   font-size: 0.9rem;
@@ -995,110 +1227,14 @@ body {
   margin-bottom: 1em;
 }
 
-/* Editor focus ring */
 .tiptap.ProseMirror:focus {
   outline: none;
 }
 
 /* ==================================================
-   PRODUCT EDIT FORM — ADMIN SETTINGS PANEL
+   PRODUCT EDIT PANELS (DEDUPED)
 ================================================== */
 
-.admin-section section {
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.03),
-    rgba(255,255,255,0.015)
-  );
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-}
-
-/* Headings inside product edit */
-.admin-section h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 0.85rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-mute);
-}
-
-/* Inputs */
-.admin-section input[type="number"],
-.admin-section input[type="text"] {
-  height: 36px;
-  padding: 0 12px;
-
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-sm);
-
-  color: var(--text-main);
-  font-size: 0.85rem;
-}
-
-/* Labels */
-.admin-section label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-
-  font-size: 0.75rem;
-  color: var(--text-mute);
-}
-
-/* Checkbox row */
-.admin-section input[type="checkbox"] {
-  accent-color: var(--accent);
-  margin-right: 6px;
-}
-
-/* Action button */
-.admin-section button {
-  margin-top: 12px;
-}
-
-/* Disabled state clarity */
-.admin-section button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-/* ==================================================
-   SELECT + OPTION — DARK ADMIN SAFE STYLING
-================================================== */
-
-.admin-select {
-  background-color: rgba(0, 0, 0, 0.45);
-  color: var(--text-main);
-  border: 1px solid var(--rule-soft);
-}
-
-/* Force readable option list */
-.admin-select option {
-  background-color: #0f1218; /* solid dark */
-  color: #e5e7eb;           /* light text */
-}
-
-/* Selected option */
-.admin-select option:checked {
-  background-color: #1f2937;
-  color: #ffffff;
-}
-
-/* Hover (only some browsers support this) */
-.admin-select option:hover {
-  background-color: #1a1f2b;
-  color: #ffffff;
-}
-
-/* ==================================================
-   PRODUCT EDIT — FINANCIAL / FLAGS PANEL
-================================================== */
-
-/* Section container */
 .admin-section section {
   background: linear-gradient(
     180deg,
@@ -1110,7 +1246,6 @@ body {
   padding: 20px;
 }
 
-/* Section title */
 .admin-section section > h3 {
   margin: 0 0 18px;
   font-size: 0.7rem;
@@ -1119,55 +1254,24 @@ body {
   color: var(--text-mute);
 }
 
-/* Inner column constraint */
 .admin-section section > div {
   max-width: 360px;
 }
 
-/* Field blocks */
-.admin-section section > div > div {
-  margin-bottom: 14px;
-}
-
-/* Labels */
-.admin-section section label {
+.admin-section label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-
   font-size: 0.75rem;
   color: var(--text-mute);
 }
 
-/* Numeric inputs */
-.admin-section section input[type="number"] {
-  height: 36px;
-  padding: 0 12px;
-
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-sm);
-
-  color: var(--text-main);
-  font-size: 0.85rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  outline: none;
-}
-
-/* Focus */
-.admin-section section input[type="number"]:focus {
-  border-color: var(--accent);
+.admin-section input[type="checkbox"] {
+  accent-color: var(--accent);
 }
 
 /* Checkbox row */
-.admin-section section label > input[type="checkbox"] {
-  accent-color: var(--accent);
-  margin-right: 6px;
-}
-
-/* Checkbox label row layout */
-.admin-section section label:has(input[type="checkbox"]) {
+.admin-section label:has(input[type="checkbox"]) {
   flex-direction: row;
   align-items: center;
   gap: 8px;
@@ -1175,29 +1279,64 @@ body {
   color: var(--text-sub);
 }
 
-/* Action button */
 .admin-section section button {
   margin-top: 16px;
-
-  padding: 8px 14px;
-  font-size: 0.8rem;
-
-  background: transparent;
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-sm);
-
-  color: var(--text-sub);
-  cursor: pointer;
 }
 
-/* Disabled clarity */
-.admin-section section button:disabled {
+.admin-section button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
 /* ==================================================
-   ADMIN RICH TEXT EDITOR — ARCHIVAL GLASS
+   SELECT — DARK SAFE
+================================================== */
+
+.admin-select {
+  background-color: rgba(0, 0, 0, 0.45);
+  color: var(--text-main);
+  border: 1px solid var(--rule-soft);
+}
+
+.admin-select option {
+  background-color: #0f1218;
+  color: #e5e7eb;
+}
+
+.admin-select option:checked {
+  background-color: #1f2937;
+  color: #ffffff;
+}
+
+/* ==================================================
+   MOBILE OPTIMIZATION
+================================================== */
+
+@media (max-width: 768px) {
+  .admin-modal-backdrop {
+    align-items: flex-end;
+  }
+
+  .admin-modal {
+    max-width: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .admin-modal-footer {
+    flex-direction: column;
+  }
+
+  .admin-action {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-section section > div {
+    max-width: 100%;
+  }
+}
+/* ==================================================
+   ADMIN RICH TEXT EDITOR — ARCHIVAL GLASS (OPTIMIZED)
 ================================================== */
 
 /* ================= CONTAINER ================= */
@@ -1225,19 +1364,18 @@ body {
 
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.02)
+    rgba(255,255,255,0.04),
+    rgba(255,255,255,0.02)
   );
 
   border-bottom: 1px solid var(--rule-soft);
 }
 
-/* ================= BUTTONS ================= */
+/* ================= TOOLBAR BUTTONS ================= */
 
 .admin-editor-toolbar button {
   min-width: 28px;
   height: 28px;
-
   padding: 0 8px;
 
   font-size: 12px;
@@ -1252,8 +1390,7 @@ body {
   cursor: pointer;
   user-select: none;
 
-  transition:
-    background 0.12s ease,
+  transition: background 0.12s ease,
     border-color 0.12s ease,
     color 0.12s ease;
 }
@@ -1263,12 +1400,14 @@ body {
   color: var(--text-main);
 }
 
-.admin-editor-toolbar button:active {
+.admin-editor-toolbar button:active,
+.admin-editor-toolbar button[aria-pressed="true"] {
   background: var(--glass-1);
   border-color: var(--rule-soft);
+  color: var(--text-main);
 }
 
-/* ================= SELECTS ================= */
+/* ================= SELECT ================= */
 
 .admin-editor-toolbar select {
   height: 28px;
@@ -1277,8 +1416,7 @@ body {
   font-size: 12px;
   color: var(--text-main);
 
-  background-color: rgba(0, 0, 0, 0.35);
-
+  background: rgba(0,0,0,0.35);
   border: 1px solid var(--rule-soft);
   border-radius: 6px;
 
@@ -1300,16 +1438,14 @@ body {
   border-color: var(--rule-hard);
 }
 
-/* ================= COLOR INPUTS ================= */
+/* ================= COLOR INPUT ================= */
 
 .admin-editor-toolbar input[type="color"] {
   width: 28px;
   height: 28px;
-
   padding: 0;
   border: none;
   background: transparent;
-
   cursor: pointer;
 }
 
@@ -1341,12 +1477,12 @@ body {
   line-height: 1.7;
 
   color: var(--text-main);
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(0,0,0,0.25);
 
   outline: none;
 }
 
-/* ================= PROSEMIRROR BASE ================= */
+/* ================= PROSEMIRROR ================= */
 
 .admin-editor-content .ProseMirror {
   outline: none;
@@ -1359,9 +1495,8 @@ body {
 .admin-editor-content .ProseMirror h1,
 .admin-editor-content .ProseMirror h2,
 .admin-editor-content .ProseMirror h3 {
-  font-weight: 600;
   margin: 1.2em 0 0.6em;
-  color: var(--text-main);
+  font-weight: 600;
 }
 
 .admin-editor-content .ProseMirror ul,
@@ -1385,11 +1520,15 @@ body {
   opacity: 0.85;
 }
 
-/* ================= FOCUS STATE ================= */
+/* ================= FOCUS ================= */
 
 .admin-editor:focus-within {
   border-color: var(--rule-hard);
 }
+
+/* ==================================================
+   FORM + ACTION PRIMITIVES (DEDUPED)
+================================================== */
 
 .admin-form-row {
   display: grid;
@@ -1411,35 +1550,38 @@ body {
   color: var(--text-mute);
 }
 
-.admin-form-group input {
+.admin-form-group input,
+.admin-input-sm {
+  padding: 6px 8px;
+  font-size: 0.8rem;
+
   background: var(--glass-1);
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-sm);
-  padding: 6px 8px;
 
-  font-size: 0.8rem;
   color: var(--text-main);
-
   outline: none;
-  transition: border 0.12s ease;
 }
 
-.admin-form-group input:focus {
+.admin-form-group input:focus,
+.admin-input-sm:focus {
   border-color: var(--accent);
 }
+
+/* ================= ACTION BUTTONS ================= */
 
 .admin-action {
   font-size: 0.72rem;
   padding: 6px 10px;
-  border-radius: var(--radius-sm);
 
   background: transparent;
   border: 1px solid var(--rule-soft);
-  color: var(--text-main);
+  border-radius: var(--radius-sm);
 
+  color: var(--text-main);
   cursor: pointer;
-  transition:
-    background 0.12s ease,
+
+  transition: background 0.12s ease,
     border-color 0.12s ease;
 }
 
@@ -1460,12 +1602,14 @@ body {
 
 .admin-action-danger {
   color: var(--danger);
-  border-color: rgba(239, 68, 68, 0.35);
+  border-color: rgba(239,68,68,0.35);
 }
 
 .admin-action-danger:hover {
-  background: rgba(239, 68, 68, 0.08);
+  background: rgba(239,68,68,0.08);
 }
+
+/* ================= EMPTY STATE ================= */
 
 .admin-table-empty {
   padding: 16px;
@@ -1474,20 +1618,32 @@ body {
   text-align: center;
 }
 
-.admin-input-sm {
-  width: 72px;
-  padding: 4px 6px;
+/* ==================================================
+   MOBILE OPTIMIZATION
+================================================== */
 
-  font-size: 0.75rem;
-  background: var(--glass-1);
-  border: 1px solid var(--rule-soft);
-  border-radius: var(--radius-sm);
+@media (max-width: 768px) {
+  .admin-editor-toolbar {
+    padding: 10px;
+  }
 
-  color: var(--text-main);
+  .admin-editor-toolbar button,
+  .admin-editor-toolbar select {
+    height: 32px;
+  }
+
+  .admin-editor-content {
+    min-height: 220px;
+    padding: 14px;
+    font-size: 0.88rem;
+  }
+
+  .admin-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-action {
+    width: 100%;
+    text-align: center;
+  }
 }
-
-.admin-input-sm:focus {
-  border-color: var(--accent);
-  outline: none;
-}
-

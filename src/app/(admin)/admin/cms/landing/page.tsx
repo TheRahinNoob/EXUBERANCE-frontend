@@ -6,7 +6,12 @@
  * ==================================================
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import "./landing-composer.css";
 
@@ -16,9 +21,11 @@ import {
   deleteAdminLandingBlock,
 } from "@/lib/admin-api/cms/landing-blocks";
 
-import type { AdminLandingBlock } from "@/lib/admin-api/cms/landing-blocks";
-import { useAdminToast } from "@/hooks/useAdminToast";
+import type {
+  AdminLandingBlock,
+} from "@/lib/admin-api/cms/landing-blocks";
 
+import { useAdminToast } from "@/hooks/useAdminToast";
 import CreateLandingBlockModal from "./CreateLandingBlockModal";
 
 /* ================= DND ================= */
@@ -58,6 +65,7 @@ function SortableRow({
     attributes,
     listeners,
     setNodeRef,
+    setActivatorNodeRef, // 🔥 IMPORTANT
     transform,
     transition,
     isDragging,
@@ -70,16 +78,33 @@ function SortableRow({
   };
 
   return (
-    <tr ref={setNodeRef} style={style} className="landing-row">
-      <td className="drag-handle" {...listeners} {...attributes}>
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className="landing-row"
+    >
+      {/* DRAG HANDLE */}
+      <td
+        ref={setActivatorNodeRef}
+        className="drag-handle"
+        data-label="Reorder"
+        {...listeners}
+        {...attributes}
+      >
         ☰
       </td>
 
-      <td className="block-type">
+      <td
+        className="block-type"
+        data-label="Type"
+      >
         {block.block_type}
       </td>
 
-      <td className="block-linked">
+      <td
+        className="block-linked"
+        data-label="Linked"
+      >
         {block.block_type === "hot" &&
           `Hot Block #${block.hot_category_block_id}`}
         {block.block_type === "comfort_rail" &&
@@ -89,7 +114,7 @@ function SortableRow({
           "—"}
       </td>
 
-      <td>
+      <td data-label="Active">
         <input
           type="checkbox"
           checked={block.is_active}
@@ -97,7 +122,7 @@ function SortableRow({
         />
       </td>
 
-      <td>
+      <td data-label="Actions">
         <button
           className="btn danger ghost"
           onClick={() => onDelete(block)}
@@ -116,12 +141,17 @@ function SortableRow({
 export default function AdminLandingCMSPage() {
   const { showToast } = useAdminToast();
 
-  const [blocks, setBlocks] = useState<AdminLandingBlock[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [dirty, setDirty] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
+  const [blocks, setBlocks] =
+    useState<AdminLandingBlock[]>([]);
+  const [loading, setLoading] =
+    useState(true);
+  const [dirty, setDirty] =
+    useState(false);
+  const [createOpen, setCreateOpen] =
+    useState(false);
 
-  const abortRef = useRef<AbortController | null>(null);
+  const abortRef =
+    useRef<AbortController | null>(null);
 
   /* ================= LOAD ================= */
 
@@ -132,7 +162,7 @@ export default function AdminLandingCMSPage() {
     try {
       setLoading(true);
       const data = await fetchAdminLandingBlocks();
-      setBlocks(data);
+      setBlocks(Array.isArray(data) ? data : []);
       setDirty(false);
     } catch {
       showToast("Failed to load landing blocks", "error");
@@ -159,21 +189,26 @@ export default function AdminLandingCMSPage() {
     if (!over || active.id === over.id) return;
 
     setBlocks((prev) => {
-      const oldIndex = prev.findIndex((b) => b.id === active.id);
-      const newIndex = prev.findIndex((b) => b.id === over.id);
+      const oldIndex = prev.findIndex(
+        (b) => b.id === active.id
+      );
+      const newIndex = prev.findIndex(
+        (b) => b.id === over.id
+      );
       setDirty(true);
       return arrayMove(prev, oldIndex, newIndex);
     });
   };
 
-  /* ================= SAVE ================= */
+  /* ================= SAVE ORDER ================= */
 
   async function handleSaveOrder() {
     try {
       for (let i = 0; i < blocks.length; i++) {
-        await updateAdminLandingBlock(blocks[i].id, {
-          ordering: i,
-        });
+        await updateAdminLandingBlock(
+          blocks[i].id,
+          { ordering: i }
+        );
       }
       showToast("Order saved", "success");
       loadBlocks();
@@ -201,7 +236,11 @@ export default function AdminLandingCMSPage() {
   /* ================= RENDER ================= */
 
   if (loading) {
-    return <p className="muted">Loading landing blocks…</p>;
+    return (
+      <p className="muted">
+        Loading landing blocks…
+      </p>
+    );
   }
 
   return (

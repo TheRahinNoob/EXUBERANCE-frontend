@@ -149,7 +149,7 @@ export default function Navbar() {
               className={styles.trackOrder}
             >
               <i className="fa fa-map-marker-alt" />
-              <span>Track Order</span>
+              <span></span>
             </Link>
 
             {/* CART */}

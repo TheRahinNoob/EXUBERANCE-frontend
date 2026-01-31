@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@700;800;900&display=swap");
 /* =========================
    NAVBAR (DESKTOP LOCKED)
 ========================= */
@@ -6,8 +7,14 @@
   top: 0;
   z-index: 1000;
   height: 85px;
-  background: #fff;
+
+  background: #ffffff;
   border-bottom: 1px solid #e5e7eb;
+
+  backdrop-filter: saturate(1.1);
+  transition:
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 /* =========================
@@ -17,7 +24,7 @@
   max-width: 1320px;
   height: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 28px;
 
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -30,7 +37,7 @@
 .left {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
 }
 
 /* =========================
@@ -38,10 +45,19 @@
 ========================= */
 .logo {
   font-size: 22px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 900;
+  letter-spacing: 0.14em;
   text-decoration: none;
-  color: #000;
+  color: #020617;
+
+  position: relative;
+  top: 1px;
+
+  transition: opacity 0.15s ease;
+}
+
+.logo:hover {
+  opacity: 0.85;
 }
 
 /* =========================
@@ -51,15 +67,34 @@
   position: relative;
 }
 
+/* 🔒 HOVER BRIDGE — CRITICAL FIX */
+.shop::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 100%;
+  width: calc(100% + 40px);
+  height: 22px;
+}
+
 .shopBtn {
   background: none;
   border: none;
-  font-size: 17px;
+
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+
   display: flex;
   align-items: center;
   gap: 6px;
+
+  color: #111827;
+}
+
+.shopBtn i {
+  font-size: 11px;
+  margin-top: 2px;
 }
 
 /* =========================
@@ -67,58 +102,72 @@
 ========================= */
 .mega {
   position: absolute;
-  top: 100%;
-  left: 0;
+  top: calc(100% + 14px);
+  left: -12px;
 
-  width: 50vw;
-  min-width: 700px;
+  width: 52vw;
+  min-width: 760px;
 
-  background: #fff;
+  background: #ffffff;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(0,0,0,.12);
+  border-radius: 14px;
 
-  padding: 24px;
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.14),
+    0 8px 20px rgba(0,0,0,0.08);
+
+  padding: 32px 34px;
 
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 
-  transition: opacity 0.15s ease;
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
 }
 
 .megaOpen {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  transform: translateY(0);
 }
 
 .megaGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: 34px;
 }
 
 .megaCol {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
 .megaTitle {
   font-size: 15px;
-  font-weight: 600;
-  color: #000;
+  font-weight: 800;
+  color: #020617;
   text-decoration: none;
+
+  margin-bottom: 6px;
 }
 
 .megaLink {
   font-size: 14px;
-  color: #666;
+  color: #475569;
   text-decoration: none;
+
+  line-height: 1.6;
+  transition: color 0.12s ease;
 }
 
 .megaLink:hover {
-  color: #000;
+  color: #020617;
 }
 
 /* =========================
@@ -131,24 +180,49 @@
 
 .searchForm {
   display: flex;
-  width: 520px;
+  width: 540px;
   height: 44px;
+
+  background: #ffffff;
+  border-radius: 10px;
 }
 
 .searchInput {
   flex: 1;
-  padding: 0 14px;
+  padding: 0 16px;
+
+  font-size: 14px;
+
   border: 1px solid #d1d5db;
   border-right: none;
+  border-radius: 10px 0 0 10px;
+
   outline: none;
 }
 
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border-color: #020617;
+}
+
 .searchBtn {
-  width: 44px;
+  width: 46px;
+
   border: 1px solid #d1d5db;
   border-left: none;
-  background: #fff;
+  border-radius: 0 10px 10px 0;
+
+  background: #ffffff;
   cursor: pointer;
+
+  transition: background 0.15s ease;
+}
+
+.searchBtn:hover {
+  background: #f3f4f6;
 }
 
 /* =========================
@@ -157,7 +231,7 @@
 .right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 /* =========================
@@ -169,22 +243,26 @@
   gap: 6px;
 
   font-size: 14px;
-  color: #374151;
+  font-weight: 500;
+  color: #475569;
   text-decoration: none;
   white-space: nowrap;
+
+  transition: color 0.15s ease;
 }
 
 .trackOrder i {
-  font-size: 13px;
-  color: #6b7280;
+  font-size: 23px;
+  color: #64748b;
+  transition: color 0.15s ease;
 }
 
 .trackOrder:hover {
-  color: #111827;
+  color: #020617;
 }
 
 .trackOrder:hover i {
-  color: #111827;
+  color: #020617;
 }
 
 /* =========================
@@ -193,7 +271,7 @@
 .cart {
   position: relative;
   font-size: 22px;
-  color: #000;
+  color: #020617;
   text-decoration: none;
 }
 
@@ -201,27 +279,34 @@
   position: absolute;
   top: -6px;
   right: -10px;
+
   background: #2563eb;
-  color: #fff;
+  color: #ffffff;
+
   font-size: 11px;
+  font-weight: 700;
+
   width: 18px;
   height: 18px;
-  border-radius: 50%;
+  border-radius: 999px;
+
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 /* =========================
-   MOBILE BUTTONS (HIDDEN BY DEFAULT)
+   MOBILE BUTTONS
 ========================= */
 .mobileMenuBtn,
 .mobileSearchBtn {
   display: none;
   background: none;
   border: none;
+
   font-size: 22px;
   cursor: pointer;
+  color: #020617;
 }
 
 /* =========================
@@ -229,21 +314,27 @@
 ========================= */
 .mobileSearch {
   position: fixed;
+  top: 85px;
   left: 0;
   width: 100%;
-  background: #eee;
-  padding: 10px;
+
+  background: #ffffff;
+  padding: 12px;
+
   z-index: 999;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .mobileSearch input {
-  width: calc(100% - 20px);
-  margin: 0 10px;
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
+  width: calc(100% - 24px);
+  margin: 0 12px;
+
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+
   font-size: 14px;
+  outline: none;
 }
 
 /* =========================
@@ -259,15 +350,16 @@
   left: 0;
   height: 100vh;
 
-  background: #fff;
+  background: #ffffff;
+
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
 
   z-index: 1000;
   display: flex;
   flex-direction: column;
 
-  box-shadow: 6px 0 24px rgba(0,0,0,0.18);
+  box-shadow: 12px 0 40px rgba(0,0,0,0.22);
 }
 
 .mobileDrawerOpen {
@@ -278,30 +370,35 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px;
-  font-weight: 600;
+
+  padding: 18px 16px;
+  font-weight: 800;
+
   border-bottom: 1px solid #e5e7eb;
 }
 
 /* =========================
-   🔥 MOBILE QUICK ACTIONS
+   MOBILE QUICK ACTIONS
 ========================= */
 .mobileQuickActions {
-  padding: 12px 14px;
+  padding: 14px;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .mobileQuickLink {
   display: block;
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 14px 16px;
+
+  border-radius: 12px;
 
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
 
-  color: #111827;
-  background: #f3f4f6;
+  color: #020617;
+  background: #f1f5f9;
+
+  transition: background 0.15s ease;
 }
 
 .mobileQuickLink:hover {
@@ -314,7 +411,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.45);
   z-index: 999;
 }
 
@@ -322,7 +419,6 @@
    MOBILE ONLY
 ========================= */
 @media (max-width: 1020px) {
-
   .nav {
     height: 64px;
   }
@@ -344,7 +440,526 @@
 
   .logo {
     font-size: 20px;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
+  }
+
+  .right {
+    margin-left: auto;
+    gap: 18px;
+  }
+
+  .mobileMenuBtn,
+  .mobileSearchBtn {
+    display: block;
+  }
+
+  .mobileSearch {
+    top: 64px;
+  }
+}
+
+/* =========================
+   FONT IMPORTS (ONLY CHANGE)
+========================= */
+
+
+/* =========================
+   FONT VARIABLES (ONLY CHANGE)
+========================= */
+:root {
+  --font-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-brand: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================
+   NAVBAR (DESKTOP LOCKED)
+========================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 85px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+  backdrop-filter: saturate(1.1);
+  transition:
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.container {
+  max-width: 1320px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+/* =========================
+   LEFT
+========================= */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* =========================
+   LOGO (BRAND FONT ONLY)
+========================= */
+.logo {
+  font-family: var(--font-brand); /* 👈 FONT FIX */
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  color: #020617;
+
+  position: relative;
+  top: 1px;
+
+  transition: opacity 0.15s ease;
+}
+
+.logo:hover {
+  opacity: 0.85;
+}
+
+/* =========================
+   SHOP (DESKTOP)
+========================= */
+.shop {
+  position: relative;
+}
+
+/* 🔒 HOVER BRIDGE — CRITICAL FIX */
+.shop::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 100%;
+  width: calc(100% + 40px);
+  height: 22px;
+}
+
+.shopBtn {
+  background: none;
+  border: none;
+
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #111827;
+}
+
+.shopBtn i {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* =========================
+   MEGA MENU (DESKTOP)
+========================= */
+.mega {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: -12px;
+
+  width: 52vw;
+  min-width: 760px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.14),
+    0 8px 20px rgba(0,0,0,0.08);
+
+  padding: 32px 34px;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.megaOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.megaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 34px;
+}
+
+.megaCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.megaTitle {
+  font-family: var(--font-brand); /* 👈 FONT FIX */
+  font-size: 15px;
+  font-weight: 800;
+  color: #020617;
+  text-decoration: none;
+
+  margin-bottom: 6px;
+}
+
+.megaLink {
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+  font-size: 14px;
+  color: #475569;
+  text-decoration: none;
+
+  line-height: 1.6;
+  transition: color 0.12s ease;
+}
+
+.megaLink:hover {
+  color: #020617;
+}
+
+/* =========================
+   SEARCH (DESKTOP)
+========================= */
+.searchInput,
+.searchBtn {
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+}
+
+/* =========================
+   TRACK ORDER
+========================= */
+.trackOrder {
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+}
+
+/* =========================
+   CART BADGE
+========================= */
+.cartBadge {
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+}
+
+/* =========================
+   MOBILE QUICK LINK
+========================= */
+.mobileQuickLink {
+  font-family: var(--font-ui); /* 👈 FONT FIX */
+}
+
+/* =========================
+   FONT IMPORTS
+========================= */
+
+
+/* =========================
+   FONT VARIABLES
+========================= */
+:root {
+  --font-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-brand: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================
+   NAVBAR (DESKTOP LOCKED)
+========================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 85px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+
+  font-family: var(--font-ui);
+  backdrop-filter: saturate(1.1);
+  transition:
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+/* =========================
+   CONTAINER
+========================= */
+.container {
+  max-width: 1320px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 28px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+/* =========================
+   LEFT
+========================= */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* =========================
+   LOGO
+========================= */
+.logo {
+  font-family: var(--font-brand);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.13em; /* slightly calmer */
+  text-decoration: none;
+  color: #020617;
+
+  position: relative;
+  top: 1px;
+
+  transition: opacity 0.15s ease;
+}
+
+.logo:hover {
+  opacity: 0.85;
+}
+
+/* =========================
+   SHOP (DESKTOP)
+========================= */
+.shop {
+  position: relative;
+}
+
+/* 🔒 HOVER BRIDGE — CRITICAL FIX */
+.shop::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 100%;
+  width: calc(100% + 40px);
+  height: 22px;
+}
+
+.shopBtn {
+  background: none;
+  border: none;
+
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600; /* slightly refined */
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #111827;
+}
+
+.shopBtn i {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+/* =========================
+   MEGA MENU
+========================= */
+.mega {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: -12px;
+
+  width: 52vw;
+  min-width: 760px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 40px 80px rgba(0,0,0,0.14),
+    0 8px 20px rgba(0,0,0,0.08);
+
+  padding: 32px 34px;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.megaOpen {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.megaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 34px;
+}
+
+.megaCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.megaTitle {
+  font-family: var(--font-brand);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #020617;
+  text-decoration: none;
+
+  margin-bottom: 6px;
+}
+
+.megaLink {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  text-decoration: none;
+
+  line-height: 1.6;
+  transition: color 0.12s ease;
+}
+
+.megaLink:hover {
+  color: #020617;
+}
+
+/* =========================
+   SEARCH
+========================= */
+.searchInput,
+.searchBtn {
+  font-family: var(--font-ui);
+}
+
+/* =========================
+   RIGHT
+========================= */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* =========================
+   TRACK ORDER
+========================= */
+.trackOrder {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  text-decoration: none;
+
+  transition: color 0.15s ease;
+}
+
+.trackOrder i {
+  font-size: 20px; /* calmer than 23 */
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.trackOrder:hover {
+  color: #020617;
+}
+
+.trackOrder:hover i {
+  color: #020617;
+}
+
+/* =========================
+   CART
+========================= */
+.cart {
+  position: relative;
+  font-size: 22px;
+  color: #020617;
+  text-decoration: none;
+}
+
+.cartBadge {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =========================
+   MOBILE QUICK LINK
+========================= */
+.mobileQuickLink {
+  font-family: var(--font-ui);
+}
+
+/* =========================
+   MOBILE ONLY
+========================= */
+@media (max-width: 1020px) {
+  .nav {
+    height: 64px;
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+  }
+
+  .shop,
+  .center,
+  .trackOrder {
+    display: none;
+  }
+
+  .left {
+    gap: 14px;
+  }
+
+  .logo {
+    font-size: 20px;
+    letter-spacing: 0.11em;
   }
 
   .right {

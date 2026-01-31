@@ -1,5 +1,5 @@
 /* ==================================================
-   FEATURED CATEGORY CARD — DARK ADMIN
+   FEATURED CATEGORY CARD — ARCHIVAL ADMIN (PRO)
 ================================================== */
 
 .featured-card {
@@ -14,17 +14,21 @@
   padding: 12px;
 
   transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
     transform 0.15s ease;
 }
 
-.featured-card:hover {
-  background: var(--glass-1);
-  border-color: var(--rule-hard);
-  transform: translateY(-2px);
+/* Hover only for pointer devices */
+@media (hover: hover) and (pointer: fine) {
+  .featured-card:hover {
+    background: var(--glass-1);
+    border-color: var(--rule-hard);
+    transform: translateY(-2px);
+  }
 }
 
+/* Busy lock */
 .featured-card[aria-busy="true"] {
   opacity: 0.6;
   pointer-events: none;
@@ -37,15 +41,28 @@
 .featured-card-image {
   height: 140px;
   overflow: hidden;
+
   border-radius: var(--radius-md);
   background: var(--ink-2);
   border: 1px solid var(--rule-soft);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .featured-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Placeholder fallback */
+.featured-card-image.placeholder {
+  font-size: 0.7rem;
+  color: var(--text-mute);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ==================================================
@@ -63,12 +80,20 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--text-main);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .featured-card-slug {
   margin: 0;
   font-size: 12px;
   color: var(--text-sub);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ==================================================
@@ -80,6 +105,12 @@
   color: var(--accent);
   cursor: pointer;
   width: fit-content;
+
+  padding: 2px 0;
+}
+
+.file-replace:hover {
+  text-decoration: underline;
 }
 
 .file-replace input {
@@ -98,7 +129,9 @@
 
 .featured-card-actions .btn {
   font-size: 0.7rem;
-  padding: 4px 10px;
+  padding: 6px 12px; /* tap-safe */
+
+  min-height: 32px;
 
   background: var(--glass-1);
   color: var(--text-main);
@@ -112,9 +145,12 @@
     border-color 0.15s ease;
 }
 
-.featured-card-actions .btn:hover {
-  background: var(--glass-2);
-  border-color: var(--rule-hard);
+/* Hover only on desktop */
+@media (hover: hover) and (pointer: fine) {
+  .featured-card-actions .btn:hover {
+    background: var(--glass-2);
+    border-color: var(--rule-hard);
+  }
 }
 
 .featured-card-actions .btn.danger {
@@ -132,4 +168,53 @@
 
 .featured-card.is-inactive .featured-card-title {
   text-decoration: line-through;
+}
+
+/* ==================================================
+   MOBILE OPTIMIZATION
+================================================== */
+
+@media (max-width: 768px) {
+  .featured-card {
+    padding: 14px;
+  }
+
+  .featured-card-actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .featured-card-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .featured-card-image {
+    height: 120px;
+  }
+
+  .featured-card-title {
+    font-size: 14px;
+  }
+
+  .featured-card-actions .btn {
+    font-size: 0.65rem;
+    padding: 6px 10px;
+  }
+}
+
+/* ==================================================
+   REDUCED MOTION
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-card {
+    transition: none;
+  }
 }

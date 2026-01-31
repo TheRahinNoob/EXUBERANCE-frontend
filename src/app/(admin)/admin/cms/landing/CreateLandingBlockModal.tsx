@@ -18,6 +18,11 @@ import {
   type AdminComfortCategoryRail,
 } from "@/lib/admin-api/cms/comfort-rails";
 
+import {
+  fetchAdminComfortEditorialBlocks,
+  type AdminComfortEditorialBlock,
+} from "@/lib/admin-api/cms/comfort-editorial";
+
 import { useAdminToast } from "@/hooks/useAdminToast";
 
 /* ==================================================
@@ -30,12 +35,19 @@ type Props = {
   onCreated: () => void;
 };
 
-const BLOCK_TYPES: LandingBlockType[] = [
-  "hero",
-  "menu",
-  "featured",
-  "hot",
-  "comfort_rail",
+/**
+ * 🔒 MUST MATCH Django LandingBlock.BlockType EXACTLY
+ */
+const BLOCK_TYPES: {
+  value: LandingBlockType;
+  label: string;
+}[] = [
+  { value: "hero", label: "Hero Banner" },
+  { value: "menu", label: "Landing Menu" },
+  { value: "featured", label: "Featured Categories" },
+  { value: "hot", label: "Hot Categories Block" },
+  { value: "comfort_rail", label: "Comfort Rail" },
+  { value: "comfort_block", label: "Comfort Editorial" },
 ];
 
 /* ==================================================
@@ -56,27 +68,30 @@ export default function CreateLandingBlockModal({
     useState<AdminHotCategoryBlock[]>([]);
   const [comfortRails, setComfortRails] =
     useState<AdminComfortCategoryRail[]>([]);
+  const [editorials, setEditorials] =
+    useState<AdminComfortEditorialBlock[]>([]);
 
   const [hotBlockId, setHotBlockId] =
     useState<number | null>(null);
   const [comfortRailId, setComfortRailId] =
     useState<number | null>(null);
+  const [editorialId, setEditorialId] =
+    useState<number | null>(null);
 
   const [loading, setLoading] = useState(false);
 
-  /* ================= LOAD DEPENDENCIES ================= */
+  /* ==================================================
+     LOAD DEPENDENCIES
+  ================================================== */
 
   useEffect(() => {
-    if (!open) return;
+    if (!open || !blockType) return;
 
     if (blockType === "hot") {
       fetchAdminHotCategoryBlocks()
         .then(setHotBlocks)
         .catch(() =>
-          showToast(
-            "Failed to load hot category blocks",
-            "error"
-          )
+          showToast("Failed to load hot blocks", "error")
         );
     }
 
@@ -84,25 +99,41 @@ export default function CreateLandingBlockModal({
       fetchAdminComfortRails()
         .then(setComfortRails)
         .catch(() =>
+          showToast("Failed to load comfort rails", "error")
+        );
+    }
+
+    if (blockType === "comfort_block") {
+      fetchAdminComfortEditorialBlocks()
+        .then(setEditorials)
+        .catch(() =>
           showToast(
-            "Failed to load comfort rails",
+            "Failed to load comfort editorials",
             "error"
           )
         );
     }
   }, [open, blockType, showToast]);
 
-  /* ================= VALIDATION ================= */
+  /* ==================================================
+     VALIDATION
+  ================================================== */
 
   function canSubmit(): boolean {
     if (!blockType) return false;
+
     if (blockType === "hot") return hotBlockId !== null;
     if (blockType === "comfort_rail")
       return comfortRailId !== null;
+    if (blockType === "comfort_block")
+      return editorialId !== null;
+
     return true;
   }
 
-  /* ================= CREATE ================= */
+  /* ==================================================
+     CREATE
+  ================================================== */
 
   async function handleCreate() {
     if (!blockType) {
@@ -110,18 +141,23 @@ export default function CreateLandingBlockModal({
       return;
     }
 
-    if (!canSubmit()) return;
-
     try {
       setLoading(true);
 
       await createAdminLandingBlock({
         block_type: blockType,
+
         hot_category_block_id:
           blockType === "hot" ? hotBlockId : null,
+
         comfort_rail_id:
           blockType === "comfort_rail"
             ? comfortRailId
+            : null,
+
+        comfort_editorial_block_id:
+          blockType === "comfort_block"
+            ? editorialId
             : null,
       });
 
@@ -140,7 +176,9 @@ export default function CreateLandingBlockModal({
 
   if (!open) return null;
 
-  /* ================= RENDER ================= */
+  /* ==================================================
+     RENDER
+  ================================================== */
 
   return (
     <div className="modal-overlay">
@@ -156,28 +194,25 @@ export default function CreateLandingBlockModal({
             <select
               value={blockType}
               onChange={(e) => {
-                const value = e.target.value;
-                if (value === "") {
-                  setBlockType("");
-                } else {
-                  setBlockType(value as LandingBlockType);
-                }
+                const value =
+                  e.target.value as LandingBlockType | "";
 
-                // reset dependent state
+                setBlockType(value);
                 setHotBlockId(null);
                 setComfortRailId(null);
+                setEditorialId(null);
               }}
             >
               <option value="">Select…</option>
               {BLOCK_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+                <option key={t.value} value={t.value}>
+                  {t.label}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* HOT BLOCK */}
+          {/* HOT */}
           {blockType === "hot" && (
             <div className="form-group">
               <label>Hot category block</label>
@@ -219,6 +254,30 @@ export default function CreateLandingBlockModal({
                 {comfortRails.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* 🧠 COMFORT EDITORIAL */}
+          {blockType === "comfort_block" && (
+            <div className="form-group">
+              <label>Comfort editorial</label>
+              <select
+                value={editorialId ?? ""}
+                onChange={(e) =>
+                  setEditorialId(
+                    e.target.value
+                      ? Number(e.target.value)
+                      : null
+                  )
+                }
+              >
+                <option value="">Select…</option>
+                {editorials.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.title}
                   </option>
                 ))}
               </select>

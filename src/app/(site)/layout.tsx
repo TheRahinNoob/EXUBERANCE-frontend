@@ -4,6 +4,10 @@ import Script from "next/script";
 import Navbar from "../../components/navbar/Navbar";
 import CartHydration from "@/components/CartHydration";
 
+/* 🔥 GLOBAL UI OVERLAYS */
+import AddToCartModal from "@/components/cart/AddToCartModal";
+import CartDrawer from "@/components/cart/CartDrawer";
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* ==================================================
@@ -76,9 +80,6 @@ export default function RootLayout({
       <head>
         {/* =========================================
            META PIXEL (GLOBAL)
-           - Loads once
-           - App Router safe
-           - Dedup ready
         ========================================== */}
         {process.env.NEXT_PUBLIC_META_PIXEL_ID && (
           <>
@@ -118,7 +119,6 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {/* =========================================
            CLIENT-SIDE STORE HYDRATION
-           (Zustand + persist)
         ========================================== */}
         <CartHydration />
 
@@ -126,6 +126,12 @@ export default function RootLayout({
            GLOBAL NAVIGATION
         ========================================== */}
         <Navbar />
+
+        {/* =========================================
+           GLOBAL OVERLAYS (ONCE)
+        ========================================== */}
+        <AddToCartModal />
+        <CartDrawer />
 
         {/* =========================================
            PAGE CONTENT

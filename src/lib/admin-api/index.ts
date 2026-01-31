@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * ADMIN API — PUBLIC BARREL EXPORT
+ * ADMIN API — PUBLIC BARREL EXPORT (CANONICAL)
  * ==================================================
  *
  * ⚠️ CRITICAL RULES:
@@ -87,17 +87,19 @@ export {
   fetchAdminProducts,
   fetchAdminProductDetail,
   createAdminProduct,
+
   updateAdminProductBasicInfo,
-  updateAdminProduct,
   updateAdminProductDescription,
-  toggleAdminProductStatus,
+  updateAdminProduct,
+
+  deactivateAdminProduct,
 } from "./products";
 
 export type {
-  AdminProductStatusToggleResponse,
   AdminProductUpdateResponse,
   AdminProductBasicInfoUpdateResponse,
   AdminProductDescriptionUpdateResponse,
+  AdminProductDeactivateResponse,
 } from "./products";
 
 /* ==================================================
@@ -231,5 +233,24 @@ export type {
 } from "./cms/comfort-rails";
 
 /* ==================================================
-   END OF BARREL
+   CMS — 🧠 COMFORT EDITORIAL (FINAL)
+================================================== */
+
+export {
+  fetchAdminComfortEditorialBlocks,
+  fetchAdminComfortEditorialBlock,
+  createAdminComfortEditorialBlock,
+  updateAdminComfortEditorialBlock,
+  updateAdminComfortEditorialBlockImage, // ✅ FIX
+  deleteAdminComfortEditorialBlock,
+} from "./cms/comfort-editorial";
+
+export type {
+  AdminComfortEditorialBlock,
+  AdminComfortEditorialBlockCreatePayload,
+  AdminComfortEditorialBlockUpdatePayload,
+} from "./cms/comfort-editorial";
+
+/* ==================================================
+   END OF BARREL (LOCKED)
 ================================================== */

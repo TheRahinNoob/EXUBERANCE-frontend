@@ -19,10 +19,6 @@ import {
    TYPES — LOCAL, STRICT, BACKEND-ALIGNED
 ================================================== */
 
-/**
- * Backend order status state machine.
- * MUST stay in sync with Django OrderStatus choices.
- */
 type OrderStatus =
   | "pending"
   | "confirmed"
@@ -54,9 +50,7 @@ const STATUS_OPTIONS: {
 export default function AdminOrdersPage() {
   const router = useRouter();
 
-  /* =========================
-     STATE
-  ========================= */
+  /* ================= STATE ================= */
 
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [meta, setMeta] =
@@ -70,9 +64,7 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /* =========================
-     DERIVED STATE
-  ========================= */
+  /* ================= DERIVED ================= */
 
   const isEmpty = useMemo(
     () => !loading && !error && orders.length === 0,
@@ -88,9 +80,7 @@ export default function AdminOrdersPage() {
     return { start, end };
   }, [meta, orders.length]);
 
-  /* =========================
-     DATA LOADER
-  ========================= */
+  /* ================= DATA ================= */
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -125,17 +115,13 @@ export default function AdminOrdersPage() {
     }
   }, [statusFilter, search, page]);
 
-  /* =========================
-     EFFECTS
-  ========================= */
+  /* ================= EFFECTS ================= */
 
   useEffect(() => {
     loadOrders();
   }, [loadOrders]);
 
-  /* =========================
-     HANDLERS
-  ========================= */
+  /* ================= HANDLERS ================= */
 
   const handleStatusChange = (value: string) => {
     setPage(1);
@@ -149,9 +135,7 @@ export default function AdminOrdersPage() {
     setSearch(value);
   };
 
-  /* =========================
-     RENDER
-  ========================= */
+  /* ================= RENDER ================= */
 
   return (
     <div className="admin-page">
@@ -192,7 +176,10 @@ export default function AdminOrdersPage() {
 
           {!loading && error && (
             <tr>
-              <td colSpan={6} className="admin-table-state admin-table-error">
+              <td
+                colSpan={6}
+                className="admin-table-state admin-table-error"
+              >
                 {error}
               </td>
             </tr>
@@ -210,9 +197,11 @@ export default function AdminOrdersPage() {
             !error &&
             orders.map((order) => (
               <tr key={order.id}>
-                <td className="mono">{order.reference}</td>
+                <td data-label="Reference" className="mono">
+                  {order.reference}
+                </td>
 
-                <td>
+                <td data-label="Customer">
                   <div className="cell-primary">
                     {order.customer_name}
                   </div>
@@ -221,19 +210,31 @@ export default function AdminOrdersPage() {
                   </div>
                 </td>
 
-                <td>
+                <td data-label="Status">
                   <AdminStatusBadge status={order.status} />
                 </td>
 
-                <td className="cell-strong">
+                <td
+                  data-label="Total"
+                  data-numeric="true"
+                  className="cell-strong"
+                >
                   {order.total}
                 </td>
 
-                <td className="cell-muted">
-                  {new Date(order.created_at).toLocaleDateString()}
+                <td
+                  data-label="Date"
+                  className="cell-muted"
+                >
+                  {new Date(
+                    order.created_at
+                  ).toLocaleDateString()}
                 </td>
 
-                <td className="align-right">
+                <td
+                  data-label="Actions"
+                  className="align-right"
+                >
                   <AdminRowActions
                     actions={[
                       {
@@ -261,7 +262,9 @@ export default function AdminOrdersPage() {
           <div className="admin-pagination-actions">
             <button
               disabled={!meta.has_prev}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              onClick={() =>
+                setPage((p) => Math.max(1, p - 1))
+              }
             >
               Prev
             </button>

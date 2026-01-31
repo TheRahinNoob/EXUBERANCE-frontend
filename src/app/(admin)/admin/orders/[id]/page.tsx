@@ -9,10 +9,6 @@ import AdminRowActions from "../../components/AdminRowActions";
 import AdminTable from "../../components/AdminTable";
 import ConfirmActionModal from "../../components/ConfirmActionModal";
 
-/**
- * ✅ FIXED IMPORT
- * Folder-based admin API module
- */
 import {
   fetchAdminOrderDetail,
   fetchAdminOrderAudit,
@@ -60,24 +56,24 @@ const ACTION_DESCRIPTIONS: Record<OrderAction, string> = {
 
 export default function AdminOrderDetailsPage() {
   const params = useParams();
-  const orderId = Number(params.id);
+  const rawId = params?.id;
+  const orderId = Number(rawId);
 
-  /* =========================
-     DATA STATE
-  ========================= */
+  /* ================= DATA STATE ================= */
 
   const [order, setOrder] =
     useState<AdminOrderDetail | null>(null);
   const [auditLogs, setAuditLogs] =
     useState<AdminOrderAuditLog[]>([]);
 
-  /* =========================
-     UI STATE
-  ========================= */
+  /* ================= UI STATE ================= */
 
   const [loading, setLoading] = useState(true);
-  const [loadingAction, setLoadingAction] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingAction, setLoadingAction] =
+    useState(false);
+  const [error, setError] = useState<string | null>(
+    null
+  );
 
   const [pendingAction, setPendingAction] =
     useState<OrderAction | null>(null);
@@ -97,10 +93,11 @@ export default function AdminOrderDetailsPage() {
     setError(null);
 
     try {
-      const [orderData, auditData] = await Promise.all([
-        fetchAdminOrderDetail(orderId),
-        fetchAdminOrderAudit(orderId),
-      ]);
+      const [orderData, auditData] =
+        await Promise.all([
+          fetchAdminOrderDetail(orderId),
+          fetchAdminOrderAudit(orderId),
+        ]);
 
       if (!orderData || !Array.isArray(auditData)) {
         throw new Error("Invalid order response");
@@ -109,12 +106,11 @@ export default function AdminOrderDetailsPage() {
       setOrder(orderData);
       setAuditLogs(auditData);
     } catch (err) {
-      const message =
+      setError(
         err instanceof Error
           ? err.message
-          : "Failed to load order";
-
-      setError(message);
+          : "Failed to load order"
+      );
     } finally {
       setLoading(false);
     }
@@ -134,16 +130,18 @@ export default function AdminOrderDetailsPage() {
     setLoadingAction(true);
 
     try {
-      await updateAdminOrderStatus(order.id, pendingAction);
+      await updateAdminOrderStatus(
+        order.id,
+        pendingAction
+      );
       setPendingAction(null);
       await loadOrder();
     } catch (err) {
-      const message =
+      setError(
         err instanceof Error
           ? err.message
-          : "Failed to update order";
-
-      setError(message);
+          : "Failed to update order"
+      );
     } finally {
       setLoadingAction(false);
     }
@@ -153,10 +151,13 @@ export default function AdminOrderDetailsPage() {
      DERIVED STATE
   ================================================== */
 
-  const allowedActions = useMemo<OrderAction[]>(() => {
-    if (!order) return [];
-    return ALLOWED_ACTIONS[order.status] ?? [];
-  }, [order]);
+  const allowedActions = useMemo<OrderAction[]>(
+    () =>
+      order
+        ? ALLOWED_ACTIONS[order.status] ?? []
+        : [],
+    [order]
+  );
 
   /* ==================================================
      STATES
@@ -204,19 +205,29 @@ export default function AdminOrderDetailsPage() {
         </div>
 
         <div className="admin-detail-grid">
-          <div className="admin-detail-key">Status</div>
+          <div className="admin-detail-key">
+            Status
+          </div>
           <div className="admin-detail-value">
-            <AdminStatusBadge status={order.status} />
+            <AdminStatusBadge
+              status={order.status}
+            />
           </div>
 
-          <div className="admin-detail-key">Total</div>
+          <div className="admin-detail-key">
+            Total
+          </div>
           <div className="admin-detail-value">
             {order.total}
           </div>
 
-          <div className="admin-detail-key">Placed at</div>
+          <div className="admin-detail-key">
+            Placed at
+          </div>
           <div className="admin-detail-value">
-            {new Date(order.created_at).toLocaleString()}
+            {new Date(
+              order.created_at
+            ).toLocaleString()}
           </div>
         </div>
       </div>
@@ -228,17 +239,23 @@ export default function AdminOrderDetailsPage() {
         </div>
 
         <div className="admin-detail-grid">
-          <div className="admin-detail-key">Name</div>
+          <div className="admin-detail-key">
+            Name
+          </div>
           <div className="admin-detail-value">
             {order.customer.name}
           </div>
 
-          <div className="admin-detail-key">Phone</div>
+          <div className="admin-detail-key">
+            Phone
+          </div>
           <div className="admin-detail-value">
             {order.customer.phone}
           </div>
 
-          <div className="admin-detail-key">Address</div>
+          <div className="admin-detail-key">
+            Address
+          </div>
           <div className="admin-detail-value">
             {order.customer.address}
           </div>
@@ -251,7 +268,6 @@ export default function AdminOrderDetailsPage() {
           Items
         </div>
 
-        {/* 👇 wrapper enforces ledger-style layout */}
         <div className="admin-items-table">
           <AdminTable>
             <thead>
@@ -266,13 +282,34 @@ export default function AdminOrderDetailsPage() {
             <tbody>
               {order.items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.product_name}</td>
-                  <td>
+                  <td data-label="Product">
+                    {item.product_name}
+                  </td>
+
+                  <td data-label="Variant">
                     {item.size} / {item.color}
                   </td>
-                  <td>{item.price}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.subtotal}</td>
+
+                  <td
+                    data-label="Price"
+                    data-numeric="true"
+                  >
+                    {item.price}
+                  </td>
+
+                  <td
+                    data-label="Qty"
+                    data-numeric="true"
+                  >
+                    {item.quantity}
+                  </td>
+
+                  <td
+                    data-label="Subtotal"
+                    data-numeric="true"
+                  >
+                    {item.subtotal}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -289,14 +326,17 @@ export default function AdminOrderDetailsPage() {
 
           <div className="admin-actions-bar">
             <AdminRowActions
-              actions={allowedActions.map((action) => ({
-                label:
-                  action.charAt(0).toUpperCase() +
-                  action.slice(1),
-                danger: action === "cancel",
-                disabled: loadingAction,
-                onClick: () => setPendingAction(action),
-              }))}
+              actions={allowedActions.map(
+                (action) => ({
+                  label:
+                    action.charAt(0).toUpperCase() +
+                    action.slice(1),
+                  danger: action === "cancel",
+                  disabled: loadingAction,
+                  onClick: () =>
+                    setPendingAction(action),
+                })
+              )}
             />
           </div>
         </div>
@@ -315,14 +355,21 @@ export default function AdminOrderDetailsPage() {
         ) : (
           <ul className="admin-timeline">
             {auditLogs.map((log, idx) => (
-              <li key={idx} className="admin-timeline-item">
+              <li
+                key={idx}
+                className="admin-timeline-item"
+              >
                 <div className="cell-strong">
-                  {log.previous_status ?? "created"} →{" "}
-                  {log.new_status}
+                  {log.previous_status ??
+                    "created"}{" "}
+                  → {log.new_status}
                 </div>
                 <div className="cell-secondary">
-                  {log.actor_type} · {log.actor_identifier} ·{" "}
-                  {new Date(log.created_at).toLocaleString()}
+                  {log.actor_type} ·{" "}
+                  {log.actor_identifier} ·{" "}
+                  {new Date(
+                    log.created_at
+                  ).toLocaleString()}
                 </div>
               </li>
             ))}

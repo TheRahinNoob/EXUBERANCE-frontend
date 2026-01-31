@@ -11,13 +11,17 @@ import { useRouter } from "next/navigation";
 import AdminPageHeader from "../components/AdminPageHeader";
 import AdminTable from "../components/AdminTable";
 import AdminStatusBadge from "../components/AdminStatusBadge";
+import ConfirmActionModal from "../components/ConfirmActionModal";
 import CreateProductModal from "./components/CreateProductModal";
-
+import "./admin-products.css";
 import {
   fetchAdminProducts,
-  toggleAdminProductStatus,
-  type AdminProduct,
-  type PaginatedResponse,
+  deactivateAdminProduct,
+} from "@/lib/admin-api";
+
+import type {
+  AdminProduct,
+  PaginatedResponse,
 } from "@/lib/admin-api";
 
 import { useAdminToast } from "@/hooks/useAdminToast";
@@ -36,9 +40,7 @@ export default function AdminProductsPage() {
   const router = useRouter();
   const { showToast } = useAdminToast();
 
-  /* =========================
-     STATE
-  ========================= */
+  /* ================= STATE ================= */
 
   const [products, setProducts] =
     useState<AdminProduct[]>([]);
@@ -53,22 +55,18 @@ export default function AdminProductsPage() {
     useState<string | null>(null);
 
   const [selectedIds, setSelectedIds] =
-    useState<Set<number>>(() => new Set());
-
-  const [bulkAction, setBulkAction] =
-    useState<"activate" | "deactivate" | null>(
-      null
-    );
-
-  const [processing, setProcessing] =
-    useState(false);
+    useState<Set<number>>(new Set());
 
   const [showCreateModal, setShowCreateModal] =
     useState(false);
 
-  /* =========================
-     DERIVED STATE
-  ========================= */
+  const [confirmDeactivateIds, setConfirmDeactivateIds] =
+    useState<number[] | null>(null);
+
+  const [processing, setProcessing] =
+    useState(false);
+
+  /* ================= DERIVED ================= */
 
   const isEmpty =
     !loading && !error && products.length === 0;
@@ -85,9 +83,7 @@ export default function AdminProductsPage() {
     [products, selectedIds]
   );
 
-  /* =========================
-     DATA LOADER
-  ========================= */
+  /* ================= DATA LOAD ================= */
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -99,17 +95,11 @@ export default function AdminProductsPage() {
         page_size: PAGE_SIZE,
       });
 
-      if (
-        !res ||
-        !Array.isArray(res.items) ||
-        !res.meta
-      ) {
-        throw new Error(
-          "Invalid products response format"
-        );
+      if (!res || !res.meta) {
+        throw new Error("Invalid response");
       }
 
-      setProducts(res.items);
+      setProducts([...res.items]); // clone readonly
       setMeta(res.meta);
       setSelectedIds(new Set());
     } catch (err) {
@@ -127,9 +117,7 @@ export default function AdminProductsPage() {
     loadProducts();
   }, [loadProducts]);
 
-  /* =========================
-     SELECTION HANDLERS
-  ========================= */
+  /* ================= SELECTION ================= */
 
   const toggleSelect = (id: number) => {
     setSelectedIds((prev) => {
@@ -149,77 +137,61 @@ export default function AdminProductsPage() {
     );
   };
 
-  /* =========================
-     BULK ACTION EXECUTION
-  ========================= */
+  /* ================= DEACTIVATION ================= */
 
-  const executeBulkAction = async () => {
-    if (
-      !bulkAction ||
-      selectedProducts.length === 0
-    ) {
-      setBulkAction(null);
-      return;
-    }
+  const confirmDeactivate = async () => {
+    if (!confirmDeactivateIds) return;
 
     setProcessing(true);
 
-    let successCount = 0;
-    let failureCount = 0;
+    let success = 0;
+    let failure = 0;
 
-    for (const product of selectedProducts) {
-      const shouldActivate =
-        bulkAction === "activate";
+    for (const id of confirmDeactivateIds) {
+      const product = products.find(
+        (p) => p.id === id
+      );
 
-      if (product.is_active === shouldActivate) {
-        continue;
-      }
+      // Idempotent safety
+      if (!product || !product.is_active) continue;
 
       try {
-        const res =
-          await toggleAdminProductStatus(
-            product.id
-          );
+        await deactivateAdminProduct(id);
 
         setProducts((prev) =>
           prev.map((p) =>
-            p.id === res.id
-              ? {
-                  ...p,
-                  is_active: res.is_active,
-                }
+            p.id === id
+              ? { ...p, is_active: false }
               : p
           )
         );
 
-        successCount++;
+        success++;
       } catch {
-        failureCount++;
+        failure++;
       }
     }
 
     setProcessing(false);
-    setBulkAction(null);
+    setConfirmDeactivateIds(null);
     setSelectedIds(new Set());
 
-    if (successCount > 0) {
+    if (success) {
       showToast(
-        `${successCount} product(s) updated`,
+        `${success} product(s) deactivated`,
         "success"
       );
     }
 
-    if (failureCount > 0) {
+    if (failure) {
       showToast(
-        `${failureCount} product(s) failed to update`,
+        `${failure} product(s) failed`,
         "error"
       );
     }
   };
 
-  /* =========================
-     RENDER
-  ========================= */
+  /* ================= RENDER ================= */
 
   return (
     <div className="admin-page">
@@ -227,16 +199,32 @@ export default function AdminProductsPage() {
         title="Products"
         description="Manage store products"
         rightSlot={
-          <button
-            className="admin-action admin-action-primary"
-            onClick={() => setShowCreateModal(true)}
-          >
-            Add Product
-          </button>
+          <div className="admin-actions">
+            {selectedProducts.some((p) => p.is_active) && (
+              <button
+                className="admin-action admin-action-danger"
+                onClick={() =>
+                  setConfirmDeactivateIds(
+                    selectedProducts
+                      .filter((p) => p.is_active)
+                      .map((p) => p.id)
+                  )
+                }
+              >
+                Deactivate Selected
+              </button>
+            )}
+
+            <button
+              className="admin-action admin-action-primary"
+              onClick={() => setShowCreateModal(true)}
+            >
+              Add Product
+            </button>
+          </div>
         }
       />
 
-      {/* ================= TABLE ================= */}
       <AdminTable>
         <thead>
           <tr>
@@ -252,47 +240,40 @@ export default function AdminProductsPage() {
             <th>Stock</th>
             <th>Status</th>
             <th>Created</th>
+            <th />
           </tr>
         </thead>
 
         <tbody>
           {loading && (
             <tr>
-              <td
-                colSpan={6}
-                className="admin-table-state"
-              >
-                Loading products…
-              </td>
+              <td colSpan={7}>Loading…</td>
             </tr>
           )}
 
-          {!loading && error && (
+          {error && (
             <tr>
-              <td
-                colSpan={6}
-                className="admin-table-state admin-table-error"
-              >
-                {error}
-              </td>
+              <td colSpan={7}>{error}</td>
             </tr>
           )}
 
           {isEmpty && (
             <tr>
-              <td
-                colSpan={6}
-                className="admin-table-state"
-              >
-                No products found
-              </td>
+              <td colSpan={7}>No products found</td>
             </tr>
           )}
 
           {!loading &&
             !error &&
             products.map((product) => (
-              <tr key={product.id}>
+              <tr
+                key={product.id}
+                style={{
+                  opacity: product.is_active
+                    ? 1
+                    : 0.45,
+                }}
+              >
                 <td>
                   <input
                     type="checkbox"
@@ -319,7 +300,6 @@ export default function AdminProductsPage() {
                 </td>
 
                 <td>{product.price}</td>
-
                 <td>{product.total_stock}</td>
 
                 <td>
@@ -337,46 +317,53 @@ export default function AdminProductsPage() {
                     product.created_at
                   ).toLocaleDateString()}
                 </td>
+
+                <td>
+                  {product.is_active && (
+                    <button
+                      className="admin-link-danger"
+                      onClick={() =>
+                        setConfirmDeactivateIds([
+                          product.id,
+                        ])
+                      }
+                    >
+                      Deactivate
+                    </button>
+                  )}
+                </td>
               </tr>
             ))}
         </tbody>
       </AdminTable>
 
-      {/* ================= PAGINATION ================= */}
       {meta && (
         <div className="admin-pagination">
-          <div>
+          <button
+            disabled={!meta.has_prev}
+            onClick={() =>
+              setPage((p) => Math.max(1, p - 1))
+            }
+          >
+            Prev
+          </button>
+
+          <span>
             Page {meta.page} of{" "}
             {Math.ceil(
               meta.total / meta.page_size
             )}
-          </div>
+          </span>
 
-          <div className="admin-pagination-actions">
-            <button
-              disabled={!meta.has_prev}
-              onClick={() =>
-                setPage((p) =>
-                  Math.max(1, p - 1)
-                )
-              }
-            >
-              Prev
-            </button>
-
-            <button
-              disabled={!meta.has_next}
-              onClick={() =>
-                setPage((p) => p + 1)
-              }
-            >
-              Next
-            </button>
-          </div>
+          <button
+            disabled={!meta.has_next}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </button>
         </div>
       )}
 
-      {/* ================= CREATE MODAL ================= */}
       {showCreateModal && (
         <CreateProductModal
           onClose={() => setShowCreateModal(false)}
@@ -386,6 +373,20 @@ export default function AdminProductsPage() {
           }}
         />
       )}
+
+      <ConfirmActionModal
+        open={!!confirmDeactivateIds}
+        title="Deactivate product?"
+        description="This will remove the product from the store. Orders remain intact."
+        confirmLabel="Deactivate"
+        danger
+        loading={processing}
+        onClose={() =>
+          !processing &&
+          setConfirmDeactivateIds(null)
+        }
+        onConfirm={confirmDeactivate}
+      />
     </div>
   );
 }

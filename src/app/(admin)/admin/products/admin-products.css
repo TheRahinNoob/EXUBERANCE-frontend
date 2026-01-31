@@ -1,0 +1,225 @@
+/* ==================================================
+   ADMIN PRODUCTS PAGE — PRODUCTION
+================================================== */
+
+/* ================= PAGE ================= */
+
+.admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= ACTION BAR ================= */
+
+.admin-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ================= BUTTONS ================= */
+
+.admin-action {
+  padding: 8px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  border-radius: var(--radius-md);
+  border: 1px solid var(--rule-soft);
+
+  color: var(--text-main);
+  background: var(--glass-0);
+
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    transform 120ms ease;
+}
+
+.admin-action:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-strong);
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 8px 18px rgba(0, 0, 0, 0.45);
+
+  transform: translateY(-1px);
+}
+
+.admin-action:active {
+  transform: translateY(0);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ================= PRIMARY ================= */
+
+.admin-action-primary {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.25),
+      rgba(59, 130, 246, 0.1)
+    ),
+    var(--glass-0);
+
+  border-color: rgba(59, 130, 246, 0.45);
+}
+
+.admin-action-primary:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(59, 130, 246, 0.35),
+      rgba(59, 130, 246, 0.15)
+    ),
+    var(--glass-1);
+
+  border-color: rgba(59, 130, 246, 0.75);
+}
+
+/* ================= DANGER ================= */
+
+.admin-action-danger,
+.admin-link-danger {
+  color: #fecaca;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239, 68, 68, 0.25),
+      rgba(239, 68, 68, 0.1)
+    ),
+    rgba(239, 68, 68, 0.08);
+
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.admin-action-danger:hover,
+.admin-link-danger:hover {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(239, 68, 68, 0.35),
+      rgba(239, 68, 68, 0.15)
+    ),
+    rgba(239, 68, 68, 0.12);
+
+  border-color: rgba(239, 68, 68, 0.8);
+
+  box-shadow:
+    0 0 0 1px rgba(239, 68, 68, 0.45),
+    0 10px 24px rgba(239, 68, 68, 0.25);
+}
+
+/* ================= LINKS ================= */
+
+.admin-link {
+  background: none;
+  border: none;
+  padding: 0;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-main);
+
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.admin-link:hover {
+  color: var(--accent);
+}
+
+/* ================= TABLE ROW STATES ================= */
+
+.admin-page table tr {
+  transition: opacity 120ms ease,
+              background 120ms ease;
+}
+
+.admin-page table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* ================= CHECKBOX ================= */
+
+.admin-page input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ================= PAGINATION ================= */
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 12px;
+  margin-top: 4px;
+
+  background: var(--glass-0);
+  border: 1px solid var(--rule-soft);
+  border-radius: var(--radius-md);
+}
+
+.admin-pagination button {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule-soft);
+
+  background: var(--glass-0);
+  color: var(--text-main);
+
+  cursor: pointer;
+}
+
+.admin-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-pagination span {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+/* ================= EMPTY / ERROR ================= */
+
+.admin-table-state,
+.admin-table-error {
+  padding: 16px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.admin-table-error {
+  color: #fecaca;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .admin-actions {
+    flex-wrap: wrap;
+  }
+
+  .admin-pagination {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

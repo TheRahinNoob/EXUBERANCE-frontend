@@ -2,10 +2,13 @@
 
 /**
  * ==================================================
- * LANDING BLOCK ROW
+ * LANDING BLOCK ROW — RESPONSIVE & DND SAFE
  * ==================================================
  *
- * Fully controlled, presentational row component.
+ * - Desktop table row
+ * - Mobile card-compatible
+ * - Touch-safe drag handle
+ * - Pure presentational component
  */
 
 import { memo } from "react";
@@ -28,7 +31,14 @@ type Props = {
   block: LandingBlockRowData;
   onToggleActive: (block: LandingBlockRowData) => void;
   onDelete: (block: LandingBlockRowData) => void;
-  dragHandleProps?: React.HTMLAttributes<HTMLTableCellElement>;
+
+  /**
+   * Drag handle props injected by dnd-kit
+   * (listeners + attributes)
+   */
+  dragHandleProps?: React.HTMLAttributes<
+    HTMLTableCellElement
+  >;
 };
 
 /* ==================================================
@@ -58,27 +68,41 @@ const LandingBlockRow = memo(function LandingBlockRow({
         block.is_active ? "active" : "inactive"
       }`}
     >
-      {/* DRAG HANDLE */}
+      {/* ================= DRAG HANDLE ================= */}
       <td
         className="drag-cell"
+        data-label="Reorder"
         {...dragHandleProps}
-        title={dragHandleProps ? "Drag to reorder" : undefined}
+        title={
+          dragHandleProps
+            ? "Drag to reorder"
+            : undefined
+        }
       >
         {dragHandleProps ? "☰" : null}
       </td>
 
-      {/* TYPE */}
-      <td className="block-type">
+      {/* ================= TYPE ================= */}
+      <td
+        className="block-type"
+        data-label="Type"
+      >
         {block.block_type.replace("_", " ")}
       </td>
 
-      {/* LINKED */}
-      <td className="block-linked">
+      {/* ================= LINKED ================= */}
+      <td
+        className="block-linked"
+        data-label="Linked"
+      >
         {linkedLabel}
       </td>
 
-      {/* ACTIVE */}
-      <td className="block-toggle">
+      {/* ================= ACTIVE ================= */}
+      <td
+        className="block-toggle"
+        data-label="Active"
+      >
         <input
           type="checkbox"
           checked={block.is_active}
@@ -87,8 +111,11 @@ const LandingBlockRow = memo(function LandingBlockRow({
         />
       </td>
 
-      {/* ACTIONS */}
-      <td className="block-actions">
+      {/* ================= ACTIONS ================= */}
+      <td
+        className="block-actions"
+        data-label="Actions"
+      >
         <button
           className="danger ghost"
           onClick={() => onDelete(block)}

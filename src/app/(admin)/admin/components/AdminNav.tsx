@@ -198,6 +198,22 @@ export default function AdminNav() {
 
             <li>
               <Link
+                href="/admin/cms/comfort-editorial"
+                className={`admin-nav-link ${
+                  isActivePath(
+                    pathname,
+                    "/admin/cms/comfort-editorial"
+                  )
+                    ? "active"
+                    : ""
+                }`}
+              >
+                Comfort Editorial
+              </Link>
+            </li>
+
+            <li>
+              <Link
                 href="/admin/cms/comfort-rails"
                 className={`admin-nav-link ${
                   isActivePath(

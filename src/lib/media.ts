@@ -1,13 +1,31 @@
-const MEDIA_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "http://127.0.0.1:8000";
+/* ==================================================
+   MEDIA URL RESOLVER — SINGLE SOURCE OF TRUTH
+================================================== */
 
-export function resolveMediaUrl(path?: string | null) {
-  if (!path) return "/placeholder.png";
+import { API_BASE } from "@/lib/admin-api/config";
 
-  // Already absolute? return as-is
-  if (path.startsWith("http")) return path;
+/**
+ * Resolves media URLs coming from backend
+ *
+ * RULES:
+ * - Absolute URLs → returned as-is
+ * - Relative paths → expanded using API_BASE
+ * - Empty/null → placeholder
+ */
+export function resolveMediaUrl(
+  path?: string | null
+): string {
+  if (!path) {
+    return "/placeholder.png";
+  }
 
-  // Ensure single slash
-  return `${MEDIA_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
+  // Already absolute? Return as-is
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
+
+  // Normalize relative media path
+  return path.startsWith("/")
+    ? `${API_BASE}${path}`
+    : `${API_BASE}/${path}`;
 }

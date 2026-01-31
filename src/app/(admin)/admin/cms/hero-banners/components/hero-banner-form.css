@@ -1,24 +1,37 @@
 /* ==================================================
-   HERO BANNER FORM — DARK / GLASS
+   HERO BANNER FORM — ARCHIVAL GLASS (PRODUCTION)
 ================================================== */
 
 .hero-form {
   max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
+
+/* ==================================================
+   FIELDSET
+================================================== */
 
 .hero-fieldset {
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-md);
   padding: 16px;
-  margin-bottom: 24px;
   background: var(--glass-0);
 }
 
 .hero-fieldset legend {
   padding: 0 8px;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-primary);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-main);
 }
+
+/* ==================================================
+   FORM GROUP
+================================================== */
 
 .form-group {
   display: flex;
@@ -27,75 +40,245 @@
   margin-bottom: 16px;
 }
 
-.form-group label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+.form-group:last-child {
+  margin-bottom: 0;
 }
 
-/* 🔥 INPUT + SELECT FIX */
+.form-group label {
+  font-size: 0.75rem;
+  color: var(--text-mute);
+}
+
+/* Required marker */
+.form-group label .required {
+  color: var(--danger);
+  margin-left: 4px;
+}
+
+/* ==================================================
+   INPUTS / SELECTS
+================================================== */
+
 .form-group input,
 .form-group select {
   background: var(--glass-1);
   border: 1px solid var(--rule-soft);
-  color: var(--text-primary);
+  color: var(--text-main);
+
   padding: 8px 10px;
   border-radius: var(--radius-sm);
+
+  font-size: 0.8rem;
   outline: none;
   appearance: none;
+
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px rgba(59,130,246,0.4);
+  box-shadow: 0 0 0 1px rgba(91, 140, 255, 0.35);
+  background: var(--glass-2);
 }
 
-/* 🔥 FORCE OPTION DARK */
+/* Dark select dropdown */
 select option {
   background: #0b1220;
   color: #e5e7eb;
 }
 
-/* FILE INPUT */
+/* File input */
 input[type="file"] {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
+  font-size: 0.72rem;
+  color: var(--text-sub);
+  padding: 6px 4px;
 }
 
-/* IMAGE PREVIEW */
+/* ==================================================
+   IMAGE PREVIEW
+================================================== */
+
 .image-preview {
-  height: 80px;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  max-height: 100px;
+
+  object-fit: cover;
+
   border-radius: var(--radius-sm);
   border: 1px solid var(--rule-soft);
   background: var(--glass-0);
 }
 
-/* ROW */
+/* ==================================================
+   ROW LAYOUT
+================================================== */
+
 .row {
   display: flex;
   gap: 12px;
 }
 
-/* CHECKBOX */
+/* ==================================================
+   CHECKBOX
+================================================== */
+
 .checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+
   font-size: 0.8rem;
-  color: var(--text-primary);
+  color: var(--text-main);
+
+  cursor: pointer;
 }
 
-/* BUTTON */
+.checkbox input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* Larger tap target for mobile */
+.checkbox-large {
+  padding: 6px 0;
+}
+
+/* ==================================================
+   FORM ACTIONS
+================================================== */
+
+.hero-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ==================================================
+   PRIMARY BUTTON
+================================================== */
+
 .btn.primary {
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: white;
+  padding: 10px 18px;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #4f46e5
+  );
+
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
+
   cursor: pointer;
+
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.btn.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .btn.primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==================================================
+   RESPONSIVE — TABLET
+================================================== */
+
+@media (max-width: 768px) {
+  .hero-form {
+    max-width: 100%;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .image-preview {
+    max-width: 100%;
+  }
+}
+
+/* ==================================================
+   MOBILE — TOUCH FIRST
+================================================== */
+
+@media (max-width: 480px) {
+  .hero-fieldset {
+    padding: 14px;
+  }
+
+  .hero-fieldset legend {
+    font-size: 0.7rem;
+  }
+
+  .form-group label {
+    font-size: 0.72rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+
+  .checkbox {
+    font-size: 0.78rem;
+  }
+
+  .hero-form-actions {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(10, 12, 16, 0.6),
+      rgba(10, 12, 16, 0.9)
+    );
+    padding: 12px 0;
+    backdrop-filter: blur(8px);
+  }
+
+  .btn.primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .form-group input,
+  .form-group select {
+    font-size: 0.78rem;
+  }
+
+  .btn.primary {
+    font-size: 0.8rem;
+  }
 }

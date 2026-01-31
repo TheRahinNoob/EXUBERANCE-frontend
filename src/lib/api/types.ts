@@ -1,9 +1,10 @@
 /* ==================================================
    API TYPES — RAW BACKEND CONTRACT
-   --------------------------------------------------
-   ❗ STRICT MIRROR OF DJANGO RESPONSES
-   ❗ STRINGS STAY STRINGS (DecimalField safety)
-   ❗ NEVER USE DIRECTLY IN UI COMPONENTS
+--------------------------------------------------
+❗ STRICT mirror of Django responses
+❗ DecimalField values stay STRING
+❗ NEVER consume directly in UI
+❗ CMS + Atomic APIs aligned
 ================================================== */
 
 /* ==================================================
@@ -14,6 +15,7 @@ export type ApiBlockResponse<T> = {
     page?: string;
     section?: string;
     generated_at?: string;
+    total?: number;
     seo?: {
       title?: string;
       description?: string;
@@ -40,23 +42,6 @@ export type APICategory = {
 };
 
 /* ==================================================
-   ✅ CATEGORY (UI-SAFE / NORMALIZED)
-================================================== */
-export type Category = {
-  id: number;
-  name: string;
-  slug: string;
-  image: string | null;
-
-  is_campaign: boolean;
-  starts_at: string | null;
-  ends_at: string | null;
-  show_countdown: boolean;
-
-  children: Category[];
-};
-
-/* ==================================================
    PRODUCT — LIST ITEM (RAW)
 ================================================== */
 export type APIProduct = {
@@ -64,7 +49,7 @@ export type APIProduct = {
   slug: string;
   name: string;
 
-  price: string;            // DecimalField → string
+  price: string;              // DecimalField → string
   old_price: string | null;
 
   main_image: string | null;
@@ -123,17 +108,6 @@ export type APIHeroBanner = {
 };
 
 /* ==================================================
-   HERO BANNER (UI)
-================================================== */
-export type HeroBannerItem = {
-  id: number;
-  image_desktop: string;
-  image_tablet: string | null;
-  image_mobile: string | null;
-  ordering: number;
-};
-
-/* ==================================================
    LANDING MENU ITEM (RAW)
 ================================================== */
 export type APILandingMenuItem = {
@@ -141,14 +115,6 @@ export type APILandingMenuItem = {
   slug: string;
   seo_title?: string;
   seo_description?: string;
-};
-
-/* ==================================================
-   LANDING MENU ITEM (UI)
-================================================== */
-export type LandingMenuItem = {
-  name: string;
-  slug: string;
 };
 
 /* ==================================================
@@ -162,16 +128,7 @@ export type APIFeaturedCategory = {
 };
 
 /* ==================================================
-   FEATURED CATEGORY (UI)
-================================================== */
-export type FeaturedCategory = {
-  name: string;
-  slug: string;
-  image: string | null;
-};
-
-/* ==================================================
-   HOT CATEGORY (RAW + UI)
+   HOT CATEGORY (RAW)
 ================================================== */
 export type APIHotCategory = {
   id: number;
@@ -181,10 +138,8 @@ export type APIHotCategory = {
   hot_category_block_id?: number;
 };
 
-export type HotCategory = APIHotCategory;
-
 /* ==================================================
-   🔥 COMFORT RAIL (RAW)
+   COMFORT RAIL (RAW)
 ================================================== */
 export type APIComfortRail = {
   id: number;
@@ -204,12 +159,35 @@ export type APIComfortRail = {
 };
 
 /* ==================================================
+   🧠 COMFORT EDITORIAL BLOCK (RAW)
+================================================== */
+export type APIComfortEditorialBlock = {
+  id: number;
+  title: string;
+  subtitle: string | null;
+  image: string | null;
+  cta_text: string | null;
+  cta_url: string | null;
+};
+
+/* ==================================================
    CMS LAYOUT BLOCK (RAW — DISCRIMINATED UNION)
+--------------------------------------------------
+Mirrors LandingCMSAPIView EXACTLY
 ================================================== */
 export type LandingCMSBlock =
   | { type: "hero" }
   | { type: "menu" }
   | { type: "featured" }
-  | { type: "hot"; hot_category_block_id: number }
-  | { type: "comfort_block" }
-  | { type: "comfort_rail"; comfort_rail_id: number };
+  | {
+      type: "hot";
+      hot_category_block_id: number;
+    }
+  | {
+      type: "comfort_block";
+      comfort_editorial_block_id: number;
+    }
+  | {
+      type: "comfort_rail";
+      comfort_rail_id: number;
+    };

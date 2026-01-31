@@ -1,5 +1,5 @@
 /* ==================================================
-   COMFORT RAILS — ADMIN CMS
+   COMFORT RAILS — ADMIN CMS (PRODUCTION)
 ================================================== */
 
 .comfort-rails-page {
@@ -11,18 +11,19 @@
 /* ================= HEADER ================= */
 
 .comfort-rails-header h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .comfort-rails-header p {
   margin-top: 6px;
-  font-size: 14px;
+  font-size: 0.85rem;
   color: var(--text-sub);
 }
 
 /* ==================================================
-   COMFORT RAIL — CREATE PANEL (PRO)
+   CREATE PANEL
 ================================================== */
 
 .comfort-rail-create {
@@ -58,7 +59,7 @@
   border-radius: var(--radius-sm);
 
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: 0.8rem;
   font-weight: 500;
 
   transition:
@@ -78,14 +79,15 @@
   background: var(--ink-1);
 }
 
-/* ================= FILE INPUT (SUBTLE) ================= */
+/* ================= FILE INPUT ================= */
 
 .comfort-rail-create input[type="file"] {
   color: var(--text-sub);
   cursor: pointer;
 }
 
-.comfort-rail-create input[type="file"]::file-selector-button {
+.comfort-rail-create
+  input[type="file"]::file-selector-button {
   margin-right: 10px;
   padding: 6px 10px;
 
@@ -95,7 +97,7 @@
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-sm);
 
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
 
   cursor: pointer;
@@ -129,15 +131,19 @@
   transform: scale(1.02);
 }
 
-/* ================= GRID ================= */
+/* ==================================================
+   GRID
+================================================== */
 
 .rails-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 16px;
 }
 
-/* ================= CARD ================= */
+/* ==================================================
+   CARD
+================================================== */
 
 .comfort-rail-card {
   background: var(--glass-0);
@@ -148,7 +154,25 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease;
 }
+
+.comfort-rail-card:hover {
+  background: var(--glass-1);
+  border-color: var(--rule-hard);
+  transform: translateY(-2px);
+}
+
+.comfort-rail-card[aria-busy="true"] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ================= IMAGE ================= */
 
 .rail-image {
   width: 100%;
@@ -157,25 +181,34 @@
   border-radius: var(--radius-md);
 }
 
+/* ================= TITLE ================= */
+
 .comfort-rail-card h3 {
-  font-size: 15px;
+  font-size: 0.95rem;
   font-weight: 600;
+  color: var(--text-main);
 }
 
 /* ================= CONTROLS ================= */
 
 .checkbox {
   display: flex;
+  align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8rem;
   color: var(--text-main);
+}
+
+.checkbox input {
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 .limit-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8rem;
 }
 
 .limit-row input {
@@ -191,7 +224,7 @@
 
 .manage-link {
   margin-top: 6px;
-  font-size: 14px;
+  font-size: 0.85rem;
   color: var(--accent);
   text-decoration: none;
 }
@@ -202,12 +235,17 @@
 
 .btn.primary {
   background: var(--accent);
-  color: white;
+  color: #fff;
   border: none;
   border-radius: var(--radius-md);
   padding: 10px 16px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.btn.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .danger {
@@ -216,9 +254,13 @@
   border: 1px solid rgba(239, 68, 68, 0.35);
   border-radius: var(--radius-sm);
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   align-self: flex-start;
   cursor: pointer;
+}
+
+.danger:hover {
+  background: rgba(239, 68, 68, 0.08);
 }
 
 /* ================= TEXT ================= */
@@ -229,4 +271,58 @@
 
 .italic {
   font-style: italic;
+}
+
+/* ==================================================
+   MOBILE (≤768px)
+================================================== */
+
+@media (max-width: 768px) {
+  .comfort-rail-create {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .comfort-rail-create select,
+  .comfort-rail-create input[type="file"],
+  .btn.primary {
+    width: 100%;
+  }
+
+  .image-preview {
+    width: 100%;
+    height: 140px;
+  }
+
+  .rails-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .comfort-rails-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .comfort-rail-card {
+    padding: 12px;
+  }
+
+  .limit-row input {
+    width: 64px;
+  }
+}
+
+/* ==================================================
+   REDUCED MOTION
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }

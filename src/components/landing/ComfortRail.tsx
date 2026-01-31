@@ -34,7 +34,9 @@ export default function ComfortRail({
   products,
 }: ComfortRailProps) {
   const isCompact = useMediaQuery("(max-width: 1299px)");
-  const visibleProducts = products.slice(0, 6);
+
+  // 🔥 BACKEND IS SOURCE OF TRUTH
+  const visibleProducts = products;
 
   /* ==================================================
      🧩 MOBILE / SMALL LAPTOP (<1300px)
@@ -119,7 +121,6 @@ export default function ComfortRail({
 
   /* ==================================================
      🖥️ DESKTOP (≥1300px)
-     ORIGINAL SYSTEM
   ================================================== */
   return (
     <section className={styles.rail}>

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import "./featured-category-grid.css";
 
 import type {
@@ -21,19 +22,37 @@ type Props = {
    COMPONENT
 ================================================== */
 
-export default function FeaturedCategoryGrid({
+function FeaturedCategoryGrid({
   items,
   onRefresh,
 }: Props) {
+  if (!items || items.length === 0) {
+    return null;
+  }
+
   return (
-    <section className="featured-grid">
+    <section
+      className="featured-grid"
+      role="list"
+      aria-label="Featured categories"
+    >
       {items.map((item) => (
-        <FeaturedCategoryCard
+        <div
           key={item.id}
-          item={item}
-          onRefresh={onRefresh}
-        />
+          role="listitem"
+        >
+          <FeaturedCategoryCard
+            item={item}
+            onRefresh={onRefresh}
+          />
+        </div>
       ))}
     </section>
   );
 }
+
+/* ==================================================
+   EXPORT
+================================================== */
+
+export default memo(FeaturedCategoryGrid);

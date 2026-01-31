@@ -1,5 +1,5 @@
 /* ==================================================
-   HERO BANNERS — ADMIN CMS
+   HERO BANNERS — ADMIN CMS (ULTRA RESPONSIVE)
 ================================================== */
 
 .hero-page {
@@ -11,8 +11,10 @@
 .hero-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  gap: 16px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .hero-header h1 {
@@ -27,12 +29,12 @@
   margin-top: 4px;
 }
 
-/* ================= TABLE ================= */
+/* ================= TABLE (DESKTOP) ================= */
 
 .hero-table-wrap {
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-md);
-  overflow-x: auto;
+  overflow: hidden;
   background: var(--glass-0);
 }
 
@@ -46,7 +48,9 @@
   text-align: left;
   padding: 10px;
   font-weight: 600;
-  color: var(--text-sub);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute);
   border-bottom: 1px solid var(--rule-soft);
 }
 
@@ -67,8 +71,8 @@
 /* ================= IMAGES ================= */
 
 .hero-table img {
-  height: 60px;
-  max-width: 160px;
+  height: 56px;
+  max-width: 140px;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--rule-soft);
@@ -82,6 +86,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .badge.active {
@@ -106,7 +111,7 @@
 
 .actions button {
   font-size: 0.65rem;
-  padding: 4px 8px;
+  padding: 6px 10px;
   background: transparent;
   border: 1px solid rgba(239, 68, 68, 0.4);
   color: #f87171;
@@ -147,7 +152,101 @@
 }
 
 /* ==================================================
-   HERO BANNER — CREATE / EDIT FORM WRAPPER
+   MOBILE — CARD MODE (≤768px)
+================================================== */
+
+@media (max-width: 768px) {
+  /* Break table structure */
+  .hero-table,
+  .hero-table thead,
+  .hero-table tbody,
+  .hero-table tr,
+  .hero-table th,
+  .hero-table td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Hide header */
+  .hero-table thead {
+    display: none;
+  }
+
+  /* Card row */
+  .hero-table tbody tr {
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    margin-bottom: 14px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.015)
+    );
+  }
+
+  .hero-table td {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* Labels via data-label */
+  .hero-table td::before {
+    content: attr(data-label);
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+
+  /* Images scale down */
+  .hero-table img {
+    height: 48px;
+    max-width: 120px;
+  }
+
+  /* Actions align left */
+  .actions {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .actions button {
+    min-height: 34px;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .hero-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .hero-header p {
+    font-size: 0.75rem;
+  }
+
+  .hero-table img {
+    height: 44px;
+    max-width: 100px;
+  }
+
+  .actions button {
+    font-size: 0.6rem;
+    padding: 6px 8px;
+  }
+}
+
+/* ==================================================
+   HERO FORM WRAPPER
 ================================================== */
 
 .hero-form-wrap {
@@ -158,7 +257,6 @@
   background: var(--glass-0);
 }
 
-/* Optional tighter form spacing inside */
 .hero-form-wrap > * {
   max-width: 920px;
 }

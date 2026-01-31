@@ -1,6 +1,8 @@
 /* ==================================================
-   CATEGORY TREE — ARCHIVAL ADMIN
+   CATEGORY TREE — ARCHIVAL ADMIN (OPTIMIZED)
 ================================================== */
+
+/* ================= ROOT TREE ================= */
 
 .category-tree {
   display: flex;
@@ -12,8 +14,8 @@
 
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.015)
+    rgba(255,255,255,0.045),
+    rgba(255,255,255,0.015)
   );
 
   border: 1px solid var(--rule-soft);
@@ -25,7 +27,7 @@
   padding: 16px;
   font-size: 0.8rem;
   color: var(--text-mute);
-  font-style: italic;
+  text-align: center;
 
   border: 1px dashed var(--rule-soft);
   border-radius: var(--radius-md);
@@ -33,16 +35,156 @@
   background: var(--glass-0);
 }
 
-/* ================= TREE ROLE ================= */
+/* ================= ACCESSIBILITY ================= */
 
 .category-tree[role="tree"] {
   outline: none;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= CATEGORY ROW ================= */
+
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+
+  font-size: 0.85rem;
+  line-height: 1.3;
+
+  color: var(--text-main);
+
+  transition: background 120ms ease,
+    color 120ms ease;
+}
+
+.category-row:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.category-row.selected {
+  background: rgba(120,160,255,0.12);
+  box-shadow: inset 0 0 0 1px rgba(120,160,255,0.25);
+}
+
+/* ================= DEPTH INDENTATION ================= */
+
+/* Desktop scale (unchanged) */
+.category-row.depth-0 { padding-left: 6px; }
+.category-row.depth-1 { padding-left: 20px; }
+.category-row.depth-2 { padding-left: 34px; }
+.category-row.depth-3 { padding-left: 48px; }
+
+/* Fallback for deeper levels */
+.category-row[class*="depth-"] {
+  position: relative;
+}
+
+/* ================= TOGGLE BUTTON ================= */
+
+.category-toggle {
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(255,255,255,0.06);
+  color: var(--text-mute);
+
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  transition: background 120ms ease,
+    color 120ms ease;
+}
+
+.category-toggle:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text-main);
+}
+
+.category-toggle-spacer {
+  width: 18px;
+  height: 18px;
+}
+
+/* ================= CHECKBOX ================= */
+
+.category-row input[type="checkbox"] {
+  cursor: pointer;
+  transform: scale(0.9);
+}
+
+/* ================= LABEL ================= */
+
+.category-label {
+  flex: 1;
+  min-width: 0;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  user-select: none;
+}
+
+/* ================= CHILDREN ================= */
+
+.category-children {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==================================================
+   MOBILE — SMALL & EXTRA SMALL SCREENS
+================================================== */
 
 @media (max-width: 768px) {
   .category-tree {
     padding: 6px;
   }
+
+  .category-row {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+
+  /* Compressed indentation scale */
+  .category-row.depth-0 { padding-left: 4px; }
+  .category-row.depth-1 { padding-left: 14px; }
+  .category-row.depth-2 { padding-left: 24px; }
+  .category-row.depth-3 { padding-left: 32px; }
+
+  .category-toggle {
+    width: 22px;
+    height: 22px;
+    font-size: 0.8rem;
+  }
+
+  .category-toggle-spacer {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+/* ==================================================
+   EXTRA SMALL PHONES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .category-row {
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .category-row.depth-1 { padding-left: 12px; }
+  .category-row.depth-2 { padding-left: 20px; }
+  .category-row.depth-3 { padding-left: 28px; }
 }

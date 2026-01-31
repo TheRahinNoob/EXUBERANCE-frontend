@@ -1,13 +1,13 @@
 /**
  * ==================================================
- * CATEGORY TYPE (RE-EXPORT)
+ * UI CATEGORY TYPE
  * ==================================================
  *
- * ⚠️ DO NOT DEFINE CATEGORY HERE
- * This file exists ONLY for legacy imports.
+ * This file exists ONLY to give the app
+ * a stable import path: `@/types/category`
  *
- * Single source of truth:
- * 👉 src/lib/api/types.ts
+ * It MUST re-export from the API boundary,
+ * NOT raw backend contracts.
  */
 
-export type { Category } from "@/lib/api/types";
+export type { Category } from "@/lib/api/categories";

@@ -1,5 +1,5 @@
 /* ==================================================
-   ADMIN CATEGORIES PAGE
+   ADMIN CATEGORIES PAGE — PRODUCTION OPTIMIZED
 ================================================== */
 
 .categories-surface {
@@ -10,17 +10,25 @@
 
 /* ================= HEADER ================= */
 
+.categories-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .categories-header h1 {
+  margin: 0;
   font-size: 1.35rem;
   font-weight: 600;
-  margin: 0;
   color: var(--text-main);
+  line-height: 1.25;
 }
 
 .categories-header p {
-  margin-top: 6px;
+  margin: 0;
   font-size: 0.8rem;
   color: var(--text-mute);
+  max-width: 560px;
 }
 
 /* ================= CONTENT ================= */
@@ -31,21 +39,61 @@
   gap: 16px;
 }
 
-/* ================= EMPTY ================= */
+/* ================= EMPTY STATE ================= */
 
 .categories-empty {
   padding: 18px;
   font-size: 0.8rem;
   color: var(--text-mute);
+  text-align: center;
+
   border: 1px dashed var(--rule-soft);
   border-radius: var(--radius-md);
+
   background: var(--glass-0);
 }
 
-/* ================= RESPONSIVE ================= */
+/* ==================================================
+   MOBILE — SMALL & EXTRA SMALL DEVICES
+================================================== */
 
 @media (max-width: 768px) {
   .categories-surface {
-    padding: 16px;
+    gap: 18px;
+  }
+
+  .categories-header h1 {
+    font-size: 1.15rem;
+  }
+
+  .categories-header p {
+    font-size: 0.78rem;
+  }
+
+  .categories-content {
+    gap: 14px;
+  }
+}
+
+/* ==================================================
+   EXTRA SMALL PHONES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .categories-surface {
+    gap: 14px;
+  }
+
+  .categories-header h1 {
+    font-size: 1.05rem;
+  }
+
+  .categories-header p {
+    font-size: 0.75rem;
+  }
+
+  .categories-empty {
+    padding: 14px;
+    font-size: 0.75rem;
   }
 }

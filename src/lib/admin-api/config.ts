@@ -4,42 +4,58 @@
  * ==================================================
  *
  * PURPOSE:
- * - Define a safe, absolute API base URL
+ * - Define ONE absolute API base URL
  * - Work in BOTH client and server environments
  * - Support Django session auth + CSRF
  *
  * NON-NEGOTIABLE RULES:
+ * - NO hardcoded URLs
+ * - NO silent fallbacks
  * - Server fetches MUST use absolute URLs
- * - credentials: "include" is REQUIRED
  * - Admin data must NEVER be cached
  */
 
-/**
- * Resolve API base URL safely for:
- * - Browser (NEXT_PUBLIC_*)
- * - Server (API_BASE_URL)
- * - Local development fallback
- *
- * Trailing slash is ALWAYS stripped to avoid:
- *   undefined//api
- *   double slashes
- */
-export const API_BASE: string = (
+/* ==================================================
+   API BASE RESOLUTION (STRICT)
+================================================== */
+
+const RAW_API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  process.env.API_BASE_URL ||
-  "https://wheat-polyester-inter-chat.trycloudflare.com"
-).replace(/\/$/, "");
+  process.env.API_BASE_URL;
+
+if (!RAW_API_BASE) {
+  throw new Error(
+    "[API_BASE] Missing API base URL. Set NEXT_PUBLIC_API_BASE_URL (and API_BASE_URL for server)."
+  );
+}
+
+if (!/^https?:\/\//i.test(RAW_API_BASE)) {
+  throw new Error(
+    `[API_BASE] Invalid API base URL (must include http/https): ${RAW_API_BASE}`
+  );
+}
 
 /**
- * Default fetch options for ALL admin API calls
+ * Absolute API base
+ * - No trailing slash
+ * - Example: https://api.fabrilife.com
+ */
+export const API_BASE: string =
+  RAW_API_BASE.replace(/\/$/, "");
+
+/* ==================================================
+   DEFAULT ADMIN FETCH OPTIONS
+================================================== */
+
+/**
+ * Mandatory defaults for ALL admin API calls
  *
- * Why these are mandatory:
  * - credentials: "include"
  *   → Django session auth
- *   → CSRF cookie transmission
+ *   → CSRF cookie support
  *
  * - cache: "no-store"
- *   → Admin views must NEVER be stale
+ *   → Admin data must NEVER be stale
  */
 export const DEFAULT_FETCH_OPTIONS: RequestInit = {
   credentials: "include",

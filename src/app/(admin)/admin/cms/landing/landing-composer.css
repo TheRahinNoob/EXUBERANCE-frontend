@@ -1,5 +1,5 @@
 /* ==================================================
-   LANDING COMPOSER — ADMIN PRO UI
+   LANDING COMPOSER — ARCHIVAL ADMIN (PRODUCTION)
 ================================================== */
 
 .landing-composer {
@@ -14,19 +14,22 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .composer-header h1 {
-  font-size: 24px;
+  font-size: 1.4rem;
   font-weight: 600;
 }
 
 .composer-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* ================= TABLE ================= */
+/* ================= TABLE (DESKTOP) ================= */
 
 .landing-table {
   width: 100%;
@@ -36,8 +39,10 @@
 
 .landing-table thead th {
   text-align: left;
-  font-size: 13px;
-  color: var(--text-sub);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-mute);
   padding: 8px;
   border-bottom: 1px solid var(--rule-soft);
 }
@@ -53,13 +58,25 @@
 .landing-row td {
   padding: 10px 8px;
   border-bottom: 1px solid var(--rule-soft);
+  font-size: 0.82rem;
 }
+
+/* ================= CELLS ================= */
 
 .drag-handle {
   cursor: grab;
   color: var(--text-mute);
   width: 32px;
   user-select: none;
+  font-size: 1rem;
+
+  /* 🔥 CRITICAL FOR MOBILE DND */
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .block-type {
@@ -67,15 +84,15 @@
 }
 
 .block-linked {
-  font-size: 13px;
   color: var(--text-sub);
+  font-size: 0.8rem;
 }
 
 /* ================= BUTTONS ================= */
 
 .btn {
   padding: 6px 12px;
-  font-size: 13px;
+  font-size: 0.75rem;
   font-weight: 500;
 
   background: var(--glass-1);
@@ -84,10 +101,18 @@
   color: var(--text-main);
 
   cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.1s ease;
 }
 
 .btn:hover {
   background: var(--glass-2);
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 
 .btn.ghost {
@@ -113,5 +138,91 @@
 
 .muted {
   color: var(--text-sub);
-  font-size: 14px;
+  font-size: 0.8rem;
+}
+
+/* ==================================================
+   MOBILE — CARD MODE (TOUCH + DND SAFE)
+================================================== */
+
+@media (max-width: 768px) {
+  /* Break table layout */
+  .landing-table,
+  .landing-table thead,
+  .landing-table tbody,
+  .landing-table tr,
+  .landing-table th,
+  .landing-table td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Hide header */
+  .landing-table thead {
+    display: none;
+  }
+
+  /* Card row */
+  .landing-row {
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+    padding: 10px 12px;
+
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.015)
+    );
+  }
+
+  .landing-row td {
+    border: none;
+    padding: 6px 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  /* Labels via data-label */
+  .landing-row td::before {
+    content: attr(data-label);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    flex-shrink: 0;
+  }
+
+  /* Drag handle — BIG + FINGER FRIENDLY */
+  .drag-handle {
+    font-size: 1.25rem;
+    padding: 6px 0;
+  }
+
+  /* Actions alignment */
+  .landing-row td:last-child {
+    justify-content: flex-start;
+  }
+
+  .landing-row .btn {
+    min-height: 34px;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .composer-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .btn {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
 }

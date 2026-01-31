@@ -3,19 +3,15 @@
 ================================================== */
 
 /**
- * IMPORTANT ARCHITECTURAL RULE:
+ * ARCHITECTURAL RULES (LOCKED):
  * --------------------------------------------------
- * - API_BASE NEVER includes `/api`
+ * - NO hardcoded URLs
+ * - NO env access inside feature files
+ * - API_BASE never includes `/api`
  * - `/api` belongs to endpoint paths only
  */
 
-const API_BASE: string =
-  process.env.NEXT_PUBLIC_API_BASE_URL ??
-  "http://127.0.0.1:8000";
-
-const MEDIA_BASE: string =
-  process.env.NEXT_PUBLIC_MEDIA_BASE_URL ??
-  "http://127.0.0.1:8000";
+import { API_BASE } from "@/lib/admin-api/config";
 
 /* ==================================================
    TYPES — STRICT & SAFE
@@ -46,6 +42,11 @@ export type SearchProductsResponse<T = any> = {
    HELPERS
 ================================================== */
 
+/**
+ * MEDIA URL NORMALIZER
+ * - Backend is the source of truth
+ * - Relative paths are expanded using API_BASE
+ */
 function normalizeMediaUrl(
   path?: string | null
 ): string | null {
@@ -56,14 +57,14 @@ function normalizeMediaUrl(
   }
 
   return path.startsWith("/")
-    ? `${MEDIA_BASE}${path}`
-    : `${MEDIA_BASE}/${path}`;
+    ? `${API_BASE}${path}`
+    : `${API_BASE}/${path}`;
 }
 
 /**
- * 🔥 PRODUCT NORMALIZER
+ * PRODUCT NORMALIZER
  * - Keeps DecimalFields as strings
- * - Never drops fields
+ * - Never drops backend fields
  */
 function normalizeProduct(product: any) {
   return {

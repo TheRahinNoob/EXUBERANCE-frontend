@@ -2,11 +2,10 @@
 // ADMIN PRODUCT API — CORE PRODUCT DOMAIN (CANONICAL)
 // ==================================================
 //
-// Principles:
+// Rules:
 // - Backend is the single source of truth
-// - Frontend NEVER infers business logic
-// - Read-heavy, mutation-light
-// - AbortController supported everywhere
+// - One mutation = one backend intent
+// - No inferred state transitions
 //
 
 import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
@@ -24,7 +23,7 @@ import type {
 import type { PaginatedResponse } from "./pagination";
 
 /* ==================================================
-   INTERNAL ASSERTION HELPERS
+   INTERNAL ASSERTIONS
 ================================================== */
 
 function assertFiniteId(
@@ -36,22 +35,32 @@ function assertFiniteId(
   }
 }
 
-function assertObject(
-  value: unknown,
-  message: string
-): asserts value is Record<string, unknown> {
-  if (!value || typeof value !== "object") {
-    throw new Error(message);
-  }
-}
-
 /* ==================================================
-   RESPONSE TYPES
+   QUERY PARAM TYPES (STRICT CONTRACT)
 ================================================== */
 
-export type AdminProductStatusToggleResponse = Readonly<{
+/**
+ * 🔍 Product list query parameters
+ * MUST match backend query support
+ */
+export type FetchAdminProductsParams = {
+  page?: number;
+  page_size?: number;
+
+  /** 🔍 Search by name / SKU / keyword */
+  search?: string;
+
+  /** Abort controller for in-flight requests */
+  signal?: AbortSignal;
+};
+
+/* ==================================================
+   RESPONSE TYPES (STRICT BACKEND CONTRACTS)
+================================================== */
+
+export type AdminProductDeactivateResponse = Readonly<{
   id: number;
-  is_active: boolean;
+  is_active: false;
 }>;
 
 export type AdminProductUpdateResponse = Readonly<{
@@ -67,7 +76,6 @@ export type AdminProductBasicInfoUpdateResponse = Readonly<{
   id: number;
   name: string;
   slug: string;
-  is_featured: boolean;
   updated_at: string;
 }>;
 
@@ -77,16 +85,14 @@ export type AdminProductDescriptionUpdateResponse = Readonly<{
 }>;
 
 /* ==================================================
-   LIST PRODUCTS (ADMIN — READ ONLY)
+   LIST PRODUCTS
 ================================================== */
 
-export async function fetchAdminProducts(params?: {
-  page?: number;
-  page_size?: number;
-  search?: string;
-  signal?: AbortSignal;
-}): Promise<PaginatedResponse<AdminProduct>> {
-  const { signal, ...queryParams } = params ?? {};
+export async function fetchAdminProducts(
+  params: FetchAdminProductsParams = {}
+): Promise<PaginatedResponse<AdminProduct>> {
+  const { signal, ...queryParams } = params;
+
   const query = buildQuery(queryParams);
 
   const res = await fetch(
@@ -98,25 +104,14 @@ export async function fetchAdminProducts(params?: {
   );
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to fetch admin products (${res.status})`
-    );
+    throw new Error(await parseErrorResponse(res));
   }
 
-  const data =
-    await safeJson<PaginatedResponse<AdminProduct>>(res);
-
-  assertObject(data, "Invalid products response");
-
-  if (!data.meta || !Array.isArray(data.items)) {
-    throw new Error("Invalid products response format");
-  }
-
-  return data;
+  return safeJson(res);
 }
 
 /* ==================================================
-   PRODUCT DETAIL (ADMIN — READ ONLY)
+   PRODUCT DETAIL
 ================================================== */
 
 export async function fetchAdminProductDetail(
@@ -134,31 +129,14 @@ export async function fetchAdminProductDetail(
   );
 
   if (!res.ok) {
-    throw new Error(
-      `Failed to fetch product (${res.status})`
-    );
+    throw new Error(await parseErrorResponse(res));
   }
 
-  const data =
-    await safeJson<AdminProductDetail>(res);
-
-  assertObject(data, "Invalid product detail response");
-
-  if (
-    typeof data.id !== "number" ||
-    !Array.isArray(data.variants) ||
-    !Array.isArray(data.attributes)
-  ) {
-    throw new Error(
-      "Invalid product detail response format"
-    );
-  }
-
-  return data;
+  return safeJson(res);
 }
 
 /* ==================================================
-   CREATE PRODUCT (ADMIN — MINIMAL V1)  ✅🔥
+   CREATE PRODUCT
 ================================================== */
 
 export async function createAdminProduct(payload: {
@@ -174,14 +152,6 @@ export async function createAdminProduct(payload: {
   is_active: boolean;
   created_at: string;
 }> {
-  if (!payload.name?.trim()) {
-    throw new Error("Product name is required");
-  }
-
-  if (!payload.slug?.trim()) {
-    throw new Error("Product slug is required");
-  }
-
   const csrfToken = getCSRFToken();
 
   const res = await fetch(
@@ -193,12 +163,7 @@ export async function createAdminProduct(payload: {
         "Content-Type": "application/json",
         ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
-      body: JSON.stringify({
-        name: payload.name.trim(),
-        slug: payload.slug.trim(),
-        price: payload.price,
-        is_active: payload.is_active ?? true,
-      }),
+      body: JSON.stringify(payload),
     }
   );
 
@@ -210,26 +175,14 @@ export async function createAdminProduct(payload: {
 }
 
 /* ==================================================
-   UPDATE PRODUCT BASIC INFO (ADMIN — IDENTITY)
+   UPDATE BASIC INFO (NAME / SLUG)
 ================================================== */
 
 export async function updateAdminProductBasicInfo(
   id: number,
-  payload: {
-    name: string;
-    slug: string;
-    is_featured?: boolean;
-  }
+  payload: { name: string; slug: string }
 ): Promise<AdminProductBasicInfoUpdateResponse> {
   assertFiniteId(id, "product id");
-
-  if (!payload.name.trim()) {
-    throw new Error("Product name is required");
-  }
-
-  if (!payload.slug.trim()) {
-    throw new Error("Product slug is required");
-  }
 
   const csrfToken = getCSRFToken();
 
@@ -254,7 +207,7 @@ export async function updateAdminProductBasicInfo(
 }
 
 /* ==================================================
-   UPDATE PRODUCT (ADMIN — PRICE / FLAGS)
+   UPDATE PRODUCT (PRICE / FEATURED)
 ================================================== */
 
 export async function updateAdminProduct(
@@ -262,7 +215,6 @@ export async function updateAdminProduct(
   payload: {
     price?: string | number | null;
     old_price?: string | number | null;
-    is_active?: boolean;
     is_featured?: boolean;
   }
 ): Promise<AdminProductUpdateResponse> {
@@ -270,8 +222,53 @@ export async function updateAdminProduct(
 
   const csrfToken = getCSRFToken();
 
+  // 🔒 Strip undefined keys (IMPORTANT)
+  const cleanPayload = Object.fromEntries(
+    Object.entries(payload).filter(
+      ([, v]) => v !== undefined
+    )
+  );
+
   const res = await fetch(
     `${API_BASE}/api/admin/products/${id}/`,
+    {
+      ...DEFAULT_FETCH_OPTIONS,
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
+      },
+      body: JSON.stringify(cleanPayload),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
+
+  return safeJson(res);
+}
+
+/* ==================================================
+   UPDATE PRODUCT DESCRIPTION (RICH HTML)
+================================================== */
+
+export async function updateAdminProductDescription(
+  id: number,
+  description: string
+): Promise<AdminProductDescriptionUpdateResponse> {
+  assertFiniteId(id, "product id");
+
+  const csrfToken = getCSRFToken();
+
+  // 🔥 Backend contract: description must exist
+  const payload = {
+    description:
+      typeof description === "string" ? description : "",
+  };
+
+  const res = await fetch(
+    `${API_BASE}/api/admin/products/${id}/description/`,
     {
       ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
@@ -291,54 +288,18 @@ export async function updateAdminProduct(
 }
 
 /* ==================================================
-   UPDATE PRODUCT DESCRIPTION (ADMIN — RICH HTML)
+   DEACTIVATE PRODUCT (SOFT DELETE — CANONICAL)
 ================================================== */
 
-export async function updateAdminProductDescription(
-  id: number,
-  description: string
-): Promise<AdminProductDescriptionUpdateResponse> {
-  assertFiniteId(id, "product id");
-
-  if (typeof description !== "string") {
-    throw new Error("Description must be a string");
-  }
-
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
-    `${API_BASE}/api/admin/products/${id}/description/`,
-    {
-      ...DEFAULT_FETCH_OPTIONS,
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
-      },
-      body: JSON.stringify({ description }),
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
-
-  return safeJson(res);
-}
-
-/* ==================================================
-   TOGGLE PRODUCT ACTIVE / INACTIVE
-================================================== */
-
-export async function toggleAdminProductStatus(
+export async function deactivateAdminProduct(
   id: number
-): Promise<AdminProductStatusToggleResponse> {
+): Promise<AdminProductDeactivateResponse> {
   assertFiniteId(id, "product id");
 
   const csrfToken = getCSRFToken();
 
   const res = await fetch(
-    `${API_BASE}/api/admin/products/${id}/status/`,
+    `${API_BASE}/api/admin/products/${id}/deactivate/`,
     {
       ...DEFAULT_FETCH_OPTIONS,
       method: "POST",

@@ -1,38 +1,75 @@
+/* =========================
+   WRAPPER
+========================= */
 .wrapper {
   margin-top: 40px;
   padding-top: 28px;
-     border-top: 1px solid #000000;
+  border-top: 1px solid #000;
 }
 
-/* =========================
-   DESCRIPTION TEXT
-========================= */
-.description {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #111827;
-  margin-bottom: 16px;
+/* ==================================================
+   CMS DESCRIPTION — SAFE TYPOGRAPHY ZONE
+================================================== */
+
+/*
+  RULES:
+  - Admin inline styles MUST work
+  - Frontend does NOT override typography
+  - Only layout spacing is allowed
+*/
+
+.cmsContent {
+  margin-bottom: 28px;
 }
 
-/* =========================
-   TABLE
-========================= */
+/* ⛔ DO NOT RESET TYPOGRAPHY */
+.cmsInner {
+  /* layout only */
+}
+
+/* Allow inline styles to work naturally */
+.cmsInner * {
+  max-width: 100%;
+}
+
+/* Spacing safety (NON-TYPOGRAPHY) */
+.cmsInner p {
+  margin: 0 0 1em;
+}
+
+.cmsInner h1,
+.cmsInner h2,
+.cmsInner h3,
+.cmsInner h4,
+.cmsInner h5,
+.cmsInner h6 {
+  margin: 1.2em 0 0.6em;
+}
+
+/* Lists spacing only */
+.cmsInner ul,
+.cmsInner ol {
+  margin: 0 0 1em 1.2em;
+}
+
+/* ==================================================
+   ATTRIBUTE TABLE (FRONTEND CONTROLLED)
+================================================== */
+
 .table {
   display: flex;
   flex-direction: column;
 }
 
 /* =========================
-   ROW — LABEL + VALUE SAME LINE (ALWAYS)
+   ROW — LABEL + VALUE
 ========================= */
 .row {
   display: grid;
-  grid-template-columns: 160px 1fr; /* 👈 fixed two-column layout */
+  grid-template-columns: 160px 1fr;
   align-items: center;
-
   gap: 16px;
   padding: 12px 0;
-
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -41,7 +78,7 @@
 }
 
 /* =========================
-   LABEL
+   LABEL (UI)
 ========================= */
 .label {
   font-size: 12px;
@@ -49,33 +86,31 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #6b7280;
-
-  white-space: nowrap; /* 👈 prevents wrapping */
+  white-space: nowrap;
 }
 
 /* =========================
-   VALUE
+   VALUE (UI)
 ========================= */
 .value {
   font-size: 13px;
   font-weight: 500;
   color: #111827;
   line-height: 1.6;
-
   word-break: break-word;
 }
 
 /* =========================
-   MOBILE — STILL SAME LINE
+   MOBILE
 ========================= */
 @media (max-width: 640px) {
   .row {
-    grid-template-columns: 140px 1fr; /* slightly tighter */
+    grid-template-columns: 140px 1fr;
     gap: 12px;
   }
 
   .label {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .value {

@@ -23,10 +23,12 @@ export default function ProductAttributes({
   description,
 }: Props) {
   const hasDescription =
-    description && description.trim() !== "";
+    typeof description === "string" &&
+    description.trim() !== "";
 
   const hasAttributes =
-    attributes && attributes.length > 0;
+    Array.isArray(attributes) &&
+    attributes.length > 0;
 
   if (!hasDescription && !hasAttributes) {
     return null;
@@ -34,17 +36,25 @@ export default function ProductAttributes({
 
   return (
     <section className={styles.wrapper}>
-      {/* PRODUCT DESCRIPTION (HTML FROM CMS) */}
+      {/* ===============================
+         CMS PRODUCT DESCRIPTION
+         (TYPOGRAPHY SANDBOX)
+      ================================ */}
       {hasDescription && (
-        <div
-          className={styles.description}
-          dangerouslySetInnerHTML={{
-            __html: description as string,
-          }}
-        />
+        <div className={styles.cmsContent}>
+          <div
+            className={styles.cmsInner}
+            dangerouslySetInnerHTML={{
+              __html: description as string,
+            }}
+          />
+        </div>
       )}
 
-      {/* PRODUCT DETAILS TABLE */}
+      {/* ===============================
+         PRODUCT ATTRIBUTE TABLE
+         (FRONTEND-CONTROLLED UI)
+      ================================ */}
       {hasAttributes && (
         <div className={styles.table}>
           {attributes.map((attr, index) => (

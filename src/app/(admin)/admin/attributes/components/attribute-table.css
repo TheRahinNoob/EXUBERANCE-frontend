@@ -1,5 +1,5 @@
 /* ==================================================
-   ATTRIBUTE TABLE — DARK GLASS UI
+   ATTRIBUTE TABLE — ARCHIVAL GLASS (OPTIMIZED)
 ================================================== */
 
 .attribute-table {
@@ -9,11 +9,12 @@
 /* ================= EMPTY ================= */
 
 .attribute-empty {
-  padding: 16px;
-  font-size: 0.85rem;
+  padding: 14px;
+  font-size: 0.8rem;
   color: var(--text-mute);
   border: 1px dashed var(--rule-soft);
   border-radius: var(--radius-md);
+  background: var(--glass-0);
 }
 
 /* ================= INPUTS ================= */
@@ -23,7 +24,7 @@
   width: 100%;
   padding: 6px 8px;
 
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-main);
 
   background: var(--glass-0);
@@ -31,10 +32,12 @@
   border-radius: var(--radius-sm);
 
   outline: none;
+  transition: border-color 0.12s ease,
+              background 0.12s ease;
 }
 
 .attribute-order {
-  width: 80px;
+  max-width: 80px;
 }
 
 .attribute-input:focus,
@@ -46,7 +49,7 @@
 /* ================= ROW STATE ================= */
 
 tr.is-saving {
-  opacity: 0.6;
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -61,16 +64,18 @@ tr.is-saving {
 /* ================= BUTTONS ================= */
 
 .btn {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   padding: 4px 10px;
 
   border-radius: var(--radius-sm);
   cursor: pointer;
 
-  transition: all 0.15s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
 }
 
-/* Glass button */
 .btn.glass {
   color: var(--text-main);
   background: var(--glass-1);
@@ -82,7 +87,6 @@ tr.is-saving {
   border-color: var(--rule-hard);
 }
 
-/* Danger */
 .btn.danger {
   background: transparent;
   color: var(--danger);
@@ -93,8 +97,82 @@ tr.is-saving {
   background: rgba(239, 68, 68, 0.08);
 }
 
-/* Disabled */
 .btn:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ==================================================
+   MOBILE — CARD MODE (EXTREME SMALL SAFE)
+================================================== */
+
+@media (max-width: 640px) {
+  /* Kill table layout */
+  .attribute-table table,
+  .attribute-table thead,
+  .attribute-table tbody,
+  .attribute-table tr,
+  .attribute-table th,
+  .attribute-table td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Hide headers */
+  .attribute-table thead {
+    display: none;
+  }
+
+  /* Card row */
+  .attribute-table tr {
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.015)
+    );
+    border: 1px solid var(--rule-soft);
+    border-radius: var(--radius-md);
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Cells stack */
+  .attribute-table td {
+    padding: 6px 0;
+  }
+
+  /* Inputs fill width */
+  .attribute-input,
+  .attribute-order {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Actions become full-width row */
+  .attribute-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .attribute-actions .btn {
+    flex: 1;
+    min-height: 34px;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .attribute-table tr {
+    padding: 10px;
+  }
+
+  .btn {
+    font-size: 0.65rem;
+    padding: 6px 8px;
+  }
 }

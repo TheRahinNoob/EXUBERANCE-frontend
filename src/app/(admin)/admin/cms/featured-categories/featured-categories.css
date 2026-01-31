@@ -1,5 +1,9 @@
+/* ==================================================
+   FEATURED CATEGORIES — ADMIN CMS (OPTIMIZED)
+================================================== */
+
 .featured-page {
-  padding: 24px 0;
+  padding: clamp(16px, 3vw, 24px) 0;
   color: var(--text-primary);
 }
 
@@ -8,19 +12,20 @@
 ================================================== */
 
 .featured-header {
-  margin-bottom: 24px;
+  margin-bottom: clamp(16px, 3vw, 24px);
 }
 
 .featured-header h1 {
-  font-size: 1.6rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.6rem);
   font-weight: 600;
   margin: 0;
 }
 
 .featured-header p {
   margin-top: 6px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   color: var(--text-muted);
+  line-height: 1.45;
 }
 
 /* ==================================================
@@ -28,40 +33,97 @@
 ================================================== */
 
 .featured-content {
-  margin-top: 24px;
+  margin-top: clamp(16px, 3vw, 24px);
 }
 
+/* Shared empty / loading base */
 .featured-loading,
-.featured-empty {
-  padding: 14px 16px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  background: var(--glass-0);
-  border: 1px dashed var(--border-soft);
-  border-radius: var(--radius-sm);
-}
-
+.featured-empty,
 .featured-error {
   padding: 14px 16px;
   font-size: 0.85rem;
-  color: var(--danger-text);
-  background: var(--danger-bg);
-  border: 1px solid var(--danger-border);
   border-radius: var(--radius-sm);
 }
 
+/* Loading & empty */
+.featured-loading,
+.featured-empty {
+  color: var(--text-muted);
+  background: var(--glass-0);
+  border: 1px dashed var(--border-soft);
+}
+
+/* Error */
+.featured-error {
+  color: var(--danger-text);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+}
+
 /* ==================================================
-   FUTURE-PROOF HELPERS (optional reuse)
+   GLASS HELPERS (REUSABLE)
 ================================================== */
 
+/* Lightweight glass — avoids heavy GPU blur on mobile */
 .glass-card {
   background: var(--glass-0);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
-  backdrop-filter: blur(10px);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
-.glass-card:hover {
-  background: var(--glass-1);
-  border-color: var(--border-strong);
+/* Hover only on hover-capable devices */
+@media (hover: hover) {
+  .glass-card:hover {
+    background: var(--glass-1);
+    border-color: var(--border-strong);
+  }
+}
+
+/* ==================================================
+   MOBILE (≤768px)
+================================================== */
+
+@media (max-width: 768px) {
+  .featured-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .featured-header p {
+    font-size: 0.8rem;
+  }
+
+  .featured-loading,
+  .featured-empty,
+  .featured-error {
+    padding: 12px 14px;
+    font-size: 0.8rem;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤360px)
+================================================== */
+
+@media (max-width: 360px) {
+  .featured-page {
+    padding: 14px 0;
+  }
+
+  .featured-header h1 {
+    font-size: 1.15rem;
+  }
+
+  .featured-header p {
+    font-size: 0.75rem;
+  }
+
+  .featured-loading,
+  .featured-empty,
+  .featured-error {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
 }

@@ -2,14 +2,15 @@
 
 /**
  * ==================================================
- * ADMIN CMS — COMFORT RAILS
+ * ADMIN CMS — COMFORT RAILS (PRODUCTION)
  * ==================================================
- * Image required on create
- * Category-anchored editorial rails
+ * - Image required on create
+ * - Category-anchored editorial rails
+ * - Defensive updates
  */
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./comfort-rails.css";
 
 import { useAdminToast } from "@/hooks/useAdminToast";
@@ -38,6 +39,8 @@ export default function AdminComfortRailsPage() {
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /* ================= LOAD ================= */
+
   async function load() {
     try {
       setLoading(true);
@@ -45,8 +48,9 @@ export default function AdminComfortRailsPage() {
         fetchAdminComfortRails(),
         fetchAdminCategories(),
       ]);
-      setRails(railsData);
-      setCategories(categoriesData);
+
+      setRails(Array.isArray(railsData) ? railsData : []);
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
     } catch (err) {
       showToast(
         err instanceof Error
@@ -63,18 +67,18 @@ export default function AdminComfortRailsPage() {
     load();
   }, []);
 
+  /* ================= CREATE ================= */
+
   async function handleCreate(categoryId: number, image: File) {
-    try {
-      await createAdminComfortRail({ category_id: categoryId, image });
-      showToast("Comfort rail created", "success");
-      load();
-    } catch (err) {
-      showToast(
-        err instanceof Error ? err.message : "Create failed",
-        "error"
-      );
-    }
+    await createAdminComfortRail({
+      category_id: categoryId,
+      image,
+    });
+    showToast("Comfort rail created", "success");
+    load();
   }
+
+  /* ================= UPDATE ================= */
 
   async function handleUpdate(
     id: number,
@@ -84,29 +88,21 @@ export default function AdminComfortRailsPage() {
       is_active?: boolean;
     }
   ) {
-    try {
-      await updateAdminComfortRail(id, payload);
-      showToast("Rail updated", "success");
-      load();
-    } catch (err) {
-      showToast(
-        err instanceof Error ? err.message : "Update failed",
-        "error"
-      );
-    }
+    await updateAdminComfortRail(id, payload);
+    showToast("Rail updated", "success");
+    load();
   }
+
+  /* ================= DELETE ================= */
 
   async function handleDelete(id: number) {
     if (!confirm("Delete this comfort rail permanently?")) return;
-
-    try {
-      await deleteAdminComfortRail(id);
-      showToast("Rail deleted", "success");
-      load();
-    } catch {
-      showToast("Delete failed", "error");
-    }
+    await deleteAdminComfortRail(id);
+    showToast("Rail deleted", "success");
+    load();
   }
+
+  /* ================= RENDER ================= */
 
   return (
     <section className="comfort-rails-page">
@@ -149,11 +145,28 @@ function CreateComfortRailForm({
   onCreate,
 }: {
   categories: AdminCategory[];
-  onCreate: (categoryId: number, image: File) => void;
+  onCreate: (categoryId: number, image: File) => Promise<void>;
 }) {
   const [categoryId, setCategoryId] = useState<number | "">("");
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  /* Preview lifecycle */
+  useEffect(() => {
+    if (!image) {
+      setPreview(null);
+      return;
+    }
+
+    const url = URL.createObjectURL(image);
+    setPreview(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [image]);
+
+  const canSubmit =
+    !!categoryId && !!image && !submitting && categories.length > 0;
 
   return (
     <div className="comfort-rail-create">
@@ -162,6 +175,7 @@ function CreateComfortRailForm({
         onChange={(e) =>
           setCategoryId(e.target.value ? Number(e.target.value) : "")
         }
+        disabled={categories.length === 0}
       >
         <option value="">Select category…</option>
         {categories.map((cat) => (
@@ -179,9 +193,9 @@ function CreateComfortRailForm({
         }
       />
 
-      {image && (
+      {preview && (
         <img
-          src={URL.createObjectURL(image)}
+          src={preview}
           alt="Preview"
           className="image-preview"
         />
@@ -189,9 +203,10 @@ function CreateComfortRailForm({
 
       <button
         className="btn primary"
-        disabled={!categoryId || !image || submitting}
+        disabled={!canSubmit}
         onClick={async () => {
           if (!categoryId || !image) return;
+
           try {
             setSubmitting(true);
             await onCreate(categoryId, image);
@@ -202,7 +217,7 @@ function CreateComfortRailForm({
           }
         }}
       >
-        Create Comfort Rail
+        {submitting ? "Creating…" : "Create Comfort Rail"}
       </button>
     </div>
   );
@@ -225,13 +240,14 @@ function ComfortRailCard({
       auto_limit?: number;
       is_active?: boolean;
     }
-  ) => void;
-  onDelete: (id: number) => void;
+  ) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
 }) {
   const [limit, setLimit] = useState(rail.auto_limit);
+  const [busy, setBusy] = useState(false);
 
   return (
-    <div className="comfort-rail-card">
+    <div className="comfort-rail-card" aria-busy={busy}>
       {rail.image && (
         <img
           src={rail.image}
@@ -246,9 +262,14 @@ function ComfortRailCard({
         <input
           type="checkbox"
           checked={rail.auto_fill}
-          onChange={(e) =>
-            onUpdate(rail.id, { auto_fill: e.target.checked })
-          }
+          disabled={busy}
+          onChange={async (e) => {
+            setBusy(true);
+            await onUpdate(rail.id, {
+              auto_fill: e.target.checked,
+            });
+            setBusy(false);
+          }}
         />
         Auto-fill products
       </label>
@@ -257,9 +278,14 @@ function ComfortRailCard({
         <input
           type="checkbox"
           checked={rail.is_active}
-          onChange={(e) =>
-            onUpdate(rail.id, { is_active: e.target.checked })
-          }
+          disabled={busy}
+          onChange={async (e) => {
+            setBusy(true);
+            await onUpdate(rail.id, {
+              is_active: e.target.checked,
+            });
+            setBusy(false);
+          }}
         />
         Active
       </label>
@@ -270,12 +296,17 @@ function ComfortRailCard({
           type="number"
           min={1}
           value={limit}
+          disabled={busy || !rail.auto_fill}
           onChange={(e) =>
             setLimit(Math.max(1, Number(e.target.value)))
           }
-          onBlur={() => {
+          onBlur={async () => {
             if (limit !== rail.auto_limit) {
-              onUpdate(rail.id, { auto_limit: limit });
+              setBusy(true);
+              await onUpdate(rail.id, {
+                auto_limit: limit,
+              });
+              setBusy(false);
             }
           }}
         />
@@ -290,6 +321,7 @@ function ComfortRailCard({
 
       <button
         className="danger"
+        disabled={busy}
         onClick={() => onDelete(rail.id)}
       >
         Delete Rail

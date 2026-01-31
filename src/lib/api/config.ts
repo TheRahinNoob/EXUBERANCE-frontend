@@ -7,24 +7,26 @@
  * - Public site (landing, shop, navbar, etc.)
  *
  * RULES:
- * - NO credentials
- * - NO cookies
+ * - NO env access here
+ * - NO hardcoded URLs
  * - SAFE for RSC / SSR / ISR
  */
 
-const RAW_API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ??
-  "http://localhost:8000";
+import { API_BASE } from "@/lib/admin-api/config";
 
 /**
  * API base (no trailing slash)
- * Example: http://localhost:8000
+ * Example:
+ *   https://api.fabrilife.com
  */
-export const API_BASE = RAW_API_BASE.replace(/\/$/, "");
+export { API_BASE };
 
 /**
  * Media base
  * Used to resolve ImageField URLs from Django
- * Example: http://localhost:8000/media/...
+ *
+ * NOTE:
+ * - Media is served from the same origin as API
+ * - If CDN is introduced later, change it centrally
  */
 export const MEDIA_BASE = API_BASE;

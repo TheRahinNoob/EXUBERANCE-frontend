@@ -1,36 +1,74 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&display=swap");
+
 .breadcrumb {
   margin-bottom: 16px;
-  font-size: 14px;
-}
 
-.breadcrumb ol {
-  display: flex;
-  gap: 8px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  font-family: "Google Sans Flex", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  font-weight: 450;
+
   color: #666;
 }
 
+/* =========================
+   LIST
+========================= */
+.breadcrumb ol {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* =========================
+   ITEM
+========================= */
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+}
+
+/* =========================
+   SEPARATOR
+========================= */
 .breadcrumb li::after {
   content: "›";
-  margin-left: 8px;
+  margin: 0 8px;
+
+  font-size: 13px;
+  font-weight: 500;
+  color: #bbb;
 }
 
+/* no separator on last */
 .breadcrumb li:last-child::after {
   content: "";
+  margin: 0;
 }
 
+/* =========================
+   LINK (PAST PATH)
+========================= */
 .breadcrumb a {
+  color: #111;
+  font-weight: 500;
   text-decoration: none;
-  color: #000;
+
+  transition: color 0.15s ease;
 }
 
 .breadcrumb a:hover {
+  color: #000;
   text-decoration: underline;
 }
 
+/* =========================
+   CURRENT PAGE
+========================= */
 .breadcrumb li:last-child span {
-  font-weight: 500;
   color: #000;
+  font-weight: 600;
 }

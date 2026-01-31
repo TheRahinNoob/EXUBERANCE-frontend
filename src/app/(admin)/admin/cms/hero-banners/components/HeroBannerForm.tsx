@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * ==================================================
+ * ADMIN CMS — HERO BANNER FORM
+ * ==================================================
+ */
+
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -14,7 +20,9 @@ import type {
   AdminHeroBannerUpdatePayload,
 } from "@/lib/admin-api";
 
+import { resolveMediaUrl } from "@/lib/admin-api/media";
 import { useAdminToast } from "@/hooks/useAdminToast";
+
 import "./hero-banner-form.css";
 
 /* ==================================================
@@ -46,34 +54,46 @@ type InputProps = {
    COMPONENT
 ================================================== */
 
-export default function HeroBannerForm({ mode, existing }: Props) {
+export default function HeroBannerForm({
+  mode,
+  existing,
+}: Props) {
   const router = useRouter();
   const { showToast } = useAdminToast();
 
-  const [imageDesktop, setImageDesktop] = useState<File | null>(null);
-  const [imageTablet, setImageTablet] = useState<File | null>(null);
-  const [imageMobile, setImageMobile] = useState<File | null>(null);
+  /* ================= STATE ================= */
 
-  const [isActive, setIsActive] = useState<boolean>(
-    existing?.is_active ?? true
-  );
-  const [startsAt, setStartsAt] = useState<string>(
-    existing?.starts_at ?? ""
-  );
-  const [endsAt, setEndsAt] = useState<string>(
-    existing?.ends_at ?? ""
-  );
-  const [ordering, setOrdering] = useState<number>(
-    existing?.ordering ?? 0
-  );
+  const [imageDesktop, setImageDesktop] =
+    useState<File | null>(null);
+  const [imageTablet, setImageTablet] =
+    useState<File | null>(null);
+  const [imageMobile, setImageMobile] =
+    useState<File | null>(null);
 
-  const [submitting, setSubmitting] = useState(false);
+  const [isActive, setIsActive] =
+    useState(existing?.is_active ?? true);
+
+  const [startsAt, setStartsAt] =
+    useState(existing?.starts_at ?? "");
+
+  const [endsAt, setEndsAt] =
+    useState(existing?.ends_at ?? "");
+
+  const [ordering, setOrdering] =
+    useState(existing?.ordering ?? 0);
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  /* ================= DERIVED ================= */
 
   const canSubmit = useMemo(() => {
     if (submitting) return false;
     if (mode === "create" && !imageDesktop) return false;
     return true;
   }, [mode, imageDesktop, submitting]);
+
+  /* ================= SUBMIT ================= */
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -96,8 +116,10 @@ export default function HeroBannerForm({ mode, existing }: Props) {
             ordering,
           };
 
-          if (imageTablet) payload.image_tablet = imageTablet;
-          if (imageMobile) payload.image_mobile = imageMobile;
+          if (imageTablet)
+            payload.image_tablet = imageTablet;
+          if (imageMobile)
+            payload.image_mobile = imageMobile;
 
           await createAdminHeroBanner(payload);
           showToast("Hero banner created", "success");
@@ -113,18 +135,26 @@ export default function HeroBannerForm({ mode, existing }: Props) {
             ordering,
           };
 
-          if (imageDesktop) payload.image_desktop = imageDesktop;
-          if (imageTablet) payload.image_tablet = imageTablet;
-          if (imageMobile) payload.image_mobile = imageMobile;
+          if (imageDesktop)
+            payload.image_desktop = imageDesktop;
+          if (imageTablet)
+            payload.image_tablet = imageTablet;
+          if (imageMobile)
+            payload.image_mobile = imageMobile;
 
-          await updateAdminHeroBanner(existing.id, payload);
+          await updateAdminHeroBanner(
+            existing.id,
+            payload
+          );
           showToast("Hero banner updated", "success");
         }
 
         router.push("/admin/cms/hero-banners");
       } catch (err) {
         showToast(
-          err instanceof Error ? err.message : "Save failed",
+          err instanceof Error
+            ? err.message
+            : "Save failed",
           "error"
         );
       } finally {
@@ -147,9 +177,15 @@ export default function HeroBannerForm({ mode, existing }: Props) {
     ]
   );
 
+  /* ================= RENDER ================= */
+
   return (
-    <form className="hero-form" onSubmit={handleSubmit}>
-      <fieldset className="hero-fieldset">
+    <form
+      className="hero-form"
+      onSubmit={handleSubmit}
+    >
+      {/* ================= IMAGES ================= */}
+      <fieldset className="hero-fieldset hero-images">
         <legend>Images</legend>
 
         <ImageInput
@@ -172,19 +208,22 @@ export default function HeroBannerForm({ mode, existing }: Props) {
         />
       </fieldset>
 
-      <fieldset className="hero-fieldset">
+      {/* ================= VISIBILITY ================= */}
+      <fieldset className="hero-fieldset hero-visibility">
         <legend>Visibility</legend>
 
-        <label className="checkbox">
+        <label className="checkbox checkbox-large">
           <input
             type="checkbox"
             checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
+            onChange={(e) =>
+              setIsActive(e.target.checked)
+            }
           />
-          Active
+          <span>Active</span>
         </label>
 
-        <div className="row">
+        <div className="row stack-on-mobile">
           <Input
             label="Starts at"
             type="datetime-local"
@@ -204,17 +243,24 @@ export default function HeroBannerForm({ mode, existing }: Props) {
           label="Ordering"
           type="number"
           value={ordering}
-          onChange={(v: string) => setOrdering(Number(v))}
+          onChange={(v) =>
+            setOrdering(Number(v) || 0)
+          }
         />
       </fieldset>
 
-      <button
-        className="btn primary"
-        type="submit"
-        disabled={!canSubmit}
-      >
-        {mode === "create" ? "Create Banner" : "Save Changes"}
-      </button>
+      {/* ================= ACTION ================= */}
+      <div className="hero-form-actions">
+        <button
+          className="btn primary"
+          type="submit"
+          disabled={!canSubmit}
+        >
+          {mode === "create"
+            ? "Create Banner"
+            : "Save Changes"}
+        </button>
+      </div>
     </form>
   );
 }
@@ -229,13 +275,18 @@ function ImageInput({
   existing,
   onChange,
 }: ImageInputProps) {
+  const preview = resolveMediaUrl(existing);
+
   return (
     <div className="form-group">
-      <label>{label}</label>
+      <label>
+        {label}
+        {required && <span className="required">*</span>}
+      </label>
 
-      {existing && (
+      {preview && (
         <img
-          src={existing}
+          src={preview}
           className="image-preview"
           alt=""
         />
@@ -265,7 +316,12 @@ function Input({
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        inputMode={
+          type === "number" ? "numeric" : undefined
+        }
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
       />
     </div>
   );

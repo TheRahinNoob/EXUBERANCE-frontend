@@ -4,31 +4,34 @@ import HeroBanner from "./HeroBanner";
 import LandingMenu from "./LandingMenu";
 import FeaturedCategories from "./FeaturedCategories";
 import HotCategories from "./HotCategories";
-import ComfortBlock from "./ComfortBlock";
+import ComfortEditorialBlock from "./ComfortEditorialBlock";
 import ComfortRail from "./ComfortRail";
 
 /**
  * ==================================================
- * LANDING CMS RENDERER — FINAL, LAYER-SAFE
+ * LANDING CMS RENDERER — FINAL / PRODUCTION GRADE
  * ==================================================
  *
- * RULES:
- * - CMS controls ORDER only
- * - API layer owns RAW contracts
- * - UI consumes NORMALIZED TYPES ONLY
+ * GUARANTEES:
+ * - CMS controls ORDER & VISIBILITY only
+ * - Renderer NEVER fetches data
+ * - Renderer NEVER mutates data
+ * - Renderer NEVER assumes availability
+ * - Fully ID-driven (future proof)
  */
 
 import type { LandingCMSBlock } from "@/lib/api/types";
 
-// ✅ UI-safe domain types (NORMALIZED)
+// UI-normalized domain types
 import type { HeroBannerItem } from "@/types/hero-banner";
 import type { LandingMenuItem } from "@/types/landing-menu";
 import type { FeaturedCategory } from "@/types/featured-category";
 import type { HotCategory } from "@/types/hot-category";
 import type { ComfortRail as UIComfortRail } from "@/types/comfort-rail";
+import type { ComfortEditorialBlockData } from "./ComfortEditorialBlock";
 
 /* ==================================================
-   PROPS
+   PROPS — STRICT & FUTURE-PROOF
 ================================================== */
 
 type Props = {
@@ -38,7 +41,14 @@ type Props = {
   landingMenuItems: LandingMenuItem[];
   featuredCategories: FeaturedCategory[];
   hotCategories: HotCategory[];
+
   comfortRails: UIComfortRail[];
+
+  /**
+   * 🔥 Editorial blocks (ID-addressable)
+   * CMS decides WHICH one renders WHERE
+   */
+  comfortEditorialBlocks: ComfortEditorialBlockData[];
 };
 
 /* ==================================================
@@ -52,6 +62,7 @@ export default function LandingRenderer({
   featuredCategories,
   hotCategories,
   comfortRails,
+  comfortEditorialBlocks,
 }: Props) {
   if (!Array.isArray(blocks) || blocks.length === 0) {
     return null;
@@ -60,30 +71,26 @@ export default function LandingRenderer({
   return (
     <>
       {blocks.map((block, index) => {
+        const key = `${block.type}-${index}`;
+
         switch (block.type) {
           /* ================= HERO ================= */
           case "hero":
             return heroBanners.length ? (
-              <HeroBanner
-                key={`hero-${index}`}
-                banners={heroBanners}
-              />
+              <HeroBanner key={key} banners={heroBanners} />
             ) : null;
 
           /* ================= MENU ================= */
           case "menu":
             return landingMenuItems.length ? (
-              <LandingMenu
-                key={`menu-${index}`}
-                items={landingMenuItems}
-              />
+              <LandingMenu key={key} items={landingMenuItems} />
             ) : null;
 
           /* ============== FEATURED ============== */
           case "featured":
             return featuredCategories.length ? (
               <FeaturedCategories
-                key={`featured-${index}`}
+                key={key}
                 items={featuredCategories}
               />
             ) : null;
@@ -91,19 +98,37 @@ export default function LandingRenderer({
           /* ================= HOT ================= */
           case "hot":
             return hotCategories.length ? (
-              <HotCategories
-                key={`hot-${index}`}
-                items={hotCategories}
-              />
+              <HotCategories key={key} items={hotCategories} />
             ) : null;
 
-          /* ============ COMFORT BLOCK ============ */
-          case "comfort_block":
+          /* ============ COMFORT EDITORIAL ============ */
+          case "comfort_block": {
+            const editorial =
+              "comfort_editorial_block_id" in block
+                ? comfortEditorialBlocks.find(
+                    (b) =>
+                      b.id === block.comfort_editorial_block_id
+                  )
+                : null;
+
+            if (!editorial) {
+              console.warn(
+                "⚠️ Comfort editorial block missing (ID:",
+                "comfort_editorial_block_id" in block
+                  ? block.comfort_editorial_block_id
+                  : "unknown",
+                ")"
+              );
+              return null;
+            }
+
             return (
-              <ComfortBlock
-                key={`comfort-block-${index}`}
+              <ComfortEditorialBlock
+                key={key}
+                block={editorial}
               />
             );
+          }
 
           /* ============ COMFORT RAIL ============ */
           case "comfort_rail": {
@@ -122,7 +147,7 @@ export default function LandingRenderer({
 
             return (
               <ComfortRail
-                key={`rail-${rail.id}`}
+                key={key}
                 category={rail.category}
                 products={rail.products}
               />

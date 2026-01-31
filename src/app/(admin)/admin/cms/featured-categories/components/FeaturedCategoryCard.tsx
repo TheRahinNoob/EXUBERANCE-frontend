@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./featured-category-card.css";
 
 import {
@@ -34,16 +34,26 @@ export default function FeaturedCategoryCard({
   const { showToast } = useAdminToast();
   const [busy, setBusy] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  /* ================= TOGGLE ACTIVE ================= */
+
   async function toggleActive() {
+    if (busy) return;
+
     try {
       setBusy(true);
+
       await updateAdminFeaturedCategory(item.id, {
         is_active: !item.is_active,
       });
+
       onRefresh();
     } catch (err) {
       showToast(
-        err instanceof Error ? err.message : "Update failed",
+        err instanceof Error
+          ? err.message
+          : "Update failed",
         "error"
       );
     } finally {
@@ -51,41 +61,70 @@ export default function FeaturedCategoryCard({
     }
   }
 
+  /* ================= IMAGE REPLACE ================= */
+
   async function replaceImage(file: File) {
+    if (busy) return;
+
     try {
       setBusy(true);
+
       await updateAdminFeaturedCategory(item.id, {
         image: file,
       });
+
       showToast("Image updated", "success");
       onRefresh();
     } catch (err) {
       showToast(
-        err instanceof Error ? err.message : "Image update failed",
+        err instanceof Error
+          ? err.message
+          : "Image update failed",
         "error"
       );
     } finally {
       setBusy(false);
+
+      // 🔒 Allow re-selecting the same file again
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   }
 
+  /* ================= DELETE ================= */
+
   async function remove() {
-    if (!confirm("Remove this featured category?")) return;
+    if (busy) return;
+
+    const confirmed = confirm(
+      "Remove this featured category?\n\nThis cannot be undone."
+    );
+    if (!confirmed) return;
 
     try {
       setBusy(true);
+
       await deleteAdminFeaturedCategory(item.id);
-      showToast("Featured category removed", "success");
+
+      showToast(
+        "Featured category removed",
+        "success"
+      );
       onRefresh();
     } catch (err) {
       showToast(
-        err instanceof Error ? err.message : "Delete failed",
+        err instanceof Error
+          ? err.message
+          : "Delete failed",
         "error"
       );
     } finally {
       setBusy(false);
     }
   }
+
+  /* ================= RENDER ================= */
 
   return (
     <article
@@ -93,14 +132,20 @@ export default function FeaturedCategoryCard({
         !item.is_active ? "is-inactive" : ""
       }`}
       aria-busy={busy}
+      aria-disabled={busy}
     >
       {/* ================= IMAGE ================= */}
-      {item.image && (
+      {item.image ? (
         <div className="featured-card-image">
           <img
             src={item.image}
             alt={item.category.name}
+            loading="lazy"
           />
+        </div>
+      ) : (
+        <div className="featured-card-image placeholder">
+          No image
         </div>
       )}
 
@@ -115,9 +160,13 @@ export default function FeaturedCategoryCard({
         </p>
 
         {/* ================= FILE ================= */}
-        <label className="file-replace">
+        <label
+          className="file-replace"
+          aria-disabled={busy}
+        >
           Replace image
           <input
+            ref={fileInputRef}
             type="file"
             accept="image/*"
             disabled={busy}
