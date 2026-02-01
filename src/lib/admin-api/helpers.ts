@@ -23,6 +23,7 @@ export async function parseErrorResponse(
 ): Promise<string> {
   try {
     const data = await res.json();
+
     return (
       data?.message ||
       data?.detail ||
@@ -42,10 +43,10 @@ export async function parseErrorResponse(
  */
 export function buildQuery(
   params?: Record<string, string | number | undefined>
-) {
-  const query = new URLSearchParams();
-
+): string {
   if (!params) return "";
+
+  const query = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== "") {
@@ -55,29 +56,4 @@ export function buildQuery(
 
   const qs = query.toString();
   return qs ? `?${qs}` : "";
-}
-
-/**
- * ==================================================
- * CSRF TOKEN READER (DJANGO STANDARD)
- * ==================================================
- *
- * PURPOSE:
- * - Reads `csrftoken` cookie set by Django
- * - Used for POST / PATCH / DELETE requests
- *
- * SAFETY:
- * - SSR / RSC safe (returns null)
- * - Browser-only execution
- */
-export function getCSRFCookie(): string | null {
-  if (typeof document === "undefined") {
-    return null;
-  }
-
-  const match = document.cookie.match(
-    /(?:^|;\s*)csrftoken=([^;]+)/
-  );
-
-  return match ? decodeURIComponent(match[1]) : null;
 }

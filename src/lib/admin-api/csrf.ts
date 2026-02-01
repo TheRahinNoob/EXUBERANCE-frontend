@@ -2,14 +2,15 @@
 
 /**
  * ==================================================
- * DJANGO CSRF — SINGLE SOURCE OF TRUTH
+ * DJANGO CSRF — BOOTSTRAP ONLY
  * ==================================================
  *
- * RULES (NON-NEGOTIABLE):
- * - Django generates the token
- * - Browser stores it in `csrftoken` cookie
- * - We ONLY read from cookie
- * - We NEVER generate or cache tokens
+ * PURPOSE:
+ * - Forces Django to SET the `csrftoken` cookie
+ * - This file NEVER reads the token
+ *
+ * SINGLE SOURCE OF TRUTH:
+ * - Reading + attaching CSRF token happens in `config.ts`
  */
 
 /* ==================================================
@@ -28,22 +29,4 @@ export async function initCSRF(): Promise<void> {
     credentials: "include",
     cache: "no-store",
   });
-}
-
-/* ==================================================
-   READ TOKEN — ALWAYS FROM COOKIE
-================================================== */
-
-/**
- * Returns the EXACT csrftoken Django issued
- * Used in POST / PATCH / DELETE requests
- */
-export function getCSRFToken(): string | null {
-  if (typeof document === "undefined") return null;
-
-  const match = document.cookie.match(
-    /(^|;\s*)csrftoken=([^;]+)/
-  );
-
-  return match ? decodeURIComponent(match[2]) : null;
 }
