@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * ADMIN API CONFIG — JWT BASED
+ * ADMIN API CONFIG — JWT BASED (FINAL)
  * ==================================================
  */
 
@@ -35,7 +35,13 @@ export async function adminFetch(
   const headers = new Headers(init.headers || {});
   headers.set("Authorization", `Bearer ${token}`);
 
-  if (!headers.has("Content-Type")) {
+  // ✅ CRITICAL FIX:
+  // Only set JSON content-type when body is NOT FormData
+  if (
+    init.body &&
+    !(init.body instanceof FormData) &&
+    !headers.has("Content-Type")
+  ) {
     headers.set("Content-Type", "application/json");
   }
 
