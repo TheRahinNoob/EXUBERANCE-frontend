@@ -23,7 +23,6 @@
 
 export {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch, // ✅ REQUIRED
 } from "./config";
 
@@ -32,9 +31,6 @@ export {
   parseErrorResponse,
   buildQuery,
 } from "./helpers";
-
-/* ❌ CSRF helpers are INTERNAL ONLY — NOT EXPORTED */
-/* CSRF is handled automatically by adminFetch */
 
 /* ==================================================
    PAGINATION

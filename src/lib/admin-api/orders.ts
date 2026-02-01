@@ -2,7 +2,6 @@
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "./config";
 
@@ -52,9 +51,8 @@ export async function fetchAdminOrders(params?: {
 }): Promise<PaginatedResponse<AdminOrder>> {
   const query = buildQuery(params);
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/orders/${query}`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/orders/${query}`
   );
 
   if (!res.ok) {
@@ -77,9 +75,8 @@ export async function fetchAdminOrderDetail(
     throw new Error("Invalid order id");
   }
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/orders/${id}/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/orders/${id}/`
   );
 
   if (!res.ok) {
@@ -102,9 +99,8 @@ export async function fetchAdminOrderAudit(
     throw new Error("Invalid order id");
   }
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/orders/${id}/audit/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/orders/${id}/audit/`
   );
 
   if (!res.ok) {
@@ -132,9 +128,6 @@ export async function updateAdminOrderStatus(
     `${API_BASE}/api/admin/orders/${id}/status/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({ action }),
     }
   );

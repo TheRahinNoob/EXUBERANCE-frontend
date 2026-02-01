@@ -7,13 +7,12 @@
  * - Strict backend contract
  * - CREATE !== UPDATE (explicit typing)
  * - Multipart-safe (file uploads)
- * - CSRF-safe (Django session auth)
+ * - JWT-based admin auth
  * - Zero inference, zero silent coercion
  */
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "@/lib/admin-api/config";
 
@@ -93,13 +92,11 @@ const BASE_URL = `${API_BASE}/api/admin/cms/hero-banners/`;
  * - Preserves DRF error messages verbatim
  */
 async function handleResponse<T>(res: Response): Promise<T> {
-  const data = await safeJson<unknown>(res);
-
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));
   }
 
-  return data as T;
+  return safeJson<T>(res);
 }
 
 /**
@@ -142,10 +139,7 @@ function buildFormData<T extends Record<string, unknown>>(
 export async function fetchAdminHeroBanners(): Promise<
   AdminHeroBanner[]
 > {
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "GET",
-  });
+  const res = await adminFetch(BASE_URL);
 
   const data = await handleResponse<unknown>(res);
 

@@ -6,7 +6,7 @@
 // Consumed by Next.js Admin Panel
 //
 // Guarantees:
-// - Session auth + CSRF (centralized)
+// - JWT-based admin auth
 // - Multipart image upload
 // - Explicit failures
 // - Backend is final authority
@@ -14,7 +14,6 @@
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "../config";
 
@@ -91,9 +90,8 @@ function assertHotCategory(
 export async function fetchAdminHotCategories(): Promise<
   AdminHotCategory[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/cms/hot-categories/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/cms/hot-categories/`
   );
 
   if (!res.ok) {
@@ -162,6 +160,10 @@ export async function createAdminHotCategory(
     }
   );
 
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
+
   const data = await safeJson<unknown>(res);
   assertHotCategory(data);
 
@@ -218,6 +220,10 @@ export async function updateAdminHotCategory(
       body: formData,
     }
   );
+
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
 
   const data = await safeJson<unknown>(res);
   assertHotCategory(data);

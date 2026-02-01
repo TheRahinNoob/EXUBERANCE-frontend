@@ -4,15 +4,15 @@
 //
 // Rules:
 // - Backend is SINGLE source of truth
-// - NO manual CSRF handling
-// - ALL mutations use adminFetch
+// - NO CSRF
+// - NO cookies
+// - ALL admin calls use adminFetch
 // - Multipart-safe
 // - Absolute URLs only
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "./config";
 
@@ -57,9 +57,8 @@ export async function fetchAdminProductImages(
 ): Promise<AdminProductImage[]> {
   assertFiniteId(productId, "product id");
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/products/${productId}/images/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/products/${productId}/images/`
   );
 
   if (!res.ok) {
@@ -160,8 +159,6 @@ export async function setAdminProductPrimaryImage(
     `${API_BASE}/api/admin/product-images/${imageId}/`,
     {
       method: "PATCH",
-      // ✅ no body
-      // ✅ no headers
     }
   );
 

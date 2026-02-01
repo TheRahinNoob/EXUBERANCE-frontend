@@ -4,15 +4,15 @@
 //
 // Rules:
 // - Backend is SINGLE source of truth
-// - NO manual CSRF handling
-// - ALL mutations use adminFetch
+// - NO CSRF
+// - NO cookies
+// - ALL admin calls use adminFetch
 // - Trailing slashes are NON-NEGOTIABLE
 // - Safe for Next.js App Router
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "./config";
 
@@ -54,9 +54,8 @@ export async function fetchAdminProductVariants(
 ): Promise<AdminProductVariant[]> {
   assertFiniteId(productId, "product id");
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/products/${productId}/variants/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/products/${productId}/variants/`
   );
 
   if (!res.ok) {
@@ -102,9 +101,6 @@ export async function createAdminProductVariant(
     `${API_BASE}/api/admin/products/${productId}/variants/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         size: payload.size,
         color: payload.color,
@@ -146,9 +142,6 @@ export async function updateAdminVariantStock(
     `${API_BASE}/api/admin/product-variants/${variantId}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
         stock: Number(stock),
       }),

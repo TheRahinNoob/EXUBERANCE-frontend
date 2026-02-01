@@ -12,7 +12,7 @@
 // - NEVER infers business rules
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS, adminFetch } from "./config";
+import { API_BASE, adminFetch } from "./config";
 import { safeJson, parseErrorResponse } from "./helpers";
 import type {
   AdminCategory,
@@ -89,9 +89,8 @@ function assertCategoryTreeNode(
 export async function fetchAdminCategoryTree(): Promise<
   AdminCategoryTreeNode[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/categories/tree/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/categories/tree/`
   );
 
   if (!res.ok) {
@@ -120,9 +119,8 @@ export async function fetchAdminCategoryTree(): Promise<
 export async function fetchAdminCategories(): Promise<
   AdminCategory[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/categories/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/categories/`
   );
 
   if (!res.ok) {
@@ -170,9 +168,6 @@ export async function createAdminCategory(payload: {
     `${API_BASE}/api/admin/categories/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -217,9 +212,6 @@ export async function updateAdminCategory(
     `${API_BASE}/api/admin/categories/${id}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );

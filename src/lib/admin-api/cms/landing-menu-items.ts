@@ -14,14 +14,13 @@
  * - DRF error fidelity preserved
  *
  * GUARANTEES:
- * - Session auth + CSRF (centralized)
+ * - JWT-based admin auth
  * - Stable response contract
  * - No silent coercion
  */
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "@/lib/admin-api/config";
 
@@ -102,9 +101,6 @@ const BASE_URL = `${API_BASE}/api/admin/cms/landing-menu-items/`;
    INTERNAL HELPERS
 ================================================== */
 
-/**
- * Preserve DRF error messages exactly
- */
 function hasDetail(
   data: unknown
 ): data is { detail: string } {
@@ -142,10 +138,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 export async function fetchAdminLandingMenuItems(): Promise<
   AdminLandingMenuItem[]
 > {
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "GET",
-  });
+  const res = await adminFetch(BASE_URL);
 
   const data = await handleResponse<unknown>(res);
 

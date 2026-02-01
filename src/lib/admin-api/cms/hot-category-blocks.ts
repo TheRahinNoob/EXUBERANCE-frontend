@@ -6,14 +6,13 @@
 // Consumed by Next.js Admin Panel
 //
 // Guarantees:
-// - Session auth + CSRF (centralized)
+// - JWT-based admin auth
 // - Explicit failures
 // - Backend is final authority
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "../config";
 
@@ -89,9 +88,8 @@ function assertId(
 export async function fetchAdminHotCategoryBlocks(): Promise<
   AdminHotCategoryBlock[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/cms/hot-category-blocks/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/cms/hot-category-blocks/`
   );
 
   if (!res.ok) {
@@ -118,9 +116,8 @@ export async function fetchAdminHotCategoryBlock(
 ): Promise<AdminHotCategoryBlockDetail> {
   assertId(id, "block id");
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/cms/hot-category-blocks/${id}/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/cms/hot-category-blocks/${id}/`
   );
 
   if (!res.ok) {
@@ -150,6 +147,10 @@ export async function createAdminHotCategoryBlock(
     }
   );
 
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
+
   return safeJson<AdminHotCategoryBlock>(res);
 }
 
@@ -173,6 +174,10 @@ export async function updateAdminHotCategoryBlock(
       body: JSON.stringify(payload),
     }
   );
+
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
 
   return safeJson<AdminHotCategoryBlock>(res);
 }
@@ -221,6 +226,10 @@ export async function createAdminHotCategoryBlockItem(
       }),
     }
   );
+
+  if (!res.ok) {
+    throw new Error(await parseErrorResponse(res));
+  }
 
   return safeJson<AdminHotCategoryBlockItemCreateResponse>(res);
 }

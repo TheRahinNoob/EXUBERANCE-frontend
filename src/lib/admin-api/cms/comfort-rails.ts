@@ -12,7 +12,6 @@
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "../config";
 
@@ -77,10 +76,9 @@ function assertId(value: unknown, label: string): asserts value is number {
 export async function fetchAdminComfortRails(
   options?: { signal?: AbortSignal }
 ): Promise<AdminComfortCategoryRail[]> {
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       signal: options?.signal,
     }
   );
@@ -110,10 +108,9 @@ export async function fetchAdminComfortRail(
 ): Promise<AdminComfortCategoryRail> {
   assertId(id, "comfort rail id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       signal: options?.signal,
     }
   );
@@ -174,9 +171,6 @@ export async function updateAdminComfortRail(
     `${API_BASE}/api/admin/cms/comfort-rails/${id}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -254,9 +248,6 @@ export async function addProductToComfortRail(
     `${API_BASE}/api/admin/cms/comfort-rails/${railId}/products/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({ product_id: productId }),
     }
   );
@@ -296,9 +287,6 @@ export async function reorderAdminComfortRails(
     `${API_BASE}/api/admin/cms/comfort-rails/reorder/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );

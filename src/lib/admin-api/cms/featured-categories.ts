@@ -5,14 +5,13 @@
 // Guarantees:
 // - Backend is the single source of truth
 // - No cached admin data
-// - CSRF + session auth enforced
+// - JWT-based admin auth
 // - Strict typing (no `any` in logic)
 // - Matches Django Admin behavior exactly
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "../config";
 
@@ -90,9 +89,8 @@ function assertFeaturedCategory(
 export async function fetchAdminFeaturedCategories(): Promise<
   AdminFeaturedCategory[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/cms/featured-categories/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/cms/featured-categories/`
   );
 
   if (!res.ok) {

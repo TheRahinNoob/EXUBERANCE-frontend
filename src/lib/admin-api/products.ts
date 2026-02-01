@@ -5,13 +5,13 @@
 // Rules:
 // - Backend is the single source of truth
 // - One mutation = one backend intent
-// - ALL mutations use adminFetch
-// - NO manual CSRF handling
+// - ALL admin calls use adminFetch
+// - NO CSRF
+// - NO cookies
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "./config";
 
@@ -94,12 +94,9 @@ export async function fetchAdminProducts(
   const { signal, ...queryParams } = params;
   const query = buildQuery(queryParams);
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${query}`,
-    {
-      ...DEFAULT_FETCH_OPTIONS,
-      signal,
-    }
+    { signal }
   );
 
   if (!res.ok) {
@@ -119,12 +116,9 @@ export async function fetchAdminProductDetail(
 ): Promise<AdminProductDetail> {
   assertFiniteId(id, "product id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${id}/`,
-    {
-      ...DEFAULT_FETCH_OPTIONS,
-      signal: options?.signal,
-    }
+    { signal: options?.signal }
   );
 
   if (!res.ok) {
@@ -155,9 +149,6 @@ export async function createAdminProduct(payload: {
     `${API_BASE}/api/admin/products/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -183,9 +174,6 @@ export async function updateAdminProductBasicInfo(
     `${API_BASE}/api/admin/products/${id}/basic/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -221,9 +209,6 @@ export async function updateAdminProduct(
     `${API_BASE}/api/admin/products/${id}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(cleanPayload),
     }
   );
@@ -256,9 +241,6 @@ export async function updateAdminProductDescription(
     `${API_BASE}/api/admin/products/${id}/description/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );

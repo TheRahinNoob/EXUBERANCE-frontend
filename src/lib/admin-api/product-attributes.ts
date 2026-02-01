@@ -4,14 +4,13 @@
 //
 // Rules:
 // - Backend is the single source of truth
-// - NO manual CSRF handling
-// - ALL mutations go through adminFetch
-// - GET requests may use fetch directly
+// - NO CSRF
+// - NO cookies
+// - ALL admin calls use adminFetch
 //
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "./config";
 
@@ -52,9 +51,8 @@ export type AdminProductAttributeValue = {
 export async function fetchAdminAttributeDefinitions(): Promise<
   AdminProductAttributeDefinition[]
 > {
-  const res = await fetch(
-    `${API_BASE}/api/admin/attribute-definitions/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/attribute-definitions/`
   );
 
   if (!res.ok) {
@@ -103,9 +101,6 @@ export async function createAdminAttributeDefinition(payload: {
     `${API_BASE}/api/admin/attribute-definitions/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -142,9 +137,6 @@ export async function updateAdminAttributeDefinition(
     `${API_BASE}/api/admin/attribute-definitions/${id}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -192,9 +184,8 @@ export async function fetchAdminProductAttributes(
     throw new Error("Invalid product id");
   }
 
-  const res = await fetch(
-    `${API_BASE}/api/admin/products/${productId}/attributes/`,
-    DEFAULT_FETCH_OPTIONS
+  const res = await adminFetch(
+    `${API_BASE}/api/admin/products/${productId}/attributes/`
   );
 
   if (!res.ok) {
@@ -234,9 +225,6 @@ export async function createAdminProductAttribute(
     `${API_BASE}/api/admin/products/${productId}/attributes/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -273,9 +261,6 @@ export async function updateAdminProductAttribute(
     `${API_BASE}/api/admin/product-attributes/${pavId}/`,
     {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(payload),
     }
   );
@@ -324,9 +309,6 @@ export async function reorderAdminProductAttributes(
     `${API_BASE}/api/admin/products/${productId}/attributes/reorder/`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({ ordered_ids: orderedIds }),
     }
   );

@@ -7,14 +7,13 @@
  * - Backend is the single source of truth
  * - CREATE !== UPDATE
  * - Multipart-safe (image upload)
- * - CSRF-safe (Django session auth)
+ * - JWT-based admin auth
  * - Image updates allowed via PATCH
  * - NO inference, NO silent coercion
  */
 
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
   adminFetch,
 } from "@/lib/admin-api/config";
 
@@ -123,10 +122,7 @@ function buildFormData<T extends Record<string, unknown>>(
 export async function fetchAdminComfortEditorialBlocks(): Promise<
   AdminComfortEditorialBlock[]
 > {
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "GET",
-  });
+  const res = await adminFetch(BASE_URL);
 
   const data = await handleResponse<unknown>(res);
 
@@ -148,10 +144,7 @@ export async function fetchAdminComfortEditorialBlock(
     throw new Error("ComfortEditorialBlock id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "GET",
-  });
+  const res = await adminFetch(`${BASE_URL}${id}/`);
 
   return handleResponse<AdminComfortEditorialBlock>(res);
 }
