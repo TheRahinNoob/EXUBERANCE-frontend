@@ -1,8 +1,18 @@
 /**
  * ==================================================
- * ADMIN API CONFIG — SINGLE SOURCE OF TRUTH
+ * ADMIN API CONFIG — JWT ONLY (PRODUCTION SAFE)
  * ==================================================
+ *
+ * RULES:
+ * - NO CSRF
+ * - NO cookies
+ * - Authorization: Bearer <access_token>
+ * - Works cross-domain (Vercel ↔ Render)
  */
+
+/* ==================================================
+   API BASE
+================================================== */
 
 const RAW_API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
@@ -17,49 +27,47 @@ if (!RAW_API_BASE) {
 export const API_BASE = RAW_API_BASE.replace(/\/$/, "");
 
 /* ==================================================
+   TOKEN UTIL
+================================================== */
+
+function getAccessToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("admin_access_token");
+}
+
+/* ==================================================
    DEFAULT FETCH OPTIONS
 ================================================== */
 
 export const DEFAULT_FETCH_OPTIONS: RequestInit = {
-  credentials: "include",
   cache: "no-store",
 };
 
 /* ==================================================
-   CSRF COOKIE READER
-================================================== */
-
-function readCSRFCookie(): string | null {
-  if (typeof document === "undefined") return null;
-
-  const match = document.cookie.match(
-    /(^|;\s*)csrftoken=([^;]+)/
-  );
-
-  return match ? decodeURIComponent(match[2]) : null;
-}
-
-/* ==================================================
-   ADMIN FETCH (PRODUCTION SAFE)
+   ADMIN FETCH (JWT)
 ================================================== */
 
 export async function adminFetch(
   input: string,
   init: RequestInit = {}
 ): Promise<Response> {
-  const method = (init.method || "GET").toUpperCase();
   const headers = new Headers(init.headers || {});
 
-  if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
-    const csrfToken = readCSRFCookie();
+  const token = getAccessToken();
+  if (!token) {
+    throw new Error(
+      "[AUTH] Missing admin access token. Login required."
+    );
+  }
 
-    if (!csrfToken) {
-      throw new Error(
-        "[CSRF] csrftoken cookie missing. initCSRF() was not executed."
-      );
-    }
+  headers.set("Authorization", `Bearer ${token}`);
 
-    headers.set("X-CSRFToken", csrfToken);
+  // Auto JSON content-type (except FormData)
+  if (
+    !(init.body instanceof FormData) &&
+    !headers.has("Content-Type")
+  ) {
+    headers.set("Content-Type", "application/json");
   }
 
   return fetch(input, {
