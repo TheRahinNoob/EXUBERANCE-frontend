@@ -2,26 +2,24 @@
 
 /**
  * ==================================================
- * DJANGO CSRF — BOOTSTRAP ONLY
+ * DJANGO CSRF — BOOTSTRAP (FINAL)
  * ==================================================
  *
  * PURPOSE:
- * - Forces Django to SET the `csrftoken` cookie
- * - This file NEVER reads the token
+ * - Triggers Django to set csrftoken cookie
+ * - Immediately locks that token into memory
  *
- * SINGLE SOURCE OF TRUTH:
- * - Reading + attaching CSRF token happens in `config.ts`
+ * REQUIRED FOR:
+ * - Cross-domain session auth (Vercel → Render)
  */
 
-/* ==================================================
-   INIT — SET CSRF COOKIE
-================================================== */
-
-import { API_BASE } from "./config";
+import {
+  API_BASE,
+  setCSRFTokenFromCookie,
+} from "./config";
 
 /**
  * Call ONCE when admin app loads
- * This makes Django set `csrftoken` cookie
  */
 export async function initCSRF(): Promise<void> {
   await fetch(`${API_BASE}/api/csrf/`, {
@@ -29,4 +27,7 @@ export async function initCSRF(): Promise<void> {
     credentials: "include",
     cache: "no-store",
   });
+
+  // 🔥 THIS WAS MISSING — AND THIS IS THE FIX
+  setCSRFTokenFromCookie();
 }
