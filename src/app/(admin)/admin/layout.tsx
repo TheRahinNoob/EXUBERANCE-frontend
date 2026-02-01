@@ -7,7 +7,7 @@ import AdminNav from "./components/AdminNav";
 import { AdminToastProvider } from "../admin/components/AdminToastProvider";
 import AdminAmbientBackground from "../admin/components/AdminAmbientBackground";
 
-import { initCSRF } from "@/lib/admin-api/csrf";
+import { initCSRFOnce } from "@/lib/admin-api/config";
 
 /**
  * ==================================================
@@ -18,13 +18,12 @@ import { initCSRF } from "@/lib/admin-api/csrf";
  * RESPONSIBILITIES:
  * - Global admin shell
  * - Sidebar + mobile navigation
- * - CSRF bootstrap (ONCE)
+ * - CSRF bootstrap (ONCE, race-safe)
  * - Toast + ambient providers
  *
- * CSRF RULE:
- * - initCSRF() MUST run once
- * - MUST NOT block render
- * - MUST NOT throw
+ * CSRF GUARANTEE:
+ * - initCSRFOnce() runs exactly once
+ * - All admin API calls WAIT for it automatically
  */
 export default function AdminLayout({
   children,
@@ -35,22 +34,20 @@ export default function AdminLayout({
 
   /**
    * ==================================================
-   * CSRF INITIALIZATION (RUN ONCE)
+   * CSRF INITIALIZATION (GLOBAL, SAFE)
    * --------------------------------------------------
-   * - Calls GET /api/csrf/
-   * - Sets csrftoken cookie
-   * - Required for ALL admin POST/PATCH/DELETE
+   * - Calls GET /api/csrf/ once
+   * - Stores csrftoken in memory
+   * - adminFetch() will await this automatically
    *
-   * NOTE:
-   * - Fire-and-forget (no await)
-   * - Never blocks UI
-   * - Never re-runs
+   * IMPORTANT:
+   * - Fire-and-forget
+   * - Must NOT block render
    * ==================================================
    */
   useEffect(() => {
-    initCSRF().catch(() => {
-      // Silently ignore — admin APIs will fail loudly if CSRF is missing
-      // This prevents layout crashes during cold backend starts
+    initCSRFOnce().catch((err) => {
+      console.error("[CSRF INIT FAILED]", err);
     });
   }, []);
 
