@@ -1,23 +1,16 @@
+// src/lib/admin-api/config.ts
+
 /**
  * ==================================================
- * ADMIN API CONFIG — SINGLE SOURCE OF TRUTH
+ * ADMIN API CONFIG — FINAL, RACE-SAFE
  * ==================================================
- *
- * ✔ Django SessionAuthentication
- * ✔ Cross-domain CSRF (Vercel → Render)
- * ✔ Race-condition safe
- * ✔ No token desync
- * ✔ Production hardened
- *
- * RULES:
- * - CSRF token is read ONCE after /api/csrf/
- * - Token is frozen in memory
- * - X-CSRFToken ALWAYS matches csrftoken cookie
- * - No dynamic cookie reads per request
  */
 
+let CSRF_TOKEN: string | null = null;
+let CSRF_READY: Promise<void> | null = null;
+
 /* ==================================================
-   API BASE (ABSOLUTE, NO TRAILING SLASH)
+   API BASE
 ================================================== */
 
 const RAW_API_BASE =
@@ -33,36 +26,37 @@ if (!RAW_API_BASE) {
 export const API_BASE = RAW_API_BASE.replace(/\/$/, "");
 
 /* ==================================================
-   DEFAULT FETCH OPTIONS
+   CSRF INITIALIZATION (SINGLETON)
 ================================================== */
 
-export const DEFAULT_FETCH_OPTIONS: RequestInit = {
-  credentials: "include",
-  cache: "no-store",
-};
+export function initCSRFOnce(): Promise<void> {
+  if (CSRF_READY) return CSRF_READY;
 
-/* ==================================================
-   CSRF TOKEN — LOCKED IN MEMORY
-================================================== */
+  CSRF_READY = (async () => {
+    await fetch(`${API_BASE}/api/csrf/`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
 
-let CSRF_TOKEN: string | null = null;
+    const match = document.cookie.match(
+      /(?:^|;\s*)csrftoken=([^;]+)/
+    );
 
-/**
- * Reads csrftoken cookie ONCE
- * Must be called AFTER /api/csrf/
- */
-export function setCSRFTokenFromCookie(): void {
-  if (typeof document === "undefined") return;
+    if (!match) {
+      throw new Error(
+        "[CSRF] csrftoken cookie missing after /api/csrf/"
+      );
+    }
 
-  const match = document.cookie.match(
-    /(^|;\s*)csrftoken=([^;]+)/
-  );
+    CSRF_TOKEN = decodeURIComponent(match[1]);
+  })();
 
-  CSRF_TOKEN = match ? decodeURIComponent(match[2]) : null;
+  return CSRF_READY;
 }
 
 /* ==================================================
-   ADMIN FETCH (THE ONLY WAY TO CALL ADMIN APIS)
+   ADMIN FETCH (RACE-SAFE)
 ================================================== */
 
 export async function adminFetch(
@@ -70,21 +64,26 @@ export async function adminFetch(
   init: RequestInit = {}
 ): Promise<Response> {
   const method = (init.method || "GET").toUpperCase();
-  const headers = new Headers(init.headers || {});
 
-  // Attach CSRF ONLY for mutations
   if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+    await initCSRFOnce();
+
     if (!CSRF_TOKEN) {
       throw new Error(
-        "[CSRF] Token not initialized. initCSRF() must run first."
+        "[CSRF] Token unavailable after init"
       );
     }
+  }
 
+  const headers = new Headers(init.headers || {});
+
+  if (CSRF_TOKEN) {
     headers.set("X-CSRFToken", CSRF_TOKEN);
   }
 
   return fetch(input, {
-    ...DEFAULT_FETCH_OPTIONS,
+    credentials: "include",
+    cache: "no-store",
     ...init,
     headers,
   });
