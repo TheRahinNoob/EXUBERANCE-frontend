@@ -3,7 +3,7 @@ import styles from "./FeaturedCategories.module.css";
 
 /**
  * ==================================================
- * FEATURED CATEGORIES (CMS-DRIVEN, UI-SAFE)
+ * FEATURED CATEGORIES (CMS-DRIVEN, IMAGE-ONLY)
  * ==================================================
  *
  * ❗ Domain types are owned by API layer
@@ -33,9 +33,9 @@ export default function FeaturedCategories({ items }: Props) {
             key={item.id}
             href={`/category/${item.slug}`}
             className={styles.card}
-            aria-label={item.name}
+            aria-label={item.name} // accessibility preserved
           >
-            {/* IMAGE — SAFE AGAINST NULL */}
+            {/* IMAGE ONLY — NO NAME */}
             {item.image ? (
               <img
                 src={item.image}
@@ -48,8 +48,6 @@ export default function FeaturedCategories({ items }: Props) {
                 aria-hidden="true"
               />
             )}
-
-            <span>{item.name}</span>
           </Link>
         ))}
       </div>
