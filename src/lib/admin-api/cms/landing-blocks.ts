@@ -12,14 +12,13 @@
 import {
   API_BASE,
   DEFAULT_FETCH_OPTIONS,
+  adminFetch,
 } from "@/lib/admin-api/config";
 
 import {
   safeJson,
   parseErrorResponse,
 } from "@/lib/admin-api/helpers";
-
-import { getCSRFToken } from "@/lib/admin-api/csrf";
 
 /* ==================================================
    TYPES — BACKEND CONTRACT (LOCKED)
@@ -33,7 +32,7 @@ export type LandingBlockType =
   | "menu"
   | "featured"
   | "hot"
-  | "comfort_block"   // ✅ Comfort Editorial BLOCK
+  | "comfort_block"
   | "comfort_rail";
 
 /**
@@ -92,15 +91,6 @@ const BASE_URL = `${API_BASE}/api/admin/cms/landing-blocks/`;
    INTERNAL HELPERS
 ================================================== */
 
-function mutationHeaders(): HeadersInit {
-  const csrf = getCSRFToken();
-
-  return {
-    "Content-Type": "application/json",
-    ...(csrf ? { "X-CSRFToken": csrf } : {}),
-  };
-}
-
 function isErrorWithDetail(
   value: unknown
 ): value is { detail: string } {
@@ -149,10 +139,11 @@ export async function fetchAdminLandingBlocks(): Promise<
 export async function createAdminLandingBlock(
   payload: AdminLandingBlockCreatePayload
 ): Promise<AdminLandingBlock> {
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(BASE_URL, {
     method: "POST",
-    headers: mutationHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
@@ -167,10 +158,11 @@ export async function updateAdminLandingBlock(
     throw new Error("LandingBlock id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(`${BASE_URL}${id}/`, {
     method: "PATCH",
-    headers: mutationHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
@@ -184,10 +176,8 @@ export async function deleteAdminLandingBlock(
     throw new Error("LandingBlock id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(`${BASE_URL}${id}/`, {
     method: "DELETE",
-    headers: mutationHeaders(),
   });
 
   if (!res.ok) {
@@ -202,10 +192,11 @@ export async function reorderAdminLandingBlocks(
     throw new Error("Reorder payload must be a non-empty array");
   }
 
-  const res = await fetch(`${BASE_URL}reorder/`, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(`${BASE_URL}reorder/`, {
     method: "POST",
-    headers: mutationHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(items),
   });
 

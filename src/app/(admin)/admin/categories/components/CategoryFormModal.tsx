@@ -3,8 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import "./category-form-modal.css";
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "@/lib/admin-api";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+import {
+  createAdminCategory,
+  updateAdminCategory,
+} from "@/lib/admin-api/categories";
+
 import type { AdminCategory } from "@/lib/admin-api/types";
 import { useAdminToast } from "@/hooks/useAdminToast";
 
@@ -56,6 +59,8 @@ export default function CategoryFormModal({
   /* ================= SYNC EDIT ================= */
 
   useEffect(() => {
+    if (!open) return;
+
     if (category) {
       setName(category.name);
       setSlug(category.slug);
@@ -99,10 +104,12 @@ export default function CategoryFormModal({
     if (!slug.trim()) return "Slug is required.";
 
     if (isCampaign) {
-      if (!startsAt || !endsAt)
+      if (!startsAt || !endsAt) {
         return "Campaign requires start and end time.";
-      if (new Date(startsAt) >= new Date(endsAt))
+      }
+      if (new Date(startsAt) >= new Date(endsAt)) {
         return "Campaign start must be before end.";
+      }
     }
 
     return null;
@@ -121,8 +128,6 @@ export default function CategoryFormModal({
     setError(null);
 
     try {
-      const csrf = getCSRFToken();
-
       const payload = {
         name: name.trim(),
         slug: slug.trim(),
@@ -130,41 +135,28 @@ export default function CategoryFormModal({
         is_active: isActive,
         ordering,
         priority,
+
+        // 🔥 Campaign
         is_campaign: isCampaign,
         starts_at: isCampaign ? startsAt : null,
         ends_at: isCampaign ? endsAt : null,
         show_countdown: isCampaign ? showCountdown : false,
       };
 
-      const res = await fetch(
-        isEditMode
-          ? `${API_BASE}/api/admin/categories/${category!.id}/`
-          : `${API_BASE}/api/admin/categories/`,
-        {
-          ...DEFAULT_FETCH_OPTIONS,
-          method: isEditMode ? "PATCH" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(csrf ? { "X-CSRFToken": csrf } : {}),
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Save failed");
+      if (isEditMode && category) {
+        await updateAdminCategory(category.id, payload);
+        showToast("Category updated", "success");
+      } else {
+        await createAdminCategory(payload);
+        showToast("Category created", "success");
       }
-
-      showToast(
-        isEditMode ? "Category updated" : "Category created",
-        "success"
-      );
 
       onSuccess();
       onClose();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Save failed");
+      setError(
+        e instanceof Error ? e.message : "Save failed"
+      );
     } finally {
       setSaving(false);
     }
@@ -178,20 +170,32 @@ export default function CategoryFormModal({
     <div className="admin-modal-overlay">
       <div className="admin-modal">
         <header className="admin-modal-header">
-          <h3>{isEditMode ? "Edit Category" : "New Category"}</h3>
+          <h3>
+            {isEditMode ? "Edit Category" : "New Category"}
+          </h3>
         </header>
 
-        {error && <div className="admin-modal-error">{error}</div>}
+        {error && (
+          <div className="admin-modal-error">
+            {error}
+          </div>
+        )}
 
         <div className="admin-modal-body">
           <div className="form-group">
             <label>Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           <div className="form-group">
             <label>Slug</label>
-            <input value={slug} onChange={(e) => setSlug(e.target.value)} />
+            <input
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+            />
           </div>
 
           <div className="form-group">
@@ -199,7 +203,11 @@ export default function CategoryFormModal({
             <select
               value={parentId ?? ""}
               onChange={(e) =>
-                setParentId(e.target.value ? Number(e.target.value) : null)
+                setParentId(
+                  e.target.value
+                    ? Number(e.target.value)
+                    : null
+                )
               }
             >
               <option value="">— No parent —</option>
@@ -215,7 +223,9 @@ export default function CategoryFormModal({
             <input
               type="checkbox"
               checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
+              onChange={(e) =>
+                setIsActive(e.target.checked)
+              }
             />
             Active
           </label>
@@ -226,7 +236,9 @@ export default function CategoryFormModal({
             <input
               type="checkbox"
               checked={isCampaign}
-              onChange={(e) => setIsCampaign(e.target.checked)}
+              onChange={(e) =>
+                setIsCampaign(e.target.checked)
+              }
             />
             Campaign category
           </label>
@@ -238,7 +250,9 @@ export default function CategoryFormModal({
                 <input
                   type="datetime-local"
                   value={startsAt ?? ""}
-                  onChange={(e) => setStartsAt(e.target.value)}
+                  onChange={(e) =>
+                    setStartsAt(e.target.value)
+                  }
                 />
               </div>
 
@@ -247,7 +261,9 @@ export default function CategoryFormModal({
                 <input
                   type="datetime-local"
                   value={endsAt ?? ""}
-                  onChange={(e) => setEndsAt(e.target.value)}
+                  onChange={(e) =>
+                    setEndsAt(e.target.value)
+                  }
                 />
               </div>
 
@@ -255,7 +271,9 @@ export default function CategoryFormModal({
                 <input
                   type="checkbox"
                   checked={showCountdown}
-                  onChange={(e) => setShowCountdown(e.target.checked)}
+                  onChange={(e) =>
+                    setShowCountdown(e.target.checked)
+                  }
                 />
                 Show countdown
               </label>
@@ -270,7 +288,9 @@ export default function CategoryFormModal({
               <input
                 type="number"
                 value={priority}
-                onChange={(e) => setPriority(Number(e.target.value))}
+                onChange={(e) =>
+                  setPriority(Number(e.target.value))
+                }
               />
             </div>
 
@@ -279,7 +299,9 @@ export default function CategoryFormModal({
               <input
                 type="number"
                 value={ordering}
-                onChange={(e) => setOrdering(Number(e.target.value))}
+                onChange={(e) =>
+                  setOrdering(Number(e.target.value))
+                }
               />
             </div>
           </div>

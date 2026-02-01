@@ -8,13 +8,8 @@ import {
   useState,
 } from "react";
 
-import {
-  API_BASE,
-  DEFAULT_FETCH_OPTIONS,
-  parseErrorResponse,
-} from "@/lib/admin-api";
 import { fetchAdminCategoryTree } from "@/lib/admin-api/categories";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+import { updateAdminProduct } from "@/lib/admin-api/products";
 
 import type { AdminCategoryTreeNode } from "@/lib/admin-api/types";
 import { useAdminToast } from "@/hooks/useAdminToast";
@@ -50,9 +45,7 @@ export default function ProductCategoryManager({
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(
-    null
-  );
+  const [error, setError] = useState<string | null>(null);
 
   const mountedRef = useRef(true);
 
@@ -69,7 +62,6 @@ export default function ProductCategoryManager({
     const b = [...initialCategoryIds].sort();
 
     if (a.length !== b.length) return true;
-
     return a.some((id, i) => id !== b[i]);
   }, [selected, initialCategoryIds]);
 
@@ -83,9 +75,7 @@ export default function ProductCategoryManager({
         const data = await fetchAdminCategoryTree();
 
         if (!Array.isArray(data)) {
-          throw new Error(
-            "Invalid category tree response"
-          );
+          throw new Error("Invalid category tree response");
         }
 
         if (mountedRef.current) {
@@ -112,7 +102,7 @@ export default function ProductCategoryManager({
     };
   }, []);
 
-  /* ================= TOGGLE CATEGORY (LOCAL) ================= */
+  /* ================= TOGGLE CATEGORY (LOCAL ONLY) ================= */
 
   const toggleCategory = useCallback((id: number) => {
     setSelected((prev) => {
@@ -130,32 +120,9 @@ export default function ProductCategoryManager({
     setSaving(true);
 
     try {
-      const csrfToken = getCSRFToken();
-
-      if (!csrfToken) {
-        throw new Error(
-          "CSRF token missing. Please reload."
-        );
-      }
-
-      const res = await fetch(
-        `${API_BASE}/api/admin/products/${productId}/`,
-        {
-          ...DEFAULT_FETCH_OPTIONS,
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-          },
-          body: JSON.stringify({
-            category_ids: Array.from(selected),
-          }),
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error(await parseErrorResponse(res));
-      }
+      await updateAdminProduct(productId, {
+        category_ids: Array.from(selected),
+      } as any); // backend owns validation
 
       showToast("Categories updated", "success");
     } catch (err) {
@@ -174,9 +141,7 @@ export default function ProductCategoryManager({
 
   return (
     <div className="admin-section">
-      <div className="admin-section-title">
-        Categories
-      </div>
+      <div className="admin-section-title">Categories</div>
 
       {loading && (
         <div className="admin-table-state">

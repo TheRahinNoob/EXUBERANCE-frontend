@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./admin.css";
 
 import AdminNav from "./components/AdminNav";
 import { AdminToastProvider } from "../admin/components/AdminToastProvider";
 import AdminAmbientBackground from "../admin/components/AdminAmbientBackground";
+
+import { initCSRF } from "@/lib/admin-api/csrf";
 
 /**
  * ==================================================
@@ -20,6 +22,19 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  /**
+   * ==================================================
+   * CSRF INITIALIZATION (RUN ONCE)
+   * --------------------------------------------------
+   * - Fetches /api/csrf/
+   * - Sets csrftoken cookie
+   * - Required for Django session auth
+   * ==================================================
+   */
+  useEffect(() => {
+    initCSRF();
+  }, []);
 
   return (
     <AdminToastProvider>

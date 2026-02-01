@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./category-edit-modal.css";
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "@/lib/admin-api";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+import { API_BASE, adminFetch } from "@/lib/admin-api";
 import type { AdminCategoryTreeNode } from "@/lib/admin-api/types";
 import { useAdminToast } from "@/hooks/useAdminToast";
 
@@ -170,16 +169,12 @@ export default function CategoryEditModal({
     setSaving(true);
 
     try {
-      const csrf = getCSRFToken();
-
-      const res = await fetch(
+      const res = await adminFetch(
         `${API_BASE}/api/admin/categories/${category.id}/`,
         {
-          ...DEFAULT_FETCH_OPTIONS,
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            ...(csrf ? { "X-CSRFToken": csrf } : {}),
           },
           body: JSON.stringify({
             name: name.trim(),
@@ -228,7 +223,10 @@ export default function CategoryEditModal({
         <div className="admin-modal-body">
           <div className="form-group">
             <label>Name</label>
-            <input value={name} onChange={(e) => setName(e.target.value)} />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           <div className="form-group">
@@ -247,7 +245,11 @@ export default function CategoryEditModal({
             <select
               value={parentId ?? ""}
               onChange={(e) =>
-                setParentId(e.target.value ? Number(e.target.value) : null)
+                setParentId(
+                  e.target.value
+                    ? Number(e.target.value)
+                    : null
+                )
               }
             >
               <option value="">— Root —</option>
@@ -263,7 +265,9 @@ export default function CategoryEditModal({
             <input
               type="checkbox"
               checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
+              onChange={(e) =>
+                setIsActive(e.target.checked)
+              }
             />
             Active
           </label>
@@ -274,7 +278,9 @@ export default function CategoryEditModal({
             <input
               type="checkbox"
               checked={isCampaign}
-              onChange={(e) => setIsCampaign(e.target.checked)}
+              onChange={(e) =>
+                setIsCampaign(e.target.checked)
+              }
             />
             Campaign category
           </label>
@@ -286,7 +292,11 @@ export default function CategoryEditModal({
                 <input
                   type="datetime-local"
                   value={startsAt ?? ""}
-                  onChange={(e) => setStartsAt(e.target.value || null)}
+                  onChange={(e) =>
+                    setStartsAt(
+                      e.target.value || null
+                    )
+                  }
                 />
               </div>
 
@@ -295,7 +305,11 @@ export default function CategoryEditModal({
                 <input
                   type="datetime-local"
                   value={endsAt ?? ""}
-                  onChange={(e) => setEndsAt(e.target.value || null)}
+                  onChange={(e) =>
+                    setEndsAt(
+                      e.target.value || null
+                    )
+                  }
                 />
               </div>
 
@@ -303,7 +317,11 @@ export default function CategoryEditModal({
                 <input
                   type="checkbox"
                   checked={showCountdown}
-                  onChange={(e) => setShowCountdown(e.target.checked)}
+                  onChange={(e) =>
+                    setShowCountdown(
+                      e.target.checked
+                    )
+                  }
                 />
                 Show countdown
               </label>
@@ -312,7 +330,10 @@ export default function CategoryEditModal({
         </div>
 
         <footer className="admin-modal-actions">
-          <button className="btn ghost" onClick={onClose}>
+          <button
+            className="btn ghost"
+            onClick={onClose}
+          >
             Cancel
           </button>
           <button

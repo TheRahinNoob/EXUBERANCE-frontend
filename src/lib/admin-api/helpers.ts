@@ -1,5 +1,10 @@
-// lib/admin-api/helpers.ts
+// src/lib/admin-api/helpers.ts
 
+/**
+ * ==================================================
+ * SAFE JSON PARSER
+ * ==================================================
+ */
 export async function safeJson<T>(res: Response): Promise<T> {
   try {
     return await res.json();
@@ -8,7 +13,14 @@ export async function safeJson<T>(res: Response): Promise<T> {
   }
 }
 
-export async function parseErrorResponse(res: Response): Promise<string> {
+/**
+ * ==================================================
+ * ERROR RESPONSE PARSER (DJANGO / DRF SAFE)
+ * ==================================================
+ */
+export async function parseErrorResponse(
+  res: Response
+): Promise<string> {
   try {
     const data = await res.json();
     return (
@@ -23,6 +35,11 @@ export async function parseErrorResponse(res: Response): Promise<string> {
   }
 }
 
+/**
+ * ==================================================
+ * QUERY STRING BUILDER
+ * ==================================================
+ */
 export function buildQuery(
   params?: Record<string, string | number | undefined>
 ) {
@@ -38,4 +55,29 @@ export function buildQuery(
 
   const qs = query.toString();
   return qs ? `?${qs}` : "";
+}
+
+/**
+ * ==================================================
+ * CSRF TOKEN READER (DJANGO STANDARD)
+ * ==================================================
+ *
+ * PURPOSE:
+ * - Reads `csrftoken` cookie set by Django
+ * - Used for POST / PATCH / DELETE requests
+ *
+ * SAFETY:
+ * - SSR / RSC safe (returns null)
+ * - Browser-only execution
+ */
+export function getCSRFCookie(): string | null {
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  const match = document.cookie.match(
+    /(?:^|;\s*)csrftoken=([^;]+)/
+  );
+
+  return match ? decodeURIComponent(match[1]) : null;
 }

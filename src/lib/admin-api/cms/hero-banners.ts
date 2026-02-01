@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * ADMIN CMS API — HERO BANNERS
+ * ADMIN CMS API — HERO BANNERS (CANONICAL)
  * ==================================================
  *
  * DESIGN PRINCIPLES:
@@ -14,11 +14,13 @@
 import {
   API_BASE,
   DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "@/lib/admin-api/config";
+
+import {
   safeJson,
   parseErrorResponse,
-} from "@/lib/admin-api";
-
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+} from "@/lib/admin-api/helpers";
 
 /* ==================================================
    TYPES — BACKEND CONTRACT
@@ -83,42 +85,18 @@ export type AdminHeroBannerUpdatePayload = {
 const BASE_URL = `${API_BASE}/api/admin/cms/hero-banners/`;
 
 /* ==================================================
-   TYPE GUARDS — DRF ERROR SAFETY
-================================================== */
-
-function hasDetail(
-  data: unknown
-): data is { detail: string } {
-  return (
-    typeof data === "object" &&
-    data !== null &&
-    "detail" in data &&
-    typeof (data as any).detail === "string"
-  );
-}
-
-/* ==================================================
    INTERNAL HELPERS
 ================================================== */
-
-function mutationHeaders(): HeadersInit {
-  const csrf = getCSRFToken();
-  return csrf ? { "X-CSRFToken": csrf } : {};
-}
 
 /**
  * Unified response handler
  * - Preserves DRF error messages verbatim
  */
 async function handleResponse<T>(res: Response): Promise<T> {
-  const data = await safeJson(res);
+  const data = await safeJson<unknown>(res);
 
   if (!res.ok) {
-    throw new Error(
-      hasDetail(data)
-        ? data.detail
-        : await parseErrorResponse(res)
-    );
+    throw new Error(await parseErrorResponse(res));
   }
 
   return data as T;
@@ -155,11 +133,11 @@ function buildFormData<T extends Record<string, unknown>>(
 }
 
 /* ==================================================
-   API FUNCTIONS
+   API — LIST
 ================================================== */
 
 /**
- * LIST
+ * GET /api/admin/cms/hero-banners/
  */
 export async function fetchAdminHeroBanners(): Promise<
   AdminHeroBanner[]
@@ -178,62 +156,77 @@ export async function fetchAdminHeroBanners(): Promise<
   return data as AdminHeroBanner[];
 }
 
+/* ==================================================
+   API — CREATE (multipart)
+================================================== */
+
 /**
- * CREATE
+ * POST /api/admin/cms/hero-banners/
  */
 export async function createAdminHeroBanner(
   payload: AdminHeroBannerCreatePayload
 ): Promise<AdminHeroBanner> {
-  if (!payload.image_desktop) {
+  if (!(payload.image_desktop instanceof File)) {
     throw new Error("image_desktop is required");
   }
 
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "POST",
-    headers: mutationHeaders(),
-    body: buildFormData(payload),
-  });
+  const res = await adminFetch(
+    BASE_URL,
+    {
+      method: "POST",
+      body: buildFormData(payload),
+    }
+  );
 
   return handleResponse<AdminHeroBanner>(res);
 }
 
+/* ==================================================
+   API — UPDATE (multipart)
+================================================== */
+
 /**
- * UPDATE
+ * PATCH /api/admin/cms/hero-banners/{id}/
  */
 export async function updateAdminHeroBanner(
   id: number,
   payload: AdminHeroBannerUpdatePayload
 ): Promise<AdminHeroBanner> {
-  if (!id) {
+  if (!Number.isFinite(id)) {
     throw new Error("HeroBanner id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "PATCH",
-    headers: mutationHeaders(),
-    body: buildFormData(payload),
-  });
+  const res = await adminFetch(
+    `${BASE_URL}${id}/`,
+    {
+      method: "PATCH",
+      body: buildFormData(payload),
+    }
+  );
 
   return handleResponse<AdminHeroBanner>(res);
 }
 
+/* ==================================================
+   API — DELETE
+================================================== */
+
 /**
- * DELETE
+ * DELETE /api/admin/cms/hero-banners/{id}/
  */
 export async function deleteAdminHeroBanner(
   id: number
 ): Promise<void> {
-  if (!id) {
+  if (!Number.isFinite(id)) {
     throw new Error("HeroBanner id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
-    method: "DELETE",
-    headers: mutationHeaders(),
-  });
+  const res = await adminFetch(
+    `${BASE_URL}${id}/`,
+    {
+      method: "DELETE",
+    }
+  );
 
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));

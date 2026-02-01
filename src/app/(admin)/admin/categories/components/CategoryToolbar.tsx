@@ -3,8 +3,7 @@
 import { useMemo, useState } from "react";
 import "./category-toolbar.css";
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "@/lib/admin-api";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+import { API_BASE, adminFetch } from "@/lib/admin-api";
 import { useAdminToast } from "@/hooks/useAdminToast";
 
 /* ==================================================
@@ -60,16 +59,12 @@ export default function CategoryToolbar({ onCreated }: Props) {
     setSaving(true);
 
     try {
-      const csrf = getCSRFToken();
-
-      const res = await fetch(
+      const res = await adminFetch(
         `${API_BASE}/api/admin/categories/`,
         {
-          ...DEFAULT_FETCH_OPTIONS,
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            ...(csrf ? { "X-CSRFToken": csrf } : {}),
           },
           body: JSON.stringify({
             name: name.trim(),

@@ -1,13 +1,33 @@
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "../config";
-import { getCSRFToken } from "../csrf";
-import { safeJson, parseErrorResponse } from "../helpers";
+// ==================================================
+// ADMIN HOT CATEGORY BLOCKS API — CANONICAL
+// ==================================================
+//
+// Mirrors Django Admin: HotCategoryBlockAdmin
+// Consumed by Next.js Admin Panel
+//
+// Guarantees:
+// - Session auth + CSRF (centralized)
+// - Explicit failures
+// - Backend is final authority
+//
+
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "../config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "../helpers";
 
 /* ==================================================
    TYPES — CANONICAL CMS CONTRACTS
 ================================================== */
 
 export type AdminHotCategoryBlockItem = {
-  id: number; // 🔒 HotCategoryBlockItem.id
+  id: number;
   ordering: number;
   is_active: boolean;
   hot_category: {
@@ -40,32 +60,23 @@ export type AdminHotCategoryBlockPayload = {
 
 export type AdminHotCategoryBlockItemReorderPayload = {
   items: {
-    id: number; // 🔒 HotCategoryBlockItem.id ONLY
+    id: number;
     ordering: number;
     is_active: boolean;
   }[];
 };
 
-export type AdminHotCategoryBlockItemCreateResponse = {
-  id: number;
-  ordering: number;
-  is_active: boolean;
-  hot_category: {
-    id: number;
-    image: string | null;
-    category: {
-      id: number;
-      name: string;
-      slug: string;
-    };
-  };
-};
+export type AdminHotCategoryBlockItemCreateResponse =
+  AdminHotCategoryBlockItem;
 
 /* ==================================================
-   INTERNAL GUARDS (ZERO-RUNTIME COST)
+   INTERNAL GUARDS
 ================================================== */
 
-function assertId(value: unknown, label: string): asserts value is number {
+function assertId(
+  value: unknown,
+  label: string
+): asserts value is number {
   if (!Number.isFinite(value)) {
     throw new Error(`Invalid ${label}`);
   }
@@ -128,24 +139,16 @@ export async function fetchAdminHotCategoryBlock(
 export async function createAdminHotCategoryBlock(
   payload: AdminHotCategoryBlockPayload
 ): Promise<AdminHotCategoryBlock> {
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
   );
-
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
 
   return safeJson<AdminHotCategoryBlock>(res);
 }
@@ -160,24 +163,16 @@ export async function updateAdminHotCategoryBlock(
 ): Promise<AdminHotCategoryBlock> {
   assertId(id, "block id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
   );
-
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
 
   return safeJson<AdminHotCategoryBlock>(res);
 }
@@ -191,16 +186,10 @@ export async function deleteAdminHotCategoryBlock(
 ): Promise<void> {
   assertId(id, "block id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 
@@ -220,16 +209,12 @@ export async function createAdminHotCategoryBlockItem(
   assertId(blockId, "block id");
   assertId(hotCategoryId, "hot category id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/${blockId}/items/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify({
         hot_category_id: hotCategoryId,
@@ -237,15 +222,11 @@ export async function createAdminHotCategoryBlockItem(
     }
   );
 
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
-
   return safeJson<AdminHotCategoryBlockItemCreateResponse>(res);
 }
 
 /* ==================================================
-   BLOCK ITEM — DELETE (🔥 THIS ENABLES UI DELETE)
+   BLOCK ITEM — DELETE
 ================================================== */
 
 export async function deleteAdminHotCategoryBlockItem(
@@ -255,16 +236,10 @@ export async function deleteAdminHotCategoryBlockItem(
   assertId(blockId, "block id");
   assertId(itemId, "block item id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/${blockId}/items/${itemId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 
@@ -283,16 +258,12 @@ export async function reorderAdminHotCategoryBlockItems(
 ): Promise<void> {
   assertId(blockId, "block id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-category-blocks/${blockId}/items/reorder/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }

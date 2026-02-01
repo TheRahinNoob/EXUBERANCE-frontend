@@ -1,6 +1,24 @@
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
-import { safeJson, parseErrorResponse } from "./helpers";
-import { getCSRFToken } from "./csrf";
+// ==================================================
+// ADMIN PRODUCT ATTRIBUTES API (CANONICAL)
+// ==================================================
+//
+// Rules:
+// - Backend is the single source of truth
+// - NO manual CSRF handling
+// - ALL mutations go through adminFetch
+// - GET requests may use fetch directly
+//
+
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "./config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "./helpers";
 
 /* ==================================================
    TYPES — ATTRIBUTE DEFINITIONS (GLOBAL)
@@ -26,17 +44,10 @@ export type AdminProductAttributeValue = {
 
 /* ==================================================
    ATTRIBUTE DEFINITIONS (GLOBAL)
-   /api/admin/attribute-definitions/
 ================================================== */
 
 /**
  * GET — List attribute definitions
- *
- * 🔒 Normalized + Type-safe
- * Supports:
- * - Array
- * - { items: [] }
- * - { results: [] }
  */
 export async function fetchAdminAttributeDefinitions(): Promise<
   AdminProductAttributeDefinition[]
@@ -84,16 +95,16 @@ export async function createAdminAttributeDefinition(payload: {
   name: string;
   ordering?: number;
 }): Promise<AdminProductAttributeDefinition> {
-  const csrf = getCSRFToken();
+  if (!payload.name?.trim()) {
+    throw new Error("Attribute name is required");
+  }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/attribute-definitions/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -103,11 +114,11 @@ export async function createAdminAttributeDefinition(payload: {
     throw new Error(await parseErrorResponse(res));
   }
 
-  return (await safeJson(res)) as AdminProductAttributeDefinition;
+  return safeJson(res);
 }
 
 /**
- * PATCH — Update attribute definition (PARTIAL)
+ * PATCH — Update attribute definition
  */
 export async function updateAdminAttributeDefinition(
   id: number,
@@ -116,7 +127,9 @@ export async function updateAdminAttributeDefinition(
     ordering?: number;
   }
 ): Promise<AdminProductAttributeDefinition> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(id)) {
+    throw new Error("Invalid attribute definition id");
+  }
 
   if (
     payload.name === undefined &&
@@ -125,14 +138,12 @@ export async function updateAdminAttributeDefinition(
     throw new Error("Nothing to update");
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/attribute-definitions/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -142,7 +153,7 @@ export async function updateAdminAttributeDefinition(
     throw new Error(await parseErrorResponse(res));
   }
 
-  return (await safeJson(res)) as AdminProductAttributeDefinition;
+  return safeJson(res);
 }
 
 /**
@@ -151,14 +162,14 @@ export async function updateAdminAttributeDefinition(
 export async function deleteAdminAttributeDefinition(
   id: number
 ): Promise<void> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(id)) {
+    throw new Error("Invalid attribute definition id");
+  }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/attribute-definitions/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrf ? { "X-CSRFToken": csrf } : undefined,
     }
   );
 
@@ -173,11 +184,14 @@ export async function deleteAdminAttributeDefinition(
 
 /**
  * GET — List attribute values for a product
- * Backend returns: { items: [...] }
  */
 export async function fetchAdminProductAttributes(
   productId: number
 ): Promise<AdminProductAttributeValue[]> {
+  if (!Number.isFinite(productId)) {
+    throw new Error("Invalid product id");
+  }
+
   const res = await fetch(
     `${API_BASE}/api/admin/products/${productId}/attributes/`,
     DEFAULT_FETCH_OPTIONS
@@ -212,16 +226,16 @@ export async function createAdminProductAttribute(
     ordering?: number;
   }
 ): Promise<AdminProductAttributeValue> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(productId)) {
+    throw new Error("Invalid product id");
+  }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${productId}/attributes/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -231,7 +245,7 @@ export async function createAdminProductAttribute(
     throw new Error(await parseErrorResponse(res));
   }
 
-  return (await safeJson(res)) as AdminProductAttributeValue;
+  return safeJson(res);
 }
 
 /**
@@ -244,7 +258,9 @@ export async function updateAdminProductAttribute(
     ordering?: number;
   }
 ): Promise<AdminProductAttributeValue> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(pavId)) {
+    throw new Error("Invalid product attribute id");
+  }
 
   if (
     payload.value === undefined &&
@@ -253,14 +269,12 @@ export async function updateAdminProductAttribute(
     throw new Error("Nothing to update");
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-attributes/${pavId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -270,7 +284,7 @@ export async function updateAdminProductAttribute(
     throw new Error(await parseErrorResponse(res));
   }
 
-  return (await safeJson(res)) as AdminProductAttributeValue;
+  return safeJson(res);
 }
 
 /**
@@ -279,14 +293,14 @@ export async function updateAdminProductAttribute(
 export async function deleteAdminProductAttribute(
   pavId: number
 ): Promise<void> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(pavId)) {
+    throw new Error("Invalid product attribute id");
+  }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-attributes/${pavId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrf ? { "X-CSRFToken": csrf } : undefined,
     }
   );
 
@@ -296,22 +310,22 @@ export async function deleteAdminProductAttribute(
 }
 
 /**
- * POST — Reorder attribute values (Drag & Drop)
+ * POST — Reorder attribute values
  */
 export async function reorderAdminProductAttributes(
   productId: number,
   orderedIds: number[]
 ): Promise<void> {
-  const csrf = getCSRFToken();
+  if (!Number.isFinite(productId)) {
+    throw new Error("Invalid product id");
+  }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${productId}/attributes/reorder/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify({ ordered_ids: orderedIds }),
     }

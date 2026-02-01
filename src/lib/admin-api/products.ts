@@ -5,22 +5,30 @@
 // Rules:
 // - Backend is the single source of truth
 // - One mutation = one backend intent
-// - No inferred state transitions
+// - ALL mutations use adminFetch
+// - NO manual CSRF handling
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "./config";
+
 import {
   buildQuery,
   safeJson,
   parseErrorResponse,
 } from "./helpers";
-import { getCSRFToken } from "./csrf";
 
 import type {
   AdminProduct,
   AdminProductDetail,
 } from "./types";
-import type { PaginatedResponse } from "./pagination";
+
+import type {
+  PaginatedResponse,
+} from "./pagination";
 
 /* ==================================================
    INTERNAL ASSERTIONS
@@ -39,18 +47,10 @@ function assertFiniteId(
    QUERY PARAM TYPES (STRICT CONTRACT)
 ================================================== */
 
-/**
- * 🔍 Product list query parameters
- * MUST match backend query support
- */
 export type FetchAdminProductsParams = {
   page?: number;
   page_size?: number;
-
-  /** 🔍 Search by name / SKU / keyword */
   search?: string;
-
-  /** Abort controller for in-flight requests */
   signal?: AbortSignal;
 };
 
@@ -92,7 +92,6 @@ export async function fetchAdminProducts(
   params: FetchAdminProductsParams = {}
 ): Promise<PaginatedResponse<AdminProduct>> {
   const { signal, ...queryParams } = params;
-
   const query = buildQuery(queryParams);
 
   const res = await fetch(
@@ -152,16 +151,12 @@ export async function createAdminProduct(payload: {
   is_active: boolean;
   created_at: string;
 }> {
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -184,16 +179,12 @@ export async function updateAdminProductBasicInfo(
 ): Promise<AdminProductBasicInfoUpdateResponse> {
   assertFiniteId(id, "product id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${id}/basic/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -220,23 +211,18 @@ export async function updateAdminProduct(
 ): Promise<AdminProductUpdateResponse> {
   assertFiniteId(id, "product id");
 
-  const csrfToken = getCSRFToken();
-
-  // 🔒 Strip undefined keys (IMPORTANT)
   const cleanPayload = Object.fromEntries(
     Object.entries(payload).filter(
       ([, v]) => v !== undefined
     )
   );
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(cleanPayload),
     }
@@ -259,22 +245,19 @@ export async function updateAdminProductDescription(
 ): Promise<AdminProductDescriptionUpdateResponse> {
   assertFiniteId(id, "product id");
 
-  const csrfToken = getCSRFToken();
-
-  // 🔥 Backend contract: description must exist
   const payload = {
     description:
-      typeof description === "string" ? description : "",
+      typeof description === "string"
+        ? description
+        : "",
   };
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${id}/description/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -296,16 +279,10 @@ export async function deactivateAdminProduct(
 ): Promise<AdminProductDeactivateResponse> {
   assertFiniteId(id, "product id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${id}/deactivate/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 

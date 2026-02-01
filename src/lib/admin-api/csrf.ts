@@ -2,33 +2,30 @@
 
 /**
  * ==================================================
- * CSRF TOKEN HELPER (DJANGO COMPATIBLE)
- * --------------------------------------------------
- * Reads CSRF token from Django's `csrftoken` cookie.
+ * CSRF COOKIE INITIALIZER (DJANGO)
+ * ==================================================
  *
- * Guarantees:
- * - Safe for Next.js App Router
- * - Safe for SSR / RSC (returns null)
- * - Compatible with session-based auth
- * - Zero side effects
+ * PURPOSE:
+ * - Triggers Django to set the `csrftoken` cookie
+ * - REQUIRED for session-based admin APIs
+ *
+ * HOW IT WORKS:
+ * - Calls backend `/api/csrf/`
+ * - Backend responds with Set-Cookie: csrftoken=...
+ * - Browser stores cookie automatically
  *
  * IMPORTANT:
- * - This function ONLY reads the token
- * - It NEVER sets headers
- * - It NEVER mutates cookies
+ * - This function DOES NOT return the token
+ * - This function MUST be called once on admin load
  * ==================================================
  */
 
-export function getCSRFToken(): string | null {
-  // SSR / Server Components safety
-  if (typeof document === "undefined") {
-    return null;
-  }
+import { API_BASE } from "./config";
 
-  // Strict, fast cookie match (Django standard)
-  const match = document.cookie.match(
-    /(?:^|;\s*)csrftoken=([^;]+)/
-  );
-
-  return match ? decodeURIComponent(match[1]) : null;
+export async function initCSRF(): Promise<void> {
+  await fetch(`${API_BASE}/api/csrf/`, {
+    method: "GET",
+    credentials: "include",
+    cache: "no-store",
+  });
 }

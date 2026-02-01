@@ -6,9 +6,8 @@ import "./category-node.css";
 import type { AdminCategoryTreeNode } from "@/lib/admin-api/types";
 import {
   API_BASE,
-  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
 } from "@/lib/admin-api";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
 import { useAdminToast } from "@/hooks/useAdminToast";
 
 import CategoryEditModal from "./CategoryEditModal";
@@ -49,7 +48,7 @@ function CategoryNode({
   );
 
   /* ==================================================
-     HELPERS — API PATCH
+     HELPERS — API PATCH (CSRF SAFE)
   ================================================== */
 
   const patchCategory = async (
@@ -59,16 +58,12 @@ function CategoryNode({
     setLoading(true);
 
     try {
-      const csrf = getCSRFToken();
-
-      const res = await fetch(
+      const res = await adminFetch(
         `${API_BASE}/api/admin/categories/${node.id}/`,
         {
-          ...DEFAULT_FETCH_OPTIONS,
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            ...(csrf ? { "X-CSRFToken": csrf } : {}),
           },
           body: JSON.stringify(payload),
         }
@@ -124,16 +119,10 @@ function CategoryNode({
     setLoading(true);
 
     try {
-      const csrf = getCSRFToken();
-
-      const res = await fetch(
+      const res = await adminFetch(
         `${API_BASE}/api/admin/categories/${node.id}/`,
         {
-          ...DEFAULT_FETCH_OPTIONS,
           method: "DELETE",
-          headers: {
-            ...(csrf ? { "X-CSRFToken": csrf } : {}),
-          },
         }
       );
 
@@ -265,7 +254,7 @@ function CategoryNode({
           is_active: node.is_active,
           is_campaign: node.is_campaign,
 
-          // ✅ REQUIRED FOR CategoryPayload (FIX)
+          // REQUIRED FOR CategoryPayload
           starts_at: node.starts_at ?? null,
           ends_at: node.ends_at ?? null,
           show_countdown: node.show_countdown ?? false,

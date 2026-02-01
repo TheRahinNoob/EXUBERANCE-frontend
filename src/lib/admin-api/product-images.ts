@@ -1,19 +1,25 @@
-// src/lib/admin-api/product-images.ts
 // ==================================================
-// ADMIN PRODUCT IMAGE API — GALLERY DOMAIN
+// ADMIN PRODUCT IMAGE API — GALLERY DOMAIN (CANONICAL)
 // ==================================================
 //
-// RULES (STRICT):
-// - Handles ONLY ProductImage domain
-// - Backend is SINGLE SOURCE OF TRUTH
-// - NO UI state logic here
-// - NO product mutations here
+// Rules:
+// - Backend is SINGLE source of truth
+// - NO manual CSRF handling
+// - ALL mutations use adminFetch
+// - Multipart-safe
 // - Absolute URLs only
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
-import { safeJson, parseErrorResponse } from "./helpers";
-import { getCSRFToken } from "./csrf";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "./config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "./helpers";
 
 /* ==================================================
    TYPES — STRICT BACKEND CONTRACT
@@ -53,10 +59,7 @@ export async function fetchAdminProductImages(
 
   const res = await fetch(
     `${API_BASE}/api/admin/products/${productId}/images/`,
-    {
-      ...DEFAULT_FETCH_OPTIONS,
-      method: "GET",
-    }
+    DEFAULT_FETCH_OPTIONS
   );
 
   if (!res.ok) {
@@ -69,7 +72,6 @@ export async function fetchAdminProductImages(
     items: AdminProductImage[];
   }>(res);
 
-  // 🔒 HARD CONTRACT CHECK
   if (
     !data ||
     typeof data !== "object" ||
@@ -101,9 +103,7 @@ export async function uploadAdminProductImage(
     throw new Error("Invalid image file");
   }
 
-  const csrfToken = getCSRFToken();
   const formData = new FormData();
-
   formData.append("image", file);
 
   if (options?.alt_text) {
@@ -113,20 +113,16 @@ export async function uploadAdminProductImage(
   if (options?.is_primary !== undefined) {
     formData.append(
       "is_primary",
-      String(options.is_primary)
+      String(Boolean(options.is_primary))
     );
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${productId}/images/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
       body: formData,
-      // ❗ NEVER set Content-Type manually
+      // ❗ DO NOT set Content-Type
     }
   );
 
@@ -136,7 +132,6 @@ export async function uploadAdminProductImage(
 
   const data = await safeJson<AdminProductImage>(res);
 
-  // 🔒 HARD CONTRACT CHECK
   if (
     !data ||
     typeof data !== "object" ||
@@ -154,7 +149,6 @@ export async function uploadAdminProductImage(
 
 /* ==================================================
    SET PRIMARY IMAGE (ADMIN)
-   🔥 FIXED: NO BODY, NO CONTENT-TYPE
 ================================================== */
 
 export async function setAdminProductPrimaryImage(
@@ -162,18 +156,12 @@ export async function setAdminProductPrimaryImage(
 ): Promise<void> {
   assertFiniteId(imageId, "image id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-images/${imageId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
-      // ✅ NO BODY
-      // ✅ NO Content-Type
+      // ✅ no body
+      // ✅ no headers
     }
   );
 
@@ -191,16 +179,10 @@ export async function deleteAdminProductImage(
 ): Promise<void> {
   assertFiniteId(imageId, "image id");
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-images/${imageId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 

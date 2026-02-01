@@ -10,9 +10,16 @@
 // - No field inference, no silent fixes
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "../config";
-import { getCSRFToken } from "../csrf";
-import { safeJson, parseErrorResponse } from "../helpers";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "../config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "../helpers";
 
 /* ==================================================
    TYPES — READ MODELS
@@ -25,7 +32,7 @@ export type AdminComfortCategoryRail = {
     name: string;
     slug: string;
   };
-  image: string | null; // absolute URL from backend
+  image: string | null;
   auto_fill: boolean;
   auto_limit: number;
   is_active: boolean;
@@ -42,10 +49,6 @@ export type AdminComfortCategoryRail = {
    TYPES — WRITE MODELS
 ================================================== */
 
-/**
- * PATCH payload — metadata only
- * (image is NOT allowed here)
- */
 export type AdminComfortCategoryRailUpdatePayload = Partial<{
   auto_fill: boolean;
   auto_limit: number;
@@ -65,11 +68,6 @@ function assertId(value: unknown, label: string): asserts value is number {
   if (!Number.isFinite(value)) {
     throw new Error(`Invalid ${label}`);
   }
-}
-
-function csrfHeaders(): HeadersInit {
-  const csrf = getCSRFToken();
-  return csrf ? { "X-CSRFToken": csrf } : {};
 }
 
 /* ==================================================
@@ -147,15 +145,10 @@ export async function createAdminComfortRail(payload: {
   formData.append("category_id", String(payload.category_id));
   formData.append("image", payload.image);
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
-      headers: {
-        ...csrfHeaders(),
-        // ❗ DO NOT set Content-Type manually
-      },
       body: formData,
     }
   );
@@ -177,14 +170,12 @@ export async function updateAdminComfortRail(
 ): Promise<void> {
   assertId(id, "comfort rail id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...csrfHeaders(),
       },
       body: JSON.stringify(payload),
     }
@@ -212,14 +203,10 @@ export async function updateAdminComfortRailImage(
   const formData = new FormData();
   formData.append("image", image);
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${id}/image/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
-      headers: {
-        ...csrfHeaders(),
-      },
       body: formData,
     }
   );
@@ -240,12 +227,10 @@ export async function deleteAdminComfortRail(
 ): Promise<void> {
   assertId(id, "comfort rail id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfHeaders(),
     }
   );
 
@@ -265,14 +250,12 @@ export async function addProductToComfortRail(
   assertId(railId, "comfort rail id");
   assertId(productId, "product id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${railId}/products/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...csrfHeaders(),
       },
       body: JSON.stringify({ product_id: productId }),
     }
@@ -290,12 +273,10 @@ export async function removeProductFromComfortRail(
   assertId(railId, "comfort rail id");
   assertId(productId, "product id");
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/${railId}/products/${productId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfHeaders(),
     }
   );
 
@@ -311,14 +292,12 @@ export async function removeProductFromComfortRail(
 export async function reorderAdminComfortRails(
   payload: AdminComfortRailReorderPayload
 ): Promise<void> {
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/comfort-rails/reorder/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...csrfHeaders(),
       },
       body: JSON.stringify(payload),
     }

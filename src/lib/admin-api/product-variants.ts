@@ -1,18 +1,25 @@
-// src/lib/admin-api/product-variants.ts
 // ==================================================
-// ADMIN PRODUCT VARIANT API
+// ADMIN PRODUCT VARIANT API (CANONICAL)
 // ==================================================
 //
-// Rules (STRICT):
-// - Handles ONLY ProductVariant domain
-// - Backend is SINGLE SOURCE OF TRUTH
+// Rules:
+// - Backend is SINGLE source of truth
+// - NO manual CSRF handling
+// - ALL mutations use adminFetch
 // - Trailing slashes are NON-NEGOTIABLE
 // - Safe for Next.js App Router
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
-import { safeJson, parseErrorResponse } from "./helpers";
-import { getCSRFToken } from "./csrf";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "./config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "./helpers";
 
 /* ==================================================
    TYPES — STRICT BACKEND CONTRACT
@@ -49,10 +56,7 @@ export async function fetchAdminProductVariants(
 
   const res = await fetch(
     `${API_BASE}/api/admin/products/${productId}/variants/`,
-    {
-      ...DEFAULT_FETCH_OPTIONS,
-      method: "GET",
-    }
+    DEFAULT_FETCH_OPTIONS
   );
 
   if (!res.ok) {
@@ -65,7 +69,6 @@ export async function fetchAdminProductVariants(
     items: AdminProductVariant[];
   }>(res);
 
-  // 🔒 HARD CONTRACT CHECK
   if (
     !data ||
     typeof data !== "object" ||
@@ -95,16 +98,12 @@ export async function createAdminProductVariant(
     throw new Error("Size and color are required");
   }
 
-  const csrf = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/products/${productId}/variants/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify({
         size: payload.size,
@@ -120,7 +119,6 @@ export async function createAdminProductVariant(
 
   const data = await safeJson<AdminProductVariant>(res);
 
-  // 🔒 HARD CONTRACT CHECK
   if (
     !data ||
     typeof data.id !== "number" ||
@@ -144,16 +142,12 @@ export async function updateAdminVariantStock(
 ): Promise<void> {
   assertFiniteId(variantId, "variant id");
 
-  const csrf = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-variants/${variantId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrf ? { "X-CSRFToken": csrf } : {}),
       },
       body: JSON.stringify({
         stock: Number(stock),
@@ -175,14 +169,10 @@ export async function deleteAdminVariant(
 ): Promise<void> {
   assertFiniteId(variantId, "variant id");
 
-  const csrf = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/product-variants/${variantId}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrf ? { "X-CSRFToken": csrf } : undefined,
     }
   );
 

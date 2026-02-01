@@ -1,6 +1,6 @@
 /**
  * ==================================================
- * ADMIN CMS API — LANDING MENU ITEMS
+ * ADMIN CMS API — LANDING MENU ITEMS (CANONICAL)
  * ==================================================
  *
  * RESPONSIBILITY:
@@ -14,7 +14,7 @@
  * - DRF error fidelity preserved
  *
  * GUARANTEES:
- * - CSRF-safe (session auth)
+ * - Session auth + CSRF (centralized)
  * - Stable response contract
  * - No silent coercion
  */
@@ -22,11 +22,13 @@
 import {
   API_BASE,
   DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "@/lib/admin-api/config";
+
+import {
   safeJson,
   parseErrorResponse,
-} from "@/lib/admin-api";
-
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+} from "@/lib/admin-api/helpers";
 
 /* ==================================================
    TYPES — BACKEND CONTRACT
@@ -100,14 +102,6 @@ const BASE_URL = `${API_BASE}/api/admin/cms/landing-menu-items/`;
    INTERNAL HELPERS
 ================================================== */
 
-function mutationHeaders(): HeadersInit {
-  const csrf = getCSRFToken();
-  return {
-    "Content-Type": "application/json",
-    ...(csrf ? { "X-CSRFToken": csrf } : {}),
-  };
-}
-
 /**
  * Preserve DRF error messages exactly
  */
@@ -118,7 +112,7 @@ function hasDetail(
     typeof data === "object" &&
     data !== null &&
     "detail" in data &&
-    typeof (data as { detail?: unknown }).detail === "string"
+    typeof (data as any).detail === "string"
   );
 }
 
@@ -170,14 +164,15 @@ export async function fetchAdminLandingMenuItems(): Promise<
 export async function createAdminLandingMenuItem(
   payload: AdminLandingMenuItemCreatePayload
 ): Promise<AdminLandingMenuItem> {
-  if (!payload.category_id) {
+  if (!Number.isFinite(payload.category_id)) {
     throw new Error("category_id is required");
   }
 
-  const res = await fetch(BASE_URL, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(BASE_URL, {
     method: "POST",
-    headers: mutationHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
@@ -193,14 +188,15 @@ export async function updateAdminLandingMenuItem(
   id: number,
   payload: AdminLandingMenuItemUpdatePayload
 ): Promise<AdminLandingMenuItem> {
-  if (!id) {
+  if (!Number.isFinite(id)) {
     throw new Error("LandingMenuItem id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(`${BASE_URL}${id}/`, {
     method: "PATCH",
-    headers: mutationHeaders(),
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
@@ -215,14 +211,12 @@ export async function updateAdminLandingMenuItem(
 export async function deleteAdminLandingMenuItem(
   id: number
 ): Promise<void> {
-  if (!id) {
+  if (!Number.isFinite(id)) {
     throw new Error("LandingMenuItem id is required");
   }
 
-  const res = await fetch(`${BASE_URL}${id}/`, {
-    ...DEFAULT_FETCH_OPTIONS,
+  const res = await adminFetch(`${BASE_URL}${id}/`, {
     method: "DELETE",
-    headers: mutationHeaders(),
   });
 
   if (!res.ok) {

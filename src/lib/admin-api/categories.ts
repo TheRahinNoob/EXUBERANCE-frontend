@@ -12,8 +12,7 @@
 // - NEVER infers business rules
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "./config";
-import { getCSRFToken } from "./csrf";
+import { API_BASE, DEFAULT_FETCH_OPTIONS, adminFetch } from "./config";
 import { safeJson, parseErrorResponse } from "./helpers";
 import type {
   AdminCategory,
@@ -63,7 +62,6 @@ function assertCategoryTreeNode(
     throw new Error("Invalid category tree node");
   }
 
-  // Required fields
   if (
     typeof value.id !== "number" ||
     typeof value.name !== "string" ||
@@ -75,7 +73,6 @@ function assertCategoryTreeNode(
     throw new Error("Invalid category tree node structure");
   }
 
-  // Optional campaign fields (backend-controlled)
   assertOptionalString(value.starts_at, "starts_at");
   assertOptionalString(value.ends_at, "ends_at");
   assertOptionalBoolean(value.show_countdown, "show_countdown");
@@ -169,16 +166,12 @@ export async function createAdminCategory(payload: {
     throw new Error("Category name is required");
   }
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/categories/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -220,16 +213,12 @@ export async function updateAdminCategory(
     throw new Error("Invalid category id");
   }
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       },
       body: JSON.stringify(payload),
     }
@@ -253,16 +242,10 @@ export async function deleteAdminCategory(
     throw new Error("Invalid category id");
   }
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 

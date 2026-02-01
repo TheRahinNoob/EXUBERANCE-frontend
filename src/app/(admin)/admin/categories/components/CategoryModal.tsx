@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "@/lib/admin-api";
-import { getCSRFToken } from "@/lib/admin-api/csrf";
+import {
+  createAdminCategory,
+  updateAdminCategory,
+} from "@/lib/admin-api/categories";
+
 import { useAdminToast } from "@/hooks/useAdminToast";
 
 /* ==================================================
@@ -63,18 +66,16 @@ export default function CategoryModal({
 }: Props) {
   const { showToast } = useAdminToast();
 
-  /* ==================================================
-     STATE
-  ================================================== */
+  /* ================= STATE ================= */
 
   const [name, setName] = useState("");
   const [slugInput, setSlugInput] = useState("");
-  const [parentId, setParentId] = useState<number | null>(null);
+  const [parentId, setParentId] = useState<number | null>(
+    null
+  );
   const [saving, setSaving] = useState(false);
 
-  /* ==================================================
-     INIT FROM MODE
-  ================================================== */
+  /* ================= INIT FROM MODE ================= */
 
   useEffect(() => {
     if (!open) return;
@@ -83,33 +84,30 @@ export default function CategoryModal({
       setName(category.name ?? "");
       setSlugInput(category.slug ?? "");
       setParentId(category.parent_id ?? null);
+      return;
     }
 
     if (mode === "create-child" && category) {
       setName("");
       setSlugInput("");
       setParentId(category.id ?? null);
+      return;
     }
 
-    if (mode === "create") {
-      setName("");
-      setSlugInput("");
-      setParentId(null);
-    }
+    // create
+    setName("");
+    setSlugInput("");
+    setParentId(null);
   }, [open, mode, category]);
 
-  /* ==================================================
-     DERIVED SLUG
-  ================================================== */
+  /* ================= DERIVED SLUG ================= */
 
   const computedSlug = useMemo(() => {
     const source = slugInput || name;
     return source ? slugify(source) : "";
   }, [name, slugInput]);
 
-  /* ==================================================
-     SUBMIT HANDLER
-  ================================================== */
+  /* ================= SUBMIT ================= */
 
   const handleSubmit = async () => {
     if (saving) return;
@@ -122,50 +120,27 @@ export default function CategoryModal({
     setSaving(true);
 
     try {
-      const csrfToken = getCSRFToken();
+      const payload = {
+        name: name.trim(),
+        slug: computedSlug || undefined,
+        parent_id: parentId,
+      };
 
-      const isEdit = mode === "edit";
-      const url = isEdit
-        ? `${API_BASE}/api/admin/categories/${category?.id}/`
-        : `${API_BASE}/api/admin/categories/`;
-
-      const method = isEdit ? "PATCH" : "POST";
-
-      const res = await fetch(url, {
-        ...DEFAULT_FETCH_OPTIONS,
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          slug: computedSlug || undefined,
-          parent_id: parentId,
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        const message =
-          data?.message ||
-          data?.detail ||
-          "Category operation failed";
-        throw new Error(message);
+      if (mode === "edit" && category?.id) {
+        await updateAdminCategory(category.id, payload);
+        showToast("Category updated successfully", "success");
+      } else {
+        await createAdminCategory(payload);
+        showToast("Category created successfully", "success");
       }
-
-      showToast(
-        mode === "edit"
-          ? "Category updated successfully"
-          : "Category created successfully",
-        "success"
-      );
 
       onSuccess();
       onClose();
     } catch (err) {
       showToast(
-        err instanceof Error ? err.message : "Operation failed",
+        err instanceof Error
+          ? err.message
+          : "Category operation failed",
         "error"
       );
     } finally {
@@ -173,9 +148,7 @@ export default function CategoryModal({
     }
   };
 
-  /* ==================================================
-     RENDER
-  ================================================== */
+  /* ================= RENDER ================= */
 
   if (!open) return null;
 
@@ -190,7 +163,7 @@ export default function CategoryModal({
             : "Create Category"}
         </h3>
 
-        {/* ================= NAME ================= */}
+        {/* NAME */}
         <div style={fieldStyle}>
           <label style={labelStyle}>Name</label>
           <input
@@ -200,7 +173,7 @@ export default function CategoryModal({
           />
         </div>
 
-        {/* ================= SLUG ================= */}
+        {/* SLUG */}
         <div style={fieldStyle}>
           <label style={labelStyle}>Slug</label>
           <input
@@ -216,7 +189,7 @@ export default function CategoryModal({
           )}
         </div>
 
-        {/* ================= PARENT ================= */}
+        {/* PARENT */}
         <div style={fieldStyle}>
           <label style={labelStyle}>
             Parent ID (optional)
@@ -226,14 +199,16 @@ export default function CategoryModal({
             value={parentId ?? ""}
             onChange={(e) =>
               setParentId(
-                e.target.value ? Number(e.target.value) : null
+                e.target.value
+                  ? Number(e.target.value)
+                  : null
               )
             }
             style={inputStyle}
           />
         </div>
 
-        {/* ================= ACTIONS ================= */}
+        {/* ACTIONS */}
         <div style={actionsStyle}>
           <button onClick={onClose} style={secondaryBtn}>
             Cancel

@@ -24,6 +24,7 @@
 export {
   API_BASE,
   DEFAULT_FETCH_OPTIONS,
+  adminFetch, // ✅ REQUIRED
 } from "./config";
 
 export {
@@ -32,9 +33,8 @@ export {
   buildQuery,
 } from "./helpers";
 
-export {
-  getCSRFToken,
-} from "./csrf";
+/* ❌ CSRF helpers are INTERNAL ONLY — NOT EXPORTED */
+/* CSRF is handled automatically by adminFetch */
 
 /* ==================================================
    PAGINATION
@@ -233,7 +233,7 @@ export type {
 } from "./cms/comfort-rails";
 
 /* ==================================================
-   CMS — 🧠 COMFORT EDITORIAL (FINAL)
+   CMS — COMFORT EDITORIAL (FINAL)
 ================================================== */
 
 export {
@@ -241,7 +241,7 @@ export {
   fetchAdminComfortEditorialBlock,
   createAdminComfortEditorialBlock,
   updateAdminComfortEditorialBlock,
-  updateAdminComfortEditorialBlockImage, // ✅ FIX
+  updateAdminComfortEditorialBlockImage,
   deleteAdminComfortEditorialBlock,
 } from "./cms/comfort-editorial";
 

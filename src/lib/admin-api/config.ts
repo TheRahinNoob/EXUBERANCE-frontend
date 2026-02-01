@@ -15,6 +15,8 @@
  * - Admin data must NEVER be cached
  */
 
+import { getCSRFCookie } from "./helpers";
+
 /* ==================================================
    API BASE RESOLUTION (STRICT)
 ================================================== */
@@ -38,7 +40,7 @@ if (!/^https?:\/\//i.test(RAW_API_BASE)) {
 /**
  * Absolute API base
  * - No trailing slash
- * - Example: https://api.fabrilife.com
+ * - Example: https://exuberance-backend.onrender.com
  */
 export const API_BASE: string =
   RAW_API_BASE.replace(/\/$/, "");
@@ -61,3 +63,48 @@ export const DEFAULT_FETCH_OPTIONS: RequestInit = {
   credentials: "include",
   cache: "no-store",
 };
+
+/* ==================================================
+   CSRF-SAFE ADMIN FETCH (🔥 CRITICAL 🔥)
+================================================== */
+
+/**
+ * adminFetch
+ * --------------------------------------------------
+ * A thin wrapper around fetch() that:
+ * - Automatically attaches X-CSRFToken for mutations
+ * - Preserves credentials + no-store cache
+ * - Is SSR-safe
+ *
+ * USE THIS FOR:
+ * - POST
+ * - PATCH
+ * - PUT
+ * - DELETE
+ */
+export async function adminFetch(
+  input: string,
+  init: RequestInit = {}
+): Promise<Response> {
+  const method = (init.method || "GET").toUpperCase();
+
+  const headers = new Headers(init.headers || {});
+
+  // Attach CSRF token ONLY for mutation requests
+  if (
+    method !== "GET" &&
+    method !== "HEAD" &&
+    method !== "OPTIONS"
+  ) {
+    const csrfToken = getCSRFCookie();
+    if (csrfToken) {
+      headers.set("X-CSRFToken", csrfToken);
+    }
+  }
+
+  return fetch(input, {
+    ...DEFAULT_FETCH_OPTIONS,
+    ...init,
+    headers,
+  });
+}

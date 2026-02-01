@@ -10,9 +10,16 @@
 // - Matches Django Admin behavior exactly
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "../config";
-import { getCSRFToken } from "../csrf";
-import { safeJson, parseErrorResponse } from "../helpers";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "../config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "../helpers";
 
 /* ==================================================
    TYPES
@@ -108,7 +115,7 @@ export async function fetchAdminFeaturedCategories(): Promise<
 }
 
 /* ==================================================
-   CREATE — FEATURED CATEGORY
+   CREATE — FEATURED CATEGORY (multipart)
 ================================================== */
 
 /**
@@ -125,9 +132,7 @@ export async function createAdminFeaturedCategory(
     throw new Error("Image file is required");
   }
 
-  const csrfToken = getCSRFToken();
   const formData = new FormData();
-
   formData.append("category_id", String(payload.category_id));
   formData.append("image", payload.image);
 
@@ -138,14 +143,10 @@ export async function createAdminFeaturedCategory(
     );
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/featured-categories/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
       body: formData,
     }
   );
@@ -161,7 +162,7 @@ export async function createAdminFeaturedCategory(
 }
 
 /* ==================================================
-   UPDATE — FEATURED CATEGORY
+   UPDATE — FEATURED CATEGORY (multipart)
 ================================================== */
 
 /**
@@ -183,7 +184,6 @@ export async function updateAdminFeaturedCategory(
     throw new Error("No valid fields provided for update");
   }
 
-  const csrfToken = getCSRFToken();
   const formData = new FormData();
 
   if (payload.ordering !== undefined) {
@@ -204,14 +204,10 @@ export async function updateAdminFeaturedCategory(
     formData.append("image", payload.image);
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/featured-categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
       body: formData,
     }
   );
@@ -240,16 +236,10 @@ export async function deleteAdminFeaturedCategory(
     throw new Error("Invalid featured category id");
   }
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/featured-categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 

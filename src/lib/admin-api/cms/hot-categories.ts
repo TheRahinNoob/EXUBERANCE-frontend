@@ -1,20 +1,27 @@
 // ==================================================
-// ADMIN HOT CATEGORY API — ATOMIC CMS CONTROL
+// ADMIN HOT CATEGORY API — CANONICAL
 // ==================================================
 //
 // Mirrors Django Admin: HotCategoryAdmin
 // Consumed by Next.js Admin Panel
 //
 // Guarantees:
-// - Session auth + CSRF
+// - Session auth + CSRF (centralized)
 // - Multipart image upload
 // - Explicit failures
 // - Backend is final authority
 //
 
-import { API_BASE, DEFAULT_FETCH_OPTIONS } from "../config";
-import { getCSRFToken } from "../csrf";
-import { safeJson, parseErrorResponse } from "../helpers";
+import {
+  API_BASE,
+  DEFAULT_FETCH_OPTIONS,
+  adminFetch,
+} from "../config";
+
+import {
+  safeJson,
+  parseErrorResponse,
+} from "../helpers";
 
 /* ==================================================
    TYPES
@@ -75,7 +82,7 @@ function assertHotCategory(
 }
 
 /* ==================================================
-   FETCH — LIST HOT CATEGORIES
+   FETCH — LIST
 ================================================== */
 
 /**
@@ -109,12 +116,11 @@ export async function fetchAdminHotCategories(): Promise<
 }
 
 /* ==================================================
-   CREATE — HOT CATEGORY
+   CREATE — multipart
 ================================================== */
 
 /**
  * POST /api/admin/cms/hot-categories/
- * multipart/form-data
  */
 export async function createAdminHotCategory(
   payload: AdminHotCategoryCreatePayload
@@ -127,16 +133,17 @@ export async function createAdminHotCategory(
     throw new Error("image file is required");
   }
 
-  const csrfToken = getCSRFToken();
   const formData = new FormData();
-
-  formData.append("category_id", String(payload.category_id));
+  formData.append(
+    "category_id",
+    String(payload.category_id)
+  );
   formData.append("image", payload.image);
 
   if (payload.is_active !== undefined) {
     formData.append(
       "is_active",
-      String(Boolean(payload.is_active))
+      payload.is_active ? "true" : "false"
     );
   }
 
@@ -147,21 +154,13 @@ export async function createAdminHotCategory(
     );
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-categories/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "POST",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
       body: formData,
     }
   );
-
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
 
   const data = await safeJson<unknown>(res);
   assertHotCategory(data);
@@ -170,12 +169,11 @@ export async function createAdminHotCategory(
 }
 
 /* ==================================================
-   UPDATE — HOT CATEGORY
+   UPDATE — multipart
 ================================================== */
 
 /**
- * PATCH /api/admin/cms/hot-categories/:id/
- * multipart/form-data
+ * PATCH /api/admin/cms/hot-categories/{id}/
  */
 export async function updateAdminHotCategory(
   id: number,
@@ -193,7 +191,6 @@ export async function updateAdminHotCategory(
     throw new Error("No fields provided for update");
   }
 
-  const csrfToken = getCSRFToken();
   const formData = new FormData();
 
   if (payload.image instanceof File) {
@@ -203,7 +200,7 @@ export async function updateAdminHotCategory(
   if (payload.is_active !== undefined) {
     formData.append(
       "is_active",
-      String(Boolean(payload.is_active))
+      payload.is_active ? "true" : "false"
     );
   }
 
@@ -214,21 +211,13 @@ export async function updateAdminHotCategory(
     );
   }
 
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "PATCH",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
       body: formData,
     }
   );
-
-  if (!res.ok) {
-    throw new Error(await parseErrorResponse(res));
-  }
 
   const data = await safeJson<unknown>(res);
   assertHotCategory(data);
@@ -237,11 +226,11 @@ export async function updateAdminHotCategory(
 }
 
 /* ==================================================
-   DELETE — HOT CATEGORY
+   DELETE
 ================================================== */
 
 /**
- * DELETE /api/admin/cms/hot-categories/:id/
+ * DELETE /api/admin/cms/hot-categories/{id}/
  */
 export async function deleteAdminHotCategory(
   id: number
@@ -250,16 +239,10 @@ export async function deleteAdminHotCategory(
     throw new Error("Invalid hot category id");
   }
 
-  const csrfToken = getCSRFToken();
-
-  const res = await fetch(
+  const res = await adminFetch(
     `${API_BASE}/api/admin/cms/hot-categories/${id}/`,
     {
-      ...DEFAULT_FETCH_OPTIONS,
       method: "DELETE",
-      headers: csrfToken
-        ? { "X-CSRFToken": csrfToken }
-        : undefined,
     }
   );
 
