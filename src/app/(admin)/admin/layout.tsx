@@ -13,8 +13,18 @@ import { initCSRF } from "@/lib/admin-api/csrf";
  * ==================================================
  * ADMIN ROOT LAYOUT
  * Archival Glass — Internal Admin System
- * Mobile Sidebar Enabled
  * ==================================================
+ *
+ * RESPONSIBILITIES:
+ * - Global admin shell
+ * - Sidebar + mobile navigation
+ * - CSRF bootstrap (ONCE)
+ * - Toast + ambient providers
+ *
+ * CSRF RULE:
+ * - initCSRF() MUST run once
+ * - MUST NOT block render
+ * - MUST NOT throw
  */
 export default function AdminLayout({
   children,
@@ -27,13 +37,21 @@ export default function AdminLayout({
    * ==================================================
    * CSRF INITIALIZATION (RUN ONCE)
    * --------------------------------------------------
-   * - Fetches /api/csrf/
+   * - Calls GET /api/csrf/
    * - Sets csrftoken cookie
-   * - Required for Django session auth
+   * - Required for ALL admin POST/PATCH/DELETE
+   *
+   * NOTE:
+   * - Fire-and-forget (no await)
+   * - Never blocks UI
+   * - Never re-runs
    * ==================================================
    */
   useEffect(() => {
-    initCSRF();
+    initCSRF().catch(() => {
+      // Silently ignore — admin APIs will fail loudly if CSRF is missing
+      // This prevents layout crashes during cold backend starts
+    });
   }, []);
 
   return (
@@ -59,6 +77,7 @@ export default function AdminLayout({
               className="admin-hamburger"
               onClick={() => setSidebarOpen(true)}
               aria-label="Open admin navigation"
+              type="button"
             >
               <span />
               <span />
