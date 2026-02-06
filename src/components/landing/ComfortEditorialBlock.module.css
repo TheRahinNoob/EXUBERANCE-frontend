@@ -175,8 +175,8 @@
 */
 .imageFrame {
   width: 100%;
-  max-width: 240px;
-  max-height: 240px;
+  max-width: 350px;
+  max-height: 350px;
   aspect-ratio: 1 / 1;
 
   border-radius: 14px;
