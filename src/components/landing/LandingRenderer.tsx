@@ -7,48 +7,32 @@ import HotCategories from "./HotCategories";
 import ComfortEditorialBlock from "./ComfortEditorialBlock";
 import ComfortRail from "./ComfortRail";
 
-/**
- * ==================================================
- * LANDING CMS RENDERER — FINAL / PRODUCTION GRADE
- * ==================================================
- *
- * GUARANTEES:
- * - CMS controls ORDER & VISIBILITY only
- * - Renderer NEVER fetches data
- * - Renderer NEVER mutates data
- * - Renderer NEVER assumes availability
- * - Fully ID-driven (future proof)
- */
-
 import type { LandingCMSBlock } from "@/lib/api/types";
 
 // UI-normalized domain types
 import type { HeroBannerItem } from "@/types/hero-banner";
 import type { LandingMenuItem } from "@/types/landing-menu";
 import type { FeaturedCategory } from "@/types/featured-category";
-import type { HotCategory } from "@/types/hot-category";
 import type { ComfortRail as UIComfortRail } from "@/types/comfort-rail";
 import type { ComfortEditorialBlockData } from "./ComfortEditorialBlock";
+import type { HotCategoryBlock } from "./HotCategories";
 
 /* ==================================================
-   PROPS — STRICT & FUTURE-PROOF
+   PROPS
 ================================================== */
 
 type Props = {
-  blocks: LandingCMSBlock[];
+  blocks?: LandingCMSBlock[];
 
-  heroBanners: HeroBannerItem[];
-  landingMenuItems: LandingMenuItem[];
-  featuredCategories: FeaturedCategory[];
-  hotCategories: HotCategory[];
+  heroBanners?: HeroBannerItem[];
+  landingMenuItems?: LandingMenuItem[];
+  featuredCategories?: FeaturedCategory[];
 
-  comfortRails: UIComfortRail[];
+  /** CMS hot blocks (MULTIPLE allowed) */
+  hotCategoryBlocks?: HotCategoryBlock[];
 
-  /**
-   * 🔥 Editorial blocks (ID-addressable)
-   * CMS decides WHICH one renders WHERE
-   */
-  comfortEditorialBlocks: ComfortEditorialBlockData[];
+  comfortRails?: UIComfortRail[];
+  comfortEditorialBlocks?: ComfortEditorialBlockData[];
 };
 
 /* ==================================================
@@ -57,70 +41,81 @@ type Props = {
 
 export default function LandingRenderer({
   blocks,
-  heroBanners,
-  landingMenuItems,
-  featuredCategories,
-  hotCategories,
-  comfortRails,
-  comfortEditorialBlocks,
+  heroBanners = [],
+  landingMenuItems = [],
+  featuredCategories = [],
+  hotCategoryBlocks = [],
+  comfortRails = [],
+  comfortEditorialBlocks = [],
 }: Props) {
   if (!Array.isArray(blocks) || blocks.length === 0) {
+    console.warn("❌ No CMS blocks provided");
     return null;
   }
 
   return (
     <>
       {blocks.map((block, index) => {
-        const key = `${block.type}-${index}`;
+        const key = `${block.type}-${block.id ?? index}`;
 
         switch (block.type) {
-          /* ================= HERO ================= */
-          case "hero":
-            return heroBanners.length ? (
-              <HeroBanner key={key} banners={heroBanners} />
-            ) : null;
+          case "hero": {
+            if (heroBanners.length === 0) return null;
+            return <HeroBanner key={key} banners={heroBanners} />;
+          }
 
-          /* ================= MENU ================= */
-          case "menu":
-            return landingMenuItems.length ? (
-              <LandingMenu key={key} items={landingMenuItems} />
-            ) : null;
+          case "menu": {
+            if (landingMenuItems.length === 0) return null;
+            return <LandingMenu key={key} items={landingMenuItems} />;
+          }
 
-          /* ============== FEATURED ============== */
-          case "featured":
-            return featuredCategories.length ? (
+          case "featured": {
+            if (featuredCategories.length === 0) return null;
+            return (
               <FeaturedCategories
                 key={key}
                 items={featuredCategories}
               />
-            ) : null;
+            );
+          }
 
-          /* ================= HOT ================= */
-          case "hot":
-            return hotCategories.length ? (
-              <HotCategories key={key} items={hotCategories} />
-            ) : null;
-
-          /* ============ COMFORT EDITORIAL ============ */
-          case "comfort_block": {
-            const editorial =
-              "comfort_editorial_block_id" in block
-                ? comfortEditorialBlocks.find(
-                    (b) =>
-                      b.id === block.comfort_editorial_block_id
-                  )
-                : null;
-
-            if (!editorial) {
+          case "hot": {
+            if (!block.hot_category_block_id) {
               console.warn(
-                "⚠️ Comfort editorial block missing (ID:",
-                "comfort_editorial_block_id" in block
-                  ? block.comfort_editorial_block_id
-                  : "unknown",
-                ")"
+                "⚠️ hot block missing hot_category_block_id",
+                block
               );
               return null;
             }
+
+            if (hotCategoryBlocks.length === 0) {
+              console.warn("⚠️ hotCategoryBlocks is empty");
+              return null;
+            }
+
+            const hotBlock = hotCategoryBlocks.find(
+              (b) => b.id === block.hot_category_block_id
+            );
+
+            if (!hotBlock) {
+              console.warn(
+                "⚠️ No matching hot category block found for id",
+                block.hot_category_block_id
+              );
+              return null;
+            }
+
+            return <HotCategories key={key} block={hotBlock} />;
+          }
+
+          case "comfort_block": {
+            if (!block.comfort_editorial_block_id) return null;
+
+            const editorial = comfortEditorialBlocks.find(
+              (b) => b.id === block.comfort_editorial_block_id
+            );
+
+            if (!editorial) return null;
 
             return (
               <ComfortEditorialBlock
@@ -130,20 +125,14 @@ export default function LandingRenderer({
             );
           }
 
-          /* ============ COMFORT RAIL ============ */
           case "comfort_rail": {
+            if (!block.comfort_rail_id) return null;
+
             const rail = comfortRails.find(
               (r) => r.id === block.comfort_rail_id
             );
 
-            if (!rail) {
-              console.warn(
-                "⚠️ Comfort rail missing (ID:",
-                block.comfort_rail_id,
-                ")"
-              );
-              return null;
-            }
+            if (!rail) return null;
 
             return (
               <ComfortRail
@@ -154,7 +143,6 @@ export default function LandingRenderer({
             );
           }
 
-          /* ============== SAFE FALLBACK ============== */
           default:
             return null;
         }

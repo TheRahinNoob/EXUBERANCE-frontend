@@ -1,10 +1,11 @@
 /* ==================================================
-   API TYPES — RAW BACKEND CONTRACT
+   API TYPES — RAW BACKEND CONTRACT (FIXED)
 --------------------------------------------------
-❗ STRICT mirror of Django responses
-❗ DecimalField values stay STRING
-❗ NEVER consume directly in UI
-❗ CMS + Atomic APIs aligned
+✔ STRICT mirror of Django responses
+✔ DecimalField values stay STRING
+✔ NEVER consume directly in UI
+✔ CMS + Atomic APIs aligned
+✔ Discriminated unions are SAFE
 ================================================== */
 
 /* ==================================================
@@ -49,7 +50,7 @@ export type APIProduct = {
   slug: string;
   name: string;
 
-  price: string;              // DecimalField → string
+  price: string; // DecimalField → string
   old_price: string | null;
 
   main_image: string | null;
@@ -171,23 +172,37 @@ export type APIComfortEditorialBlock = {
 };
 
 /* ==================================================
-   CMS LAYOUT BLOCK (RAW — DISCRIMINATED UNION)
+   CMS LAYOUT BLOCK (RAW — SAFE DISCRIMINATED UNION)
 --------------------------------------------------
-Mirrors LandingCMSAPIView EXACTLY
+✔ Every block has id + order
+✔ Matches LandingCMSAPIView
+✔ Sortable & type-safe
 ================================================== */
+
+type CMSBaseBlock = {
+  id: number;
+  order: number;
+};
+
 export type LandingCMSBlock =
-  | { type: "hero" }
-  | { type: "menu" }
-  | { type: "featured" }
-  | {
+  | (CMSBaseBlock & {
+      type: "hero";
+    })
+  | (CMSBaseBlock & {
+      type: "menu";
+    })
+  | (CMSBaseBlock & {
+      type: "featured";
+    })
+  | (CMSBaseBlock & {
       type: "hot";
       hot_category_block_id: number;
-    }
-  | {
+    })
+  | (CMSBaseBlock & {
       type: "comfort_block";
       comfort_editorial_block_id: number;
-    }
-  | {
+    })
+  | (CMSBaseBlock & {
       type: "comfort_rail";
       comfort_rail_id: number;
-    };
+    });

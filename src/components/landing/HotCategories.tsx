@@ -5,51 +5,67 @@ import styles from "./HotCategories.module.css";
 
 /**
  * ==================================================
- * HOT CATEGORIES — LANDING SECTION
+ * HOT CATEGORIES — LANDING SECTION (CMS BLOCK)
  * ==================================================
  *
- * Rules:
- * - API layer owns the contract
- * - UI NEVER redefines domain types
- * - This component consumes APIHotCategory directly
+ * ✔ Renders ONE hot-category CMS block
+ * ✔ Fully CMS-driven
+ * ✔ Zero unsafe access
+ * ✔ Strictly typed
+ * ✔ Scales to unlimited blocks
+ * ✔ NO TITLE (as requested)
  */
 
-import type { APIHotCategory } from "@/lib/api/types";
+import type { HotCategory } from "@/types/hot-category";
+
+/* ==================================================
+   TYPES
+================================================== */
+
+export type HotCategoryBlock = {
+  id: number;
+  title?: string; // kept for CMS, not rendered
+  ordering: number;
+  is_active: boolean;
+  items: HotCategory[];
+};
 
 /* ==================================================
    PROPS
 ================================================== */
 
 type Props = {
-  items: APIHotCategory[];
+  block: HotCategoryBlock;
 };
 
 /* ==================================================
    COMPONENT
 ================================================== */
 
-export default function HotCategories({ items }: Props) {
-  // Absolute safety guard
-  if (!Array.isArray(items) || items.length === 0) {
-    return null;
-  }
+export default function HotCategories({ block }: Props) {
+  // CMS hard guards
+  if (!block?.is_active) return null;
+  if (!Array.isArray(block.items) || block.items.length === 0) return null;
 
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      aria-label="Hot categories"
+    >
       <div className={styles.grid}>
-        {items.map((item) => (
+        {block.items.map((item) => (
           <Link
             key={item.id}
             href={`/category/${item.slug}`}
             className={styles.card}
             aria-label={item.name}
           >
-            {/* IMAGE */}
             {item.image ? (
               <img
                 src={item.image}
                 alt={item.name}
                 loading="lazy"
+                className={styles.image}
               />
             ) : (
               <div
@@ -58,9 +74,7 @@ export default function HotCategories({ items }: Props) {
               />
             )}
 
-            <span className={styles.title}>
-              {item.name}
-            </span>
+            <span className={styles.title}>{item.name}</span>
           </Link>
         ))}
       </div>

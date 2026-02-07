@@ -2,16 +2,14 @@
    LANDING PUBLIC API (NORMALIZED — PRODUCTION)
 --------------------------------------------------
 ✔ SSR-safe
-✔ Absolute URLs only
+✔ Fully typed
 ✔ CMS-driven layout
 ✔ Atomic data fetching
-✔ Zero undefined access
+✔ Zero undefined/null mismatches
 ================================================== */
-
 import { SITE_API_BASE } from "./site-config";
 
 /* ================= RAW API TYPES ================= */
-
 import type {
   ApiBlockResponse,
   APIHeroBanner,
@@ -24,7 +22,6 @@ import type {
 } from "./types";
 
 /* ================= UI TYPES ================= */
-
 import type { HeroBannerItem } from "@/types/hero-banner";
 import type { LandingMenuItem } from "@/types/landing-menu";
 import type { FeaturedCategory } from "@/types/featured-category";
@@ -33,18 +30,14 @@ import type { ComfortRail } from "@/types/comfort-rail";
 import type { ComfortEditorialBlockData } from "@/components/landing/ComfortEditorialBlock";
 
 /* ==================================================
-   INTERNAL SAFE FETCH (SSR HARDENED)
+   INTERNAL SAFE FETCH
 ================================================== */
-
 async function safeFetch<T>(url: string): Promise<T> {
   if (!url || !/^https?:\/\//.test(url)) {
     throw new Error(`[API] Invalid fetch URL: ${url}`);
   }
 
-  const res = await fetch(url, {
-    cache: "no-store",
-    credentials: "omit",
-  });
+  const res = await fetch(url, { cache: "no-store", credentials: "omit" });
 
   if (!res.ok) {
     const text = await res.text();
@@ -57,7 +50,6 @@ async function safeFetch<T>(url: string): Promise<T> {
 /* ==================================================
    HERO BANNERS
 ================================================== */
-
 export async function getHeroBanners(): Promise<HeroBannerItem[]> {
   const data = await safeFetch<ApiBlockResponse<APIHeroBanner>>(
     `${SITE_API_BASE}/api/landing/banners/`
@@ -77,7 +69,6 @@ export async function getHeroBanners(): Promise<HeroBannerItem[]> {
 /* ==================================================
    LANDING MENU
 ================================================== */
-
 export async function getLandingMenu(): Promise<LandingMenuItem[]> {
   const data = await safeFetch<ApiBlockResponse<APILandingMenuItem>>(
     `${SITE_API_BASE}/api/landing/menu/`
@@ -88,17 +79,14 @@ export async function getLandingMenu(): Promise<LandingMenuItem[]> {
   return data.items.map((item) => ({
     name: item.name,
     slug: item.slug,
-    ...(item.seo_title && { seo_title: item.seo_title }),
-    ...(item.seo_description && {
-      seo_description: item.seo_description,
-    }),
+    ...(item.seo_title ? { seo_title: item.seo_title } : {}),
+    ...(item.seo_description ? { seo_description: item.seo_description } : {}),
   }));
 }
 
 /* ==================================================
    FEATURED CATEGORIES
 ================================================== */
-
 export async function getFeaturedCategories(): Promise<FeaturedCategory[]> {
   const data = await safeFetch<ApiBlockResponse<APIFeaturedCategory>>(
     `${SITE_API_BASE}/api/landing/featured-categories/`
@@ -110,34 +98,36 @@ export async function getFeaturedCategories(): Promise<FeaturedCategory[]> {
     id: item.id ?? index,
     name: item.name,
     slug: item.slug,
-    image: item.image,
+    image: item.image ?? null,
   }));
 }
 
 /* ==================================================
-   HOT CATEGORIES
+   HOT CATEGORIES (BLOCKS)
 ================================================== */
+export interface APIHotCategoryBlockResponse {
+  id: number;
+  title: string;
+  ordering: number;
+  is_active: boolean;
+  items: APIHotCategory[];
+}
 
-export async function getHotCategories(): Promise<HotCategory[]> {
-  const data = await safeFetch<ApiBlockResponse<APIHotCategory>>(
-    `${SITE_API_BASE}/api/landing/hot-categories/`
-  );
+export async function getHotCategories(): Promise<APIHotCategoryBlockResponse[]> {
+  const data = await safeFetch<{
+    meta: any;
+    block_count: number;
+    blocks: APIHotCategoryBlockResponse[];
+  }>(`${SITE_API_BASE}/api/landing/hot-categories/`);
 
-  if (!Array.isArray(data.items)) return [];
+  if (!Array.isArray(data.blocks)) return [];
 
-  return data.items.map((item) => ({
-    id: item.id,
-    hot_category_block_id: item.hot_category_block_id,
-    name: item.name,
-    slug: item.slug,
-    image: item.image,
-  }));
+  return data.blocks.filter((b) => b.is_active && Array.isArray(b.items));
 }
 
 /* ==================================================
    COMFORT RAILS
 ================================================== */
-
 export async function getComfortRails(): Promise<ComfortRail[]> {
   const data = await safeFetch<ApiBlockResponse<APIComfortRail>>(
     `${SITE_API_BASE}/api/landing/comfort/`
@@ -150,7 +140,7 @@ export async function getComfortRails(): Promise<ComfortRail[]> {
     category: {
       name: rail.category.name,
       slug: rail.category.slug,
-      image: rail.category.image,
+      image: rail.category.image ?? null,
     },
     products: Array.isArray(rail.products)
       ? rail.products.map((p) => ({
@@ -166,15 +156,12 @@ export async function getComfortRails(): Promise<ComfortRail[]> {
 }
 
 /* ==================================================
-   🧠 COMFORT EDITORIAL BLOCKS
+   COMFORT EDITORIAL BLOCKS
 ================================================== */
-
-export async function getComfortEditorialBlocks(): Promise<
-  ComfortEditorialBlockData[]
-> {
-  const data = await safeFetch<
-    ApiBlockResponse<APIComfortEditorialBlock>
-  >(`${SITE_API_BASE}/api/landing/comfort-editorial/`);
+export async function getComfortEditorialBlocks(): Promise<ComfortEditorialBlockData[]> {
+  const data = await safeFetch<ApiBlockResponse<APIComfortEditorialBlock>>(
+    `${SITE_API_BASE}/api/landing/comfort-editorial/`
+  );
 
   if (!Array.isArray(data.items)) return [];
 
@@ -191,11 +178,12 @@ export async function getComfortEditorialBlocks(): Promise<
 /* ==================================================
    CMS — LANDING LAYOUT (ORDER ONLY)
 ================================================== */
-
 export async function getLandingCMS(): Promise<LandingCMSBlock[]> {
   const data = await safeFetch<ApiBlockResponse<LandingCMSBlock>>(
     `${SITE_API_BASE}/api/landing/cms/`
   );
 
-  return Array.isArray(data.items) ? data.items : [];
+  if (!Array.isArray(data.items)) return [];
+
+  return data.items;
 }

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   /**
    * Fetch ALL landing data in parallel.
-   * Every function is defensive and returns [] on failure,
+   * Every function is defensive and returns []
    * so the homepage NEVER crashes.
    */
   const [
@@ -37,17 +37,17 @@ export default async function HomePage() {
     heroBanners,
     landingMenuItems,
     featuredCategories,
-    hotCategories,
+    hotCategoryBlocks,
     comfortRails,
     comfortEditorialBlocks,
   ] = await Promise.all([
-    getLandingCMS(),            // CMS layout (ORDER ONLY)
-    getHeroBanners(),           // Hero content
-    getLandingMenu(),           // Menu content
-    getFeaturedCategories(),    // Featured categories
-    getHotCategories(),         // Hot categories
-    getComfortRails(),          // Comfort rails
-    getComfortEditorialBlocks(),      // 🔥 Comfort editorial content
+    getLandingCMS(),              // CMS layout (order only)
+    getHeroBanners(),             // Hero banners
+    getLandingMenu(),             // Top menu
+    getFeaturedCategories(),      // Featured categories
+    getHotCategories(),           // 🔥 HOT CATEGORY BLOCKS (IMPORTANT)
+    getComfortRails(),            // Comfort rails
+    getComfortEditorialBlocks(),  // Comfort editorial blocks
   ]);
 
   return (
@@ -57,7 +57,7 @@ export default async function HomePage() {
         heroBanners={heroBanners}
         landingMenuItems={landingMenuItems}
         featuredCategories={featuredCategories}
-        hotCategories={hotCategories}
+        hotCategoryBlocks={hotCategoryBlocks} // ✅ FIXED PROP NAME
         comfortRails={comfortRails}
         comfortEditorialBlocks={comfortEditorialBlocks}
       />
