@@ -295,13 +295,85 @@
 /* =========================
    RESPONSIVE MOBILE
 ========================= */
+/* =========================
+   RESPONSIVE MOBILE REFINEMENT
+========================= */
+/* =========================
+   HYPER-COMPACT MOBILE NAVBAR
+========================= */
 @media (max-width: 1020px) {
-  .nav { height: 64px; }
-  .container { display: flex; align-items: center; }
+  /* navbar height */
+  .nav { 
+    height: 52px; /* ultra-compact */
+    padding: 0 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  }
+
+  /* container layout */
+  .container { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    padding: 0 8px;
+  }
+
+  /* hide desktop-only elements */
   .shop, .center, .trackOrder { display: none; }
-  .left { gap: 14px; }
-  .logo { font-size: 20px; letter-spacing: 0.11em; }
-  .right { margin-left: auto; gap: 18px; }
-  .mobileMenuBtn, .mobileSearchBtn { display: block; }
-  .mobileSearch { top: 64px; }
+
+  /* left section spacing */
+  .left { gap: 6px; }
+
+  /* ultra-small logo */
+  .logo { 
+    font-size: 16px; 
+    letter-spacing: 0.08em; 
+    top: 0;
+    font-weight: 800;
+  }
+
+  /* right section */
+  .right { 
+    margin-left: auto; 
+    gap: 8px;
+  }
+
+  /* mobile menu & search buttons */
+  .mobileMenuBtn, .mobileSearchBtn { 
+    display: block; 
+    font-size: 18px; 
+    padding: 4px; 
+    color: #020617;
+    transition: transform 0.15s ease;
+  }
+  .mobileMenuBtn:hover, .mobileSearchBtn:hover { transform: scale(1.1); }
+
+  /* mobile search box */
+  .mobileSearch { 
+    top: 52px; /* aligns with navbar */
+    padding: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+  .mobileSearch input {
+    width: calc(100% - 16px);
+    margin: 0 8px;
+    padding: 10px 12px; /* smaller input */
+    font-size: 12px;     /* small but readable */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  .mobileSearch .searchBtn {
+    width: 36px;         /* small button */
+    font-size: 13px;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* cart & track icons */
+  .cart { font-size: 18px; }
+  .cartBadge { width: 16px; height: 16px; font-size: 10px; }
+  .trackOrder i { font-size: 16px; }
+
+  /* subtle transitions for smooth feel */
+  .nav, .mobileSearch, .logo, .mobileMenuBtn, .mobileSearchBtn {
+    transition: all 0.2s ease;
+  }
 }
