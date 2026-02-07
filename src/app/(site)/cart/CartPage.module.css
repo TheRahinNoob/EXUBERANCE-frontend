@@ -1,177 +1,208 @@
+/* ==================================================
+   SAFE SCOPED RESET (CSS MODULE COMPATIBLE)
+================================================== */
+.page,
+.page *,
+.page *::before,
+.page *::after {
+  box-sizing: border-box;
+}
+
+/* ==================================================
+   PAGE WRAPPER
+================================================== */
 .page {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 12px;
+  overflow-x: hidden;
 }
 
 .title {
   text-align: center;
-  font-size: 26px;
-  margin-bottom: 32px;
+  font-size: clamp(18px, 6vw, 26px);
+  margin-bottom: 20px;
 }
 
-/* =========================
-   DESKTOP GRID (DEFAULT)
-========================= */
-.headerRow,
-.row {
-  display: grid;
-  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 40px;
-  gap: 12px;
-  align-items: center;
+/* ==================================================
+   DESKTOP TABLE (≥769px ONLY)
+================================================== */
+@media (min-width: 769px) {
+  .headerRow,
+  .row {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr 44px;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .headerRow {
+    font-weight: 600;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .row {
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
 }
 
-.headerRow {
-  font-weight: 600;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-/* =========================
-   ROW
-========================= */
-.row {
-  padding: 16px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-/* =========================
+/* ==================================================
    PRODUCT
-========================= */
+================================================== */
 .product {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
 }
 
 .product img {
-  width: 60px;
-  height: 80px;
+  width: 56px;
+  height: 72px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .productName {
-  color: #2563eb;
   font-size: 14px;
-  text-decoration: none;
   line-height: 1.4;
+  color: #2563eb;
+  text-decoration: none;
+  word-break: break-word;
 }
 
 .productName:hover {
   text-decoration: underline;
 }
 
-/* =========================
-   SIZE
-========================= */
+/* ==================================================
+   SIZE BADGE
+================================================== */
 .size {
   background: #f3f4f6;
   padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 13px;
-  display: inline-block;
+  border-radius: 999px;
+  font-size: 12px;
+  width: fit-content;
 }
 
-/* =========================
+/* ==================================================
    QUANTITY
-========================= */
+================================================== */
 .qty {
-  width: 60px;
-  padding: 6px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  font-size: 15px;
   text-align: center;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  appearance: textfield;
 }
 
-/* =========================
-   REMOVE
-========================= */
+.qty::-webkit-inner-spin-button,
+.qty::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+/* ==================================================
+   REMOVE BUTTON
+================================================== */
 .remove {
   background: #ef4444;
-  border: none;
   color: #fff;
-  padding: 6px 8px;
+  border: none;
+  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  border-radius: 4px;
 }
 
-/* =========================
+.remove:active {
+  transform: scale(0.92);
+}
+
+/* ==================================================
    TOTAL
-========================= */
+================================================== */
 .totalBox {
+  margin: 24px 0;
   text-align: center;
-  margin: 40px 0 24px;
-  font-size: 20px;
+  font-size: clamp(16px, 5vw, 20px);
 }
 
 .totalBox strong {
   color: #16a34a;
 }
 
-/* =========================
+/* ==================================================
    ACTION BUTTONS
-========================= */
+================================================== */
 .actions {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  width: 100%;
+  min-height: 52px;
+  font-size: clamp(14px, 5vw, 16px);
+  border-radius: 14px;
+  display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .primaryBtn {
   background: #22c55e;
   color: #fff;
-  padding: 14px 48px;
-  text-decoration: none;
-  font-weight: 600;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
 }
 
 .secondaryBtn {
   background: #f59e0b;
   color: #fff;
-  padding: 14px 48px;
-  text-decoration: none;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 320px;
-  text-align: center;
 }
 
-/* =========================
-   EMPTY STATE
-========================= */
-/* =========================
-   EMPTY CART STATE
-========================= */
+.primaryBtn:active,
+.secondaryBtn:active {
+  transform: scale(0.97);
+}
+
+/* ==================================================
+   EMPTY CART
+================================================== */
 .empty {
-  min-height: 60vh;
-  padding: 24px;
+  min-height: 70vh;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   text-align: center;
 }
 
 .emptyTitle {
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: clamp(18px, 6vw, 28px);
+  margin-bottom: 10px;
 }
 
 .emptyText {
-  font-size: 15px;
+  font-size: clamp(14px, 4vw, 15px);
   color: #6b7280;
-  max-width: 420px;
-  margin-bottom: 24px;
-  line-height: 1.6;
+  margin-bottom: 20px;
 }
 
 /* ==================================================
-   MOBILE & SMALL SCREENS
+   MOBILE CARD MODE (≤768px)
 ================================================== */
 @media (max-width: 768px) {
   .headerRow {
@@ -179,95 +210,112 @@
   }
 
   .row {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 12px;
-    padding: 16px;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 16px;
+    background: #fff;
     border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    margin-bottom: 16px;
   }
 
-  .product {
-    align-items: flex-start;
-  }
-
-  .qty {
+  .row > div {
     width: 100%;
+  }
+
+  .row > div:nth-child(2)::before { content: "Unit price"; }
+  .row > div:nth-child(3)::before { content: "Size"; }
+  .row > div:nth-child(4)::before { content: "Quantity"; }
+  .row > div:nth-child(5)::before { content: "Subtotal"; }
+
+  .row > div::before {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 4px;
   }
 
   .remove {
     align-self: flex-end;
   }
+}
 
-  /* labels */
-  .row > div:not(.product):not(.remove)::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 12px;
-    color: #6b7280;
-    margin-bottom: 4px;
+/* ==================================================
+   MICRO PHONES (≤360px)
+================================================== */
+@media (max-width: 360px) {
+  .product img {
+    width: 48px;
+    height: 64px;
+  }
+
+  .productName {
+    font-size: 13px;
   }
 }
 
 /* ==================================================
-   VERY SMALL PHONES (≤360px)
+   HELL MODE (≤280px)
 ================================================== */
-@media (max-width: 360px) {
-  .product img {
-    width: 52px;
-    height: 70px;
+@media (max-width: 280px) {
+  .title {
+    font-size: 16px;
   }
 
-  .title {
-    font-size: 22px;
+  .product img {
+    width: 40px;
+    height: 54px;
   }
 
   .primaryBtn,
   .secondaryBtn {
-    padding: 12px;
+    font-size: 13px;
+    min-height: 48px;
   }
 }
 
 /* ==================================================
-   RELATED PRODUCTS (UNCHANGED — ALREADY RESPONSIVE)
+   RELATED PRODUCTS
 ================================================== */
 .related {
-  margin-top: 72px;
+  margin-top: 40px;
 }
 
 .relatedTitle {
-  font-size: 22px;
-  margin-bottom: 24px;
+  font-size: clamp(18px, 5vw, 22px);
+  margin-bottom: 16px;
 }
 
 .relatedGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
 }
 
 .productCard {
-  background: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
 
 .cardImageWrap img {
   width: 100%;
-  height: 260px;
+  aspect-ratio: 3 / 4;
   object-fit: contain;
 }
 
 .cardBody {
-  padding: 14px 12px;
+  padding: 12px;
   text-align: center;
 }
 
 .cardTitle {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.4;
   -webkit-line-clamp: 2;
   display: -webkit-box;
@@ -276,19 +324,15 @@
 }
 
 .cardSub {
-  font-size: 12px;
+  font-size: 11px;
   color: #6b7280;
 }
 
 .cardPrice {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .cardFooter {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 12px;
-  font-size: 13px;
-  border-top: 1px solid #e5e7eb;
+  display: none;
 }
