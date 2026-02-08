@@ -33,8 +33,20 @@
 .right {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
+
+  /* subtle container feel */
+  padding: 20px;
+  margin-top: 6px;
+
+  /* calm, low-contrast border */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+
+  /* keep it neutral */
+  background: transparent;
 }
+
 
 /* =========================
    MOBILE: FULL BLEED GALLERY
