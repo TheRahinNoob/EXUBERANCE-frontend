@@ -1,293 +1,279 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600&display=swap");
 
-/* =========================
-   PAGE WRAPPER (UI ONLY)
-========================= */
-.page {
-  padding: 20px;
-  max-width: 1080px;
-  margin: 0 auto;
+/* ==================================================
+   FLUID CORE SCALE SYSTEM
+================================================== */
+:root {
+  --radius-sm: clamp(6px, 2vw, 10px);
+  --radius-md: clamp(10px, 3vw, 14px);
+  --radius-lg: clamp(14px, 4vw, 18px);
 
-  /* UI font only — CMS content is sandboxed elsewhere */
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --fs-xs: clamp(10px, 2.8vw, 12px);
+  --fs-sm: clamp(12px, 3.2vw, 14px);
+  --fs-md: clamp(14px, 3.6vw, 16px);
+  --fs-lg: clamp(16px, 4.5vw, 20px);
+  --fs-xl: clamp(18px, 6vw, 28px);
+
+  --gap-xs: clamp(6px, 2vw, 10px);
+  --gap-sm: clamp(10px, 3vw, 14px);
+  --gap-md: clamp(16px, 4vw, 20px);
+  --gap-lg: clamp(24px, 6vw, 40px);
+}
+
+/* ==================================================
+   PAGE
+================================================== */
+.page {
+  padding: clamp(12px, 4vw, 24px);
+  max-width: 1320px;
+  margin: 0 auto;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #f8f8f8;
   color: #111;
 }
 
-/* =========================
-   NOT FOUND
-========================= */
-.notFound {
-  padding: 64px;
-  text-align: center;
-}
-
-/* =========================
-   PDP MAIN (MOBILE FIRST)
-========================= */
+/* ==================================================
+   PDP MAIN LAYOUT
+================================================== */
 .pdpMain {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: var(--gap-lg);
 }
 
+/* ==================================================
+   RIGHT PANEL (PRODUCT INFO)
+================================================== */
 .right {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-
-  /* subtle container feel */
-  padding: 20px;
-  margin-top: 6px;
-
-  /* calm, low-contrast border */
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 18px;
-
-  /* keep it neutral */
-  background: transparent;
+  gap: var(--gap-md);
+  padding: clamp(12px, 4vw, 20px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius-lg);
 }
 
+/* Sticky only on real desktop */
+@media (min-width: 1024px) {
+  .pdpMain {
+    display: grid;
+    grid-template-columns: minmax(520px, 1fr) minmax(340px, 420px);
+    gap: 64px;
+    align-items: start;
+  }
 
-/* =========================
-   MOBILE: FULL BLEED GALLERY
-========================= */
-@media (max-width: 640px) {
-  .pdpMain > :first-child {
-    margin-left: -20px;
-    margin-right: -20px;
+  .right {
+    position: sticky;
+    top: 96px;
   }
 }
 
 /* ==================================================
-   🚫 NO TYPOGRAPHY FOR CMS HERE
-   Product description is styled ONLY
-   inside ProductAttributes.module.css
+   PRODUCT INFO TYPOGRAPHY
 ================================================== */
+.productName {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  line-height: 1.15;
+}
 
-/* =========================
-   DESKTOP LAYOUT
-========================= */
-@media (min-width: 1024px) {
-  .page {
-    padding-left: 40px;
-    padding-right: 40px;
-    max-width: 1320px;
-  }
+.productSubtitle {
+  font-size: var(--fs-sm);
+  color: #555;
+}
 
-  .pdpMain {
-    display: grid;
-    grid-template-columns: minmax(520px, 1fr) 480px;
-    gap: 72px;
-    align-items: start;
-  }
+.productPrice {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
 
+.productOldPrice {
+  font-size: var(--fs-sm);
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+.productMeta {
+  font-size: var(--fs-xs);
+  color: #666;
+}
+
+/* ==================================================
+   CTA / ACTION AREA (GESTURE FRIENDLY)
+================================================== */
+.actionRow {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.actionRow button {
+  flex: 1;
+  height: clamp(42px, 12vw, 48px);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  background: #111;
+  color: #fff;
+}
+
+/* ==================================================
+   GALLERY
+================================================== */
+.futuristicGallery {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ==================================================
+   MOBILE FULL BLEED IMAGE
+================================================== */
+@media (max-width: 640px) {
   .pdpMain > :first-child {
-    margin-left: 0;
-    margin-right: 0;
+    margin-inline: calc(clamp(12px, 4vw, 24px) * -1);
   }
 }
 
-/* =========================
-   RELATED SECTION (UI)
-========================= */
+/* ==================================================
+   RELATED SECTION
+================================================== */
 .related {
-  margin-top: 72px;
+  margin-top: clamp(48px, 10vw, 96px);
+  padding-top: clamp(32px, 6vw, 64px);
+  border-top: 1px solid #e5e7eb;
 }
 
 .relatedTitle {
   font-family: "Rajdhani", sans-serif;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-
-  color: #000;
-  margin-bottom: 20px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #000;
+  font-size: clamp(18px, 5vw, 24px);
+  margin-bottom: var(--gap-md);
 }
 
-/* =========================
+/* ==================================================
    RELATED GRID
-========================= */
+================================================== */
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  gap: var(--gap-sm);
 }
 
-/* =========================
-   PRODUCT CARD (UI)
-========================= */
-.card {
-  position: relative;
-  text-decoration: none;
-  color: #111;
+@media (min-width: 640px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
 
+@media (min-width: 1024px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 28px;
+  }
+}
+
+/* ==================================================
+   PRODUCT CARD
+================================================== */
+.card {
   display: flex;
   flex-direction: column;
-
-  border-radius: 8px;
   background: #fff;
-
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.12),
-    0 1px 4px rgba(0, 0, 0, 0.08);
-
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  text-decoration: none;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.08);
 }
 
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.18),
-    0 4px 10px rgba(0, 0, 0, 0.12);
-}
-
-/* =========================
-   IMAGE AREA
-========================= */
+/* ==================================================
+   IMAGE
+================================================== */
 .imageWrap {
-  position: relative;
-  width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
-  border-radius: 8px 8px 0 0;
 }
 
 .imageWrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-/* =========================
-   ACTION ICON
-========================= */
-.actionIcon {
+/* ==================================================
+   SALE TAG
+================================================== */
+.saleTag {
   position: absolute;
   top: 8px;
-  right: 8px;
-
-  width: 28px;
-  height: 28px;
-
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 50%;
-
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  left: 8px;
+  font-size: var(--fs-xs);
+  padding: 4px 8px;
+  background: #ff3e3e;
+  color: #fff;
+  border-radius: 6px;
 }
 
-/* =========================
+/* ==================================================
    PRICE BAR
-========================= */
+================================================== */
 .priceBar {
   position: absolute;
   bottom: 8px;
-  left: 0;
-  right: 0;
-
+  inset-inline: 0;
   display: flex;
   justify-content: center;
-  z-index: 3;
 }
 
 .priceBarInner {
-  background: #ffffff;
-  color: #000;
-  font-size: 12px;
-  padding: 4px 10px;
+  font-size: var(--fs-xs);
+  padding: 6px 10px;
   border-radius: 999px;
-
+  background: #fff;
   display: flex;
-  align-items: center;
-  gap: 8px;
-
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  gap: 6px;
 }
 
-.price {
-  font-weight: 700;
-}
-
-.oldPrice {
-  color: #9ca3af;
-  font-size: 11px;
-  text-decoration: line-through;
-}
-
-/* =========================
-   ADD TO CART
-========================= */
+/* ==================================================
+   ADD TO CART — TOUCH FIRST
+================================================== */
 .addToCart {
-  margin-top: 8px;
-  height: 34px;
-  width: 100%;
-
-  background: #000;
-  color: #fff;
-
-  border: none;
-  border-radius: 0 0 8px 8px;
-
-  font-size: 13px;
+  height: clamp(36px, 11vw, 42px);
+  font-size: var(--fs-sm);
   font-weight: 600;
-  cursor: pointer;
-
-  transition: background 0.2s ease;
-}
-
-.addToCart:hover {
   background: #111;
+  color: #fff;
+  border: none;
 }
 
-/* =========================
-   MOBILE
-========================= */
-@media (max-width: 640px) {
-  .relatedGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* =========================
-   TABLET
-========================= */
-@media (min-width: 604px) and (max-width: 1023px) {
-  .relatedGrid {
-    grid-template-columns: repeat(auto-fill, 180px);
-    gap: 20px;
-    justify-content: start;
+/* Hover only for mouse devices */
+@media (hover: hover) and (pointer: fine) {
+  .addToCart {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: 0.3s ease;
   }
 
-  .card {
-    width: 180px;
-  }
-
-  .imageWrap {
-    width: 180px;
-    height: 240px;
+  .card:hover .addToCart {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-/* =========================
-   LARGE DESKTOP
-========================= */
-@media (min-width: 1024px) {
-  .relatedGrid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 28px;
+/* ==================================================
+   EXTREME SMALL DEVICES (≤360px)
+================================================== */
+@media (max-width: 360px) {
+  .productName {
+    font-size: 18px;
   }
 
-  .imageWrap {
-    height: 300px;
+  .relatedGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionRow button {
+    height: 40px;
+    font-size: 12px;
   }
 }
