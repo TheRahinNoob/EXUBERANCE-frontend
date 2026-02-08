@@ -8,7 +8,7 @@
 }
 
 /* ==================================================
-   MAIN IMAGE AREA (IMAGE-DRIVEN)
+   MAIN IMAGE AREA
 ================================================== */
 .mainWrapper {
   width: 100%;
@@ -16,35 +16,95 @@
 
   display: flex;
   justify-content: center;
+  align-items: center;
 
   position: relative;
 }
 
 /* ==================================================
-   MAIN IMAGE (FULL IMAGE, NO SCALE)
+   MAIN IMAGE (FLUID BASE)
 ================================================== */
 .main {
-  width: 90%;
+  width: 100%;
+  max-width: 100%;
   height: auto;
   display: block;
 }
 
 /* ==================================================
-   TABLET SIZE (UNCHANGED)
+   SMALL MOBILE (≤ 360px)
 ================================================== */
-@media (min-width: 604px) {
+@media (max-width: 360px) {
+  .main {
+    width: 92vw;
+  }
+}
+
+/* ==================================================
+   MOBILE (361px – 480px)
+================================================== */
+@media (min-width: 361px) and (max-width: 480px) {
+  .main {
+    width: 88vw;
+  }
+}
+
+/* ==================================================
+   LARGE MOBILE (481px – 603px)
+================================================== */
+@media (min-width: 481px) and (max-width: 603px) {
   .main {
     width: 420px;
+    max-width: 90vw;
+  }
+}
+
+/* ==================================================
+   TABLET PORTRAIT (604px – 767px)
+================================================== */
+@media (min-width: 604px) and (max-width: 767px) {
+  .main {
+    width: 460px;
+    max-width: 92%;
+  }
+}
+
+/* ==================================================
+   TABLET LANDSCAPE (768px – 1023px)
+================================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .main {
+    width: 520px;
     max-width: 100%;
   }
 }
 
 /* ==================================================
-   🔥 DESKTOP: BIG, PREMIUM IMAGE
+   SMALL DESKTOP (1024px – 1279px)
 ================================================== */
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (max-width: 1279px) {
   .main {
-     width:630px;         /* 🔥 BIGGER IMAGE */
+    width: 620px;
+    max-width: 100%;
+  }
+}
+
+/* ==================================================
+   DESKTOP (1280px – 1439px)
+================================================== */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .main {
+    width: 660px;
+    max-width: 100%;
+  }
+}
+
+/* ==================================================
+   LARGE DESKTOP / PREMIUM (≥ 1440px)
+================================================== */
+@media (min-width: 1440px) {
+  .main {
+    width: 700px; /* 🔥 HERO SIZE LOCKED */
     max-width: 100%;
   }
 }
@@ -57,7 +117,6 @@
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 4px;
-
   justify-content: flex-start;
 }
 
@@ -93,10 +152,9 @@
   object-fit: contain;
 }
 
-/* ACTIVE STATE */
+/* ACTIVE STATE (NO SHADOW DRAMA) */
 .thumb.active {
   border-color: #111827;
-  box-shadow: 0 0 0 1px #111827;
 }
 
 /* ==================================================
@@ -118,7 +176,7 @@
 }
 
 /* ==================================================
-   MOBILE TWEAKS (CENTER THUMBS)
+   MOBILE THUMB TWEAKS
 ================================================== */
 @media (max-width: 640px) {
   .thumb {
@@ -129,5 +187,15 @@
   .thumbs {
     justify-content: center;
     padding-inline: 16px;
+  }
+}
+
+/* ==================================================
+   ULTRA SMALL DEVICES (≤ 320px)
+================================================== */
+@media (max-width: 320px) {
+  .thumb {
+    width: 50px;
+    height: 64px;
   }
 }
