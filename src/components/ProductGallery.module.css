@@ -44,7 +44,7 @@
 ================================================== */
 @media (min-width: 1024px) {
   .main {
-    width: 560px;          /* 🔥 BIGGER IMAGE */
+     width:630px;         /* 🔥 BIGGER IMAGE */
     max-width: 100%;
   }
 }
