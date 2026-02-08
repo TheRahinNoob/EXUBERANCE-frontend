@@ -1,4 +1,11 @@
+/* ==================================================
+   FONTS & BASE
+================================================== */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600&display=swap");
+
 .page {
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #111;
   max-width: 960px;
   margin: 0 auto;
   padding: 48px 24px;
@@ -8,6 +15,7 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 32px;
+  text-align: center;
 }
 
 .layout {
@@ -16,22 +24,26 @@
   gap: 40px;
 }
 
-/* -----------------------
-   Customer Info
------------------------- */
+/* ==================================================
+   CUSTOMER INFO
+================================================== */
 .section {
   background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .section h2 {
   font-size: 18px;
-  margin-bottom: 12px;
+  font-weight: 600;
+  margin-bottom: 16px;
 }
 
 .input,
 .textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 14px;
   margin-top: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -39,6 +51,7 @@
 }
 
 .textarea {
+  min-height: 100px;
   resize: vertical;
 }
 
@@ -48,21 +61,28 @@
   font-size: 14px;
 }
 
-/* -----------------------
-   Order Summary
------------------------- */
+/* ==================================================
+   ORDER SUMMARY
+================================================== */
+.summaryWrapper {
+  position: relative;
+}
+
 .summary {
   border: 1px solid #eee;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fafafa;
+  position: sticky;
+  top: 20px;
 }
 
 .item {
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  word-break: break-word;
 }
 
 .total {
@@ -71,9 +91,6 @@
   margin-top: 16px;
 }
 
-/* -----------------------
-   Button
------------------------- */
 .button {
   margin-top: 20px;
   width: 100%;
@@ -83,7 +100,13 @@
   border: none;
   border-radius: 6px;
   font-weight: 600;
+  font-size: 16px;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #111;
 }
 
 .button:disabled {
@@ -91,10 +114,73 @@
   cursor: not-allowed;
 }
 
-/* -----------------------
-   Empty cart
------------------------- */
+/* ==================================================
+   EMPTY CART
+================================================== */
 .empty {
-  padding: 64px;
+  padding: 64px 24px;
   text-align: center;
+  font-size: 18px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 16px;
+  color: #000;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+/* Extremely small mobile (<360px) */
+@media (max-width: 360px) {
+  .page { padding: 24px 12px; }
+  .title { font-size: 22px; }
+  .layout { display: flex; flex-direction: column; gap: 20px; }
+  .section { padding: 16px; }
+  .input, .textarea { font-size: 13px; padding: 10px; }
+  .summary { padding: 16px; top: 10px; }
+  .item { font-size: 12px; }
+  .total { font-size: 14px; }
+  .button { font-size: 14px; padding: 12px; }
+}
+
+/* Small mobile (361-480px) */
+@media (min-width: 361px) and (max-width: 480px) {
+  .layout { display: flex; flex-direction: column; gap: 24px; }
+  .title { font-size: 24px; }
+  .input, .textarea { font-size: 13.5px; }
+  .item { font-size: 13px; }
+  .total { font-size: 15px; }
+  .button { font-size: 15px; padding: 13px; }
+}
+
+/* Tablets (481-768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; gap: 28px; }
+  .title { font-size: 26px; }
+  .input, .textarea { font-size: 14px; }
+  .button { font-size: 16px; }
+}
+
+/* Tablets landscape (769-1023px) */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .layout { grid-template-columns: 2fr 1fr; gap: 32px; }
+  .title { font-size: 27px; }
+}
+
+/* Desktop 1024px+ */
+@media (min-width: 1024px) {
+  .layout { gap: 40px; }
+  .title { font-size: 28px; }
+}
+
+/* Large desktop 1440px+ */
+@media (min-width: 1440px) {
+  .page { max-width: 1200px; }
+  .layout { gap: 48px; }
+  .title { font-size: 30px; }
 }
