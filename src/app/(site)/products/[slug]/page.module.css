@@ -1,83 +1,70 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600&display=swap");
 
 /* =========================
-   PAGE WRAPPER
+   PAGE WRAPPER (UI ONLY)
 ========================= */
 .page {
-  padding: 24px;
-  max-width: 1320px;
+  padding: 20px;
+  max-width: 1080px;
   margin: 0 auto;
+
+  /* UI font only — CMS content is sandboxed elsewhere */
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111;
-  background-color: #f8f8f8;
 }
 
 /* =========================
    NOT FOUND
 ========================= */
 .notFound {
-  padding: 80px 20px;
+  padding: 64px;
   text-align: center;
-  font-size: 24px;
-  font-weight: 600;
-  color: #444;
 }
 
 /* =========================
-   PDP MAIN
+   PDP MAIN (MOBILE FIRST)
 ========================= */
 .pdpMain {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 28px;
 }
 
-/* =========================
-   RIGHT PANEL
-========================= */
 .right {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-/* Sticky purchase panel */
-@media (min-width: 1024px) {
-  .right {
-    position: sticky;
-    top: 100px;
-  }
+  gap: 10px;
 }
 
 /* =========================
-   GALLERY
-========================= */
-.futuristicGallery {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-/* =========================
-   MOBILE FULL BLEED
+   MOBILE: FULL BLEED GALLERY
 ========================= */
 @media (max-width: 640px) {
   .pdpMain > :first-child {
-    margin-left: -24px;
-    margin-right: -24px;
+    margin-left: -20px;
+    margin-right: -20px;
   }
 }
 
+/* ==================================================
+   🚫 NO TYPOGRAPHY FOR CMS HERE
+   Product description is styled ONLY
+   inside ProductAttributes.module.css
+================================================== */
+
 /* =========================
-   DESKTOP PDP GRID
+   DESKTOP LAYOUT
 ========================= */
 @media (min-width: 1024px) {
+  .page {
+    padding-left: 40px;
+    padding-right: 40px;
+    max-width: 1320px;
+  }
+
   .pdpMain {
     display: grid;
-    grid-template-columns: minmax(560px, 1fr) 440px;
+    grid-template-columns: minmax(520px, 1fr) 480px;
     gap: 72px;
     align-items: start;
   }
@@ -89,21 +76,22 @@
 }
 
 /* =========================
-   RELATED SECTION
+   RELATED SECTION (UI)
 ========================= */
 .related {
-  margin-top: 96px;
-  padding-top: 64px;
-  border-top: 1px solid #e5e7eb;
+  margin-top: 72px;
 }
 
 .relatedTitle {
   font-family: "Rajdhani", sans-serif;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: #111;
-  margin-bottom: 28px;
+
+  color: #000;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #000;
 }
 
 /* =========================
@@ -112,46 +100,37 @@
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-/* Tablet */
-@media (min-width: 640px) {
-  .relatedGrid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  }
-}
-
-/* Desktop */
-@media (min-width: 1024px) {
-  .relatedGrid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 28px;
-  }
+  gap: 16px;
 }
 
 /* =========================
-   PRODUCT CARD
+   PRODUCT CARD (UI)
 ========================= */
 .card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-
   text-decoration: none;
   color: #111;
 
-  border-radius: 14px;
-  background: #fff;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  background: #fff;
+
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.12),
+    0 1px 4px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.18),
+    0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
 /* =========================
@@ -162,72 +141,45 @@
   width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+  border-radius: 8px 8px 0 0;
 }
 
 .imageWrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.4s ease;
-}
-
-.card:hover .imageWrap img {
-  transform: scale(1.05);
+  display: block;
 }
 
 /* =========================
-   SALE BADGE
-========================= */
-.saleTag {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-
-  background: #ff3e3e;
-  color: #fff;
-
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 9px;
-  border-radius: 8px;
-
-  z-index: 5;
-  letter-spacing: 0.03em;
-}
-
-/* =========================
-   ACTION ICON (WISHLIST)
+   ACTION ICON
 ========================= */
 .actionIcon {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
 
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
 
-  background: #fff;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 50%;
 
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s ease;
-}
-
-.actionIcon:hover {
-  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 /* =========================
-   PRICE PILL
+   PRICE BAR
 ========================= */
 .priceBar {
   position: absolute;
-  bottom: 14px;
+  bottom: 8px;
   left: 0;
   right: 0;
 
@@ -237,18 +189,17 @@
 }
 
 .priceBarInner {
-  background: #fff;
+  background: #ffffff;
   color: #000;
-
-  font-size: 13px;
-  padding: 7px 14px;
+  font-size: 12px;
+  padding: 4px 10px;
   border-radius: 999px;
 
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 .price {
@@ -257,35 +208,74 @@
 
 .oldPrice {
   color: #9ca3af;
-  font-size: 12px;
+  font-size: 11px;
   text-decoration: line-through;
 }
 
 /* =========================
-   ADD TO CART (HOVER REVEAL)
+   ADD TO CART
 ========================= */
 .addToCart {
-  height: 42px;
+  margin-top: 8px;
+  height: 34px;
   width: 100%;
 
-  border: none;
-  background: #111;
+  background: #000;
   color: #fff;
 
-  font-size: 14px;
+  border: none;
+  border-radius: 0 0 8px 8px;
+
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 
-  transform: translateY(100%);
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-
-.card:hover .addToCart {
-  transform: translateY(0);
-  opacity: 1;
+  transition: background 0.2s ease;
 }
 
 .addToCart:hover {
-  background: #000;
+  background: #111;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 640px) {
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================
+   TABLET
+========================= */
+@media (min-width: 604px) and (max-width: 1023px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, 180px);
+    gap: 20px;
+    justify-content: start;
+  }
+
+  .card {
+    width: 180px;
+  }
+
+  .imageWrap {
+    width: 180px;
+    height: 240px;
+  }
+}
+
+/* =========================
+   LARGE DESKTOP
+========================= */
+@media (min-width: 1024px) {
+  .relatedGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 28px;
+  }
+
+  .imageWrap {
+    height: 300px;
+  }
 }
