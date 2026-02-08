@@ -32,10 +32,21 @@
   gap: 40px;
 }
 
+/* =========================
+   RIGHT PANEL
+========================= */
 .right {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  padding: 20px;
+  margin-top: 6px;
+
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+
+  background: transparent;
 }
 
 /* Sticky purchase panel */
@@ -55,7 +66,7 @@
   overflow: hidden;
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 /* =========================
@@ -72,7 +83,6 @@
    DESKTOP PDP GRID
 ========================= */
 @media (min-width: 1024px) {
-
   .pdpMain {
     display: grid;
     grid-template-columns: minmax(560px, 1fr) 440px;
@@ -135,18 +145,21 @@
   position: relative;
   display: flex;
   flex-direction: column;
+
   text-decoration: none;
   color: #111;
+
   border-radius: 14px;
   background: #fff;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.12);
 }
 
 /* =========================
@@ -177,32 +190,39 @@
   position: absolute;
   top: 12px;
   left: 12px;
+
   background: #ff3e3e;
   color: #fff;
+
   font-size: 11px;
   font-weight: 700;
   padding: 5px 9px;
   border-radius: 8px;
+
   z-index: 5;
   letter-spacing: 0.03em;
 }
 
 /* =========================
-   ACTION ICON (Wishlist)
+   ACTION ICON (WISHLIST)
 ========================= */
 .actionIcon {
   position: absolute;
   top: 12px;
   right: 12px;
+
   width: 30px;
   height: 30px;
+
   background: #fff;
   border-radius: 50%;
+
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s ease;
 }
 
@@ -218,6 +238,7 @@
   bottom: 14px;
   left: 0;
   right: 0;
+
   display: flex;
   justify-content: center;
   z-index: 3;
@@ -226,13 +247,16 @@
 .priceBarInner {
   background: #fff;
   color: #000;
+
   font-size: 13px;
   padding: 7px 14px;
   border-radius: 999px;
+
   display: flex;
   align-items: center;
   gap: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .price {
@@ -246,17 +270,20 @@
 }
 
 /* =========================
-   ADD TO CART (Hover Reveal)
+   ADD TO CART (HOVER REVEAL)
 ========================= */
 .addToCart {
   height: 42px;
   width: 100%;
+
   border: none;
   background: #111;
   color: #fff;
+
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+
   transform: translateY(100%);
   opacity: 0;
   transition: all 0.3s ease;
