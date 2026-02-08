@@ -39,14 +39,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-
-  padding: 20px;
-  margin-top: 6px;
-
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 18px;
-
-  background: transparent;
 }
 
 /* Sticky purchase panel */
