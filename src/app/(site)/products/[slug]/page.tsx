@@ -1,42 +1,33 @@
+// SERVER COMPONENT — DO NOT USE "use client" HERE
 import type { Metadata } from "next";
 import styles from "./page.module.css";
 
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
-import ProductPurchase from "@/components/ProductPurchase";
+import ProductPurchaseWrapper from "@/components/ProductPurchaseWrapper"; // CLIENT
 import ProductAttributes from "@/components/ProductAttributes";
 
-// ✅ META VIEW CONTENT (CLIENT COMPONENT)
 import ViewContentPixel from "@/components/meta/ViewContentPixel";
 
 import type { ProductDetail, Product } from "@/types/product";
-import {
-  getProduct,
-  getRelatedProducts,
-} from "@/lib/api/products";
+import { getProduct, getRelatedProducts } from "@/lib/api/products";
 
 /* ==================================================
    CONFIG
 ================================================== */
 const SITE_BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 /* ==================================================
    SEO SCHEMA
 ================================================== */
-function buildProductSchema(
-  product: ProductDetail,
-  slug: string
-) {
+function buildProductSchema(product: ProductDetail, slug: string) {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
     image: product.images,
-    description:
-      product.short_description ||
-      product.description,
+    description: product.short_description || product.description,
     sku: product.id.toString(),
     brand: {
       "@type": "Brand",
@@ -48,18 +39,17 @@ function buildProductSchema(
       priceCurrency: "BDT",
       price: product.price,
       availability: product.variants.some(
-        (v) => v.stock > 0
+        (v) => (v.stock ?? 0) > 0
       )
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
-      itemCondition:
-        "https://schema.org/NewCondition",
+      itemCondition: "https://schema.org/NewCondition",
     },
   };
 }
 
 /* ==================================================
-   METADATA
+   METADATA (SERVER-SIDE, PROMISE-SAFE)
 ================================================== */
 export async function generateMetadata({
   params,
@@ -67,6 +57,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+
   const product = await getProduct(slug);
 
   if (!product) {
@@ -94,7 +85,7 @@ export async function generateMetadata({
 }
 
 /* ==================================================
-   PAGE
+   PAGE COMPONENT (SERVER, PROMISE-SAFE)
 ================================================== */
 export default async function ProductPage({
   params,
@@ -102,6 +93,7 @@ export default async function ProductPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+
   const product = await getProduct(slug);
 
   if (!product) {
@@ -117,14 +109,14 @@ export default async function ProductPage({
 
   return (
     <main className={styles.page}>
-      {/* 🔥 META VIEW CONTENT EVENT (CLIENT-SAFE) */}
-<ViewContentPixel
-  productId={product.id}
-  price={Number(product.price)}
-/>
+      {/* Meta Pixel (Client, deduplicated) */}
+      <ViewContentPixel
+        productId={product.id}
+        price={Number(product.price)}
+        currency="BDT"
+      />
 
-
-      {/* JSON-LD */}
+      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -144,7 +136,8 @@ export default async function ProductPage({
         <div className={styles.right}>
           <ProductInfo product={product} />
 
-          <ProductPurchase
+          {/* Add-to-cart wrapper */}
+          <ProductPurchaseWrapper
             product={product}
             productSlug={slug}
           />
@@ -164,42 +157,50 @@ export default async function ProductPage({
           </h2>
 
           <div className={styles.relatedGrid}>
-            {relatedProducts.map((item) => (
-              <a
-                key={item.id}
-                href={`/products/${item.slug}`}
-                className={styles.card}
-              >
-                <div className={styles.imageWrap}>
-                  <img
-                    src={item.main_image}
-                    alt={item.name}
-                  />
-
-                  <span className={styles.actionIcon}>
-                    ✎
-                  </span>
-
-                  <div className={styles.priceBar}>
-                    <div className={styles.priceBarInner}>
-                      <span className={styles.price}>
-                        ৳ {item.price}
+            {relatedProducts.map(
+              (item) =>
+                item.slug && (
+                  <a
+                    key={item.id}
+                    href={`/products/${item.slug}`}
+                    className={styles.card}
+                  >
+                    <div className={styles.imageWrap}>
+                      <img
+                        src={item.main_image}
+                        alt={item.name}
+                      />
+                      <span className={styles.actionIcon}>
+                        ✎
                       </span>
 
-                      {item.old_price && (
-                        <span className={styles.oldPrice}>
-                          ৳ {item.old_price}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                      <div className={styles.priceBar}>
+                        <div
+                          className={styles.priceBarInner}
+                        >
+                          <span className={styles.price}>
+                            ৳ {item.price}
+                          </span>
 
-                <button className={styles.addToCart}>
-                  + Add To Cart
-                </button>
-              </a>
-            ))}
+                          {item.old_price && (
+                            <span
+                              className={styles.oldPrice}
+                            >
+                              ৳ {item.old_price}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      className={styles.addToCart}
+                    >
+                      + Add To Cart
+                    </button>
+                  </a>
+                )
+            )}
           </div>
         </section>
       )}

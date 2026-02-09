@@ -1,89 +1,66 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import ProductVariants from "./ProductVariants";
 import AddToCart from "./AddToCart";
 import type { ProductDetail, ProductVariant } from "@/types/product";
 import styles from "./ProductPurchase.module.css";
 
-/* ==================================================
-   ProductPurchase (MOBILE-FIRST CONTROLLER)
-================================================== */
 type Props = {
   product: ProductDetail;
-  productSlug: string; // ✅ NEW (required for cart linking)
+  productSlug: string;
+  // Optional controlled props (for wrapper usage)
+  selectedVariant?: ProductVariant | null;
+  onVariantChange?: (variant: ProductVariant | null) => void;
+  onAddToCartClick?: () => void;
+  isAddToCartDisabled?: boolean;
+  disabledReason?: string;
 };
 
 export default function ProductPurchase({
   product,
   productSlug,
+  selectedVariant: controlledVariant,
+  onVariantChange,
+  onAddToCartClick,
+  isAddToCartDisabled: controlledDisabled,
+  disabledReason: controlledReason,
 }: Props) {
-  /* -----------------------------
-     Selected Variant State
-  ------------------------------ */
-  const [selectedVariant, setSelectedVariant] =
-    useState<ProductVariant | null>(null);
+  // Internal state for variant selection if not controlled
+  const [internalVariant, setInternalVariant] = useState<ProductVariant | null>(null);
+  const selectedVariant = controlledVariant ?? internalVariant;
+  const handleVariantChange = onVariantChange ?? ((v: ProductVariant | null) => setInternalVariant(v));
 
-  /* -----------------------------
-     Derived Business Rules
-  ------------------------------ */
-  const isOutOfStock = useMemo(() => {
-    return selectedVariant
-      ? selectedVariant.stock <= 0
-      : false;
-  }, [selectedVariant]);
-
-  const isAddToCartDisabled = useMemo(() => {
-    return !selectedVariant || isOutOfStock;
-  }, [selectedVariant, isOutOfStock]);
-
-  const disabledReason = useMemo(() => {
-    if (!selectedVariant) {
-      return "Please select size and color";
-    }
-
-    if (isOutOfStock) {
-      return "This variant is out of stock";
-    }
-
-    return undefined;
-  }, [selectedVariant, isOutOfStock]);
-
-  /* -----------------------------
-     Handlers
-  ------------------------------ */
-  const handleVariantChange = useCallback(
-    (variant: ProductVariant | null) => {
-      setSelectedVariant(variant);
-    },
-    []
+  // Derived states
+  const isOutOfStock = useMemo(() => selectedVariant ? selectedVariant.stock <= 0 : false, [selectedVariant]);
+  const isAddToCartDisabled = controlledDisabled ?? (!selectedVariant || isOutOfStock);
+  const disabledReason = controlledReason ?? (
+    !selectedVariant ? "Please select size and color" : (isOutOfStock ? "This variant is out of stock" : undefined)
   );
 
-  /* -----------------------------
-     Render
-  ------------------------------ */
+  // AddToCart click handler
+  const handleClick = useCallback(() => {
+    if (onAddToCartClick) onAddToCartClick();
+  }, [onAddToCartClick]);
+
   return (
     <section className={styles.wrapper}>
-      {/* =========================
-         SIZE & COLOR SELECTION
-         (MOBILE-FIRST ORDER)
-      ========================= */}
+      {/* Variant selection */}
       <ProductVariants
         variants={product.variants}
         value={selectedVariant}
         onChange={handleVariantChange}
       />
 
-      {/* =========================
-         ADD TO CART
-      ========================= */}
+      {/* Add to Cart button */}
       <div className={styles.cartBox}>
         <AddToCart
           product={product}
-          productSlug={productSlug} // ✅ PASS SLUG DOWN
+          productSlug={productSlug}
           variant={selectedVariant}
           disabled={isAddToCartDisabled}
           disabledReason={disabledReason}
+          onClick={handleClick}
         />
       </div>
     </section>

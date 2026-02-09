@@ -5,6 +5,15 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./OrderSuccess.module.css";
 
+type MetaUserData = {
+  fn?: string;
+  ln?: string;
+  em?: string;
+  ph?: string;
+  ct?: string;
+  total?: number;
+};
+
 export default function OrderSuccessClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -16,10 +25,62 @@ export default function OrderSuccessClient() {
      SAFETY GUARD — INVALID ACCESS
   ================================================== */
   useEffect(() => {
-    if (!reference) {
-      router.replace("/");
-    }
+    if (!reference) router.replace("/");
   }, [reference, router]);
+
+  /* ==================================================
+     META — PURCHASE (ADVANCED MATCHING, ONCE)
+  ================================================== */
+  useEffect(() => {
+    if (!reference || typeof window === "undefined" || !(window as any).fbq)
+      return;
+
+    const firedKey = `meta_purchase_fired_${reference}`;
+    if (sessionStorage.getItem(firedKey)) return;
+
+    // Load saved checkout data
+    const rawMeta = sessionStorage.getItem("meta_user_data");
+    const metaUser: MetaUserData | null = rawMeta ? JSON.parse(rawMeta) : null;
+
+    // Mark this order as fired
+    sessionStorage.setItem(firedKey, "1");
+
+    // Fire the Purchase event
+    (window as any).fbq(
+      "track",
+      "Purchase",
+      {
+        value: metaUser?.total ?? 0.0, // ✅ Real order total
+        currency: "BDT",
+        content_name: "Checkout Form",
+      },
+      {
+        external_id: reference, // strongest dedupe key
+        fn: metaUser?.fn,
+        ln: metaUser?.ln,
+        em: metaUser?.em,
+        ph: metaUser?.ph,
+        ct: metaUser?.ct,
+        country: "bd",
+      }
+    );
+
+    // Cleanup stored data (optional)
+    sessionStorage.removeItem("meta_user_data");
+  }, [reference]);
+
+  /* ==================================================
+     COPY ORDER REFERENCE
+  ================================================== */
+  const copyReference = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(reference || "");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      alert("Failed to copy order reference");
+    }
+  }, [reference]);
 
   if (!reference) {
     return (
@@ -30,29 +91,12 @@ export default function OrderSuccessClient() {
   }
 
   /* ==================================================
-     ACTIONS
-  ================================================== */
-
-  const copyReference = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(reference);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      alert("Failed to copy order reference");
-    }
-  }, [reference]);
-
-  /* ==================================================
      RENDER
   ================================================== */
-
   return (
     <main className={styles.wrapper}>
       <section className={styles.card}>
-        <h1 className={styles.title}>
-          🎉 Order Placed Successfully
-        </h1>
+        <h1 className={styles.title}>🎉 Order Placed Successfully</h1>
 
         <p className={styles.subtitle}>
           Thank you for shopping with us. Your order has been received.
@@ -60,10 +104,8 @@ export default function OrderSuccessClient() {
 
         <div className={styles.referenceBox}>
           <span className={styles.label}>Order Reference</span>
-
           <div className={styles.referenceRow}>
             <strong className={styles.mono}>{reference}</strong>
-
             <button
               type="button"
               onClick={copyReference}

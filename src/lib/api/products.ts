@@ -10,9 +10,11 @@ import { normalizeMediaUrl } from "./normalizers";
 /* ==================================================
    INTERNAL SAFE FETCH
    - Never crashes UI
-   - Logs once
+   - Logs network & HTTP errors
 ================================================== */
 async function safeFetch<T>(url: string): Promise<T | null> {
+  if (!url) return null;
+
   let res: Response;
 
   try {
@@ -68,7 +70,7 @@ type APIProduct = {
   short_description?: string;
   description?: string;
 
-  price: string;              // DecimalField (KEEP STRING)
+  price: string; // keep as string
   old_price: string | null;
 
   main_image: string;
@@ -112,11 +114,11 @@ export async function getProducts(params?: {
    PRODUCT DETAIL (PDP)
 ================================================== */
 export async function getProduct(
-  slug: string
+  slug?: string
 ): Promise<ProductDetail | null> {
-  const raw = await safeFetch<APIProduct>(
-    `${API_BASE}/api/products/${slug}/`
-  );
+  if (!slug) return null;
+
+  const raw = await safeFetch<APIProduct>(`${API_BASE}/api/products/${slug}/`);
 
   if (!raw) return null;
 
@@ -125,7 +127,6 @@ export async function getProduct(
     slug: raw.slug,
     name: raw.name,
 
-    // 🔥 KEEP DECIMAL STRINGS — UI decides formatting
     price: raw.price,
     old_price: raw.old_price ?? null,
 
@@ -159,13 +160,10 @@ export async function getProduct(
         [
           normalizeMediaUrl(raw.main_image),
           ...(Array.isArray(raw.images)
-            ? raw.images.map((img) =>
-                normalizeMediaUrl(img.image)
-              )
+            ? raw.images.map((img) => normalizeMediaUrl(img.image))
             : []),
         ].filter(
-          (img): img is string =>
-            typeof img === "string" && img.length > 0
+          (img): img is string => typeof img === "string" && img.length > 0
         )
       )
     ),
@@ -176,9 +174,11 @@ export async function getProduct(
    RELATED PRODUCTS
 ================================================== */
 export async function getRelatedProducts(
-  slug: string,
+  slug?: string,
   limit = 8
 ): Promise<Product[]> {
+  if (!slug) return [];
+
   const data = await safeFetch<APIProduct[]>(
     `${API_BASE}/api/products/${slug}/related/?limit=${limit}`
   );
@@ -189,7 +189,7 @@ export async function getRelatedProducts(
 }
 
 /* ==================================================
-   NORMALIZER (AUTHORITATIVE)
+   NORMALIZER
 ================================================== */
 function normalizeProduct(raw: APIProduct): Product {
   return {
@@ -197,7 +197,6 @@ function normalizeProduct(raw: APIProduct): Product {
     slug: raw.slug,
     name: raw.name,
 
-    // 🔒 Decimal safety
     price: raw.price,
     old_price: raw.old_price ?? null,
 

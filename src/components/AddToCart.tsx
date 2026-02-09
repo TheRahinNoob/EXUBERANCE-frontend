@@ -14,6 +14,7 @@ type Props = {
   variant: ProductVariant | null;
   disabled?: boolean;
   disabledReason?: string;
+  onClick?: () => void; // callback for parent (analytics handled outside)
 };
 
 /* ==================================================
@@ -25,6 +26,7 @@ export default function AddToCart({
   variant,
   disabled = false,
   disabledReason,
+  onClick,
 }: Props) {
   const addItem = useCartStore((s) => s.addItem);
   const [qty, setQty] = useState(1);
@@ -32,30 +34,22 @@ export default function AddToCart({
   /* ==================================================
      DERIVED STATE
   ================================================== */
-
   const maxQty = variant?.stock ?? 1;
+  const isDisabled = disabled || !variant || variant.stock <= 0;
 
-  const isDisabled =
-    disabled || !variant || variant.stock <= 0;
-
-  /**
-   * 🔒 PRICE NORMALIZATION (CRITICAL BOUNDARY)
-   * Backend may return string (DecimalField).
-   * Cart logic MUST use number only.
-   */
-  const normalizedPrice = useMemo<number | null>(() => {
-    const value =
+  // Ensure product price is always a valid number
+  const normalizedPrice = useMemo<number>(() => {
+    const price =
       typeof product.price === "string"
         ? Number(product.price)
         : product.price;
 
-    return Number.isFinite(value) ? value : null;
+    return Number.isFinite(price) ? price : 0;
   }, [product.price]);
 
   /* ==================================================
      ACTIONS
   ================================================== */
-
   const increase = () => {
     if (!variant) return;
     setQty((q) => Math.min(q + 1, maxQty));
@@ -67,14 +61,8 @@ export default function AddToCart({
 
   const handleAdd = () => {
     if (!variant || isDisabled) return;
-    if (normalizedPrice === null) {
-      console.error(
-        "Invalid product price:",
-        product.price
-      );
-      return;
-    }
 
+    // 1️⃣ Add item to cart (ONLY responsibility of this component)
     addItem({
       product_id: product.id,
       product_slug: productSlug,
@@ -82,22 +70,25 @@ export default function AddToCart({
       product_name: product.name,
       variant_label: `${variant.size} / ${variant.color}`,
       image: product.main_image,
-      price: normalizedPrice, // ✅ ALWAYS number
+      price: normalizedPrice,
       quantity: qty,
     });
 
+    // 2️⃣ Reset quantity
     setQty(1);
+
+    // 3️⃣ Notify parent (Meta Pixel handled in wrapper)
+    onClick?.();
   };
 
   /* ==================================================
      RENDER
   ================================================== */
-
   return (
     <div className={styles.wrapper}>
       {/* MAIN ROW */}
       <div className={styles.row}>
-        {/* QUANTITY */}
+        {/* QUANTITY CONTROLS */}
         <div className={styles.qtyBox}>
           <button
             type="button"
@@ -109,9 +100,7 @@ export default function AddToCart({
             −
           </button>
 
-          <span className={styles.qtyValue}>
-            {qty}
-          </span>
+          <span className={styles.qtyValue}>{qty}</span>
 
           <button
             type="button"
@@ -124,7 +113,7 @@ export default function AddToCart({
           </button>
         </div>
 
-        {/* ADD TO CART */}
+        {/* ADD TO CART BUTTON */}
         <button
           type="button"
           onClick={handleAdd}
@@ -135,11 +124,10 @@ export default function AddToCart({
         </button>
       </div>
 
-      {/* HELPER */}
+      {/* HELPER TEXT */}
       {isDisabled && (
         <p className={styles.helper}>
-          {disabledReason ??
-            "Please select size and color"}
+          {disabledReason ?? "Please select size and color"}
         </p>
       )}
     </div>

@@ -15,8 +15,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 ================================================== */
 const SITE_NAME = "Exuberance";
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "http://localhost:3000";
+  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 /* ==================================================
    GLOBAL SEO METADATA (DEFAULTS)
@@ -56,8 +55,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
-    description:
-      "Exuberance – Premium lifestyle & fashion brand.",
+    description: "Exuberance – Premium lifestyle & fashion brand.",
     images: ["/og-default.jpg"],
   },
 
@@ -68,7 +66,7 @@ export const metadata: Metadata = {
 };
 
 /* ==================================================
-   ROOT LAYOUT (APP ROUTER)
+   SITE ROOT LAYOUT (PUBLIC ONLY)
 ================================================== */
 export default function RootLayout({
   children,
@@ -79,44 +77,47 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {/* =========================================
-           META PIXEL (GLOBAL)
+           META PIXEL (BASE – LOADS ONCE)
         ========================================== */}
         {process.env.NEXT_PUBLIC_META_PIXEL_ID && (
-          <>
-            <Script
-              id="meta-pixel"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `
-                  !function(f,b,e,v,n,t,s)
-                  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-                  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-                  n.queue=[];t=b.createElement(e);t.async=!0;
-                  t.src=v;s=b.getElementsByTagName(e)[0];
-                  s.parentNode.insertBefore(t,s)}(window, document,'script',
-                  'https://connect.facebook.net/en_US/fbevents.js');
+          <Script
+            id="meta-pixel-base"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
 
-                  fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
-                  fbq('track', 'PageView');
-                `,
-              }}
-            />
-
-            <noscript>
-              <img
-                height="1"
-                width="1"
-                style={{ display: "none" }}
-                src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
-                alt=""
-              />
-            </noscript>
-          </>
+                fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
+                fbq('track', 'PageView');
+              `,
+            }}
+          />
         )}
       </head>
 
       <body suppressHydrationWarning>
+        {/* =========================================
+           NOSCRIPT FALLBACK (META PIXEL)
+        ========================================== */}
+        {process.env.NEXT_PUBLIC_META_PIXEL_ID && (
+          <noscript>
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${process.env.NEXT_PUBLIC_META_PIXEL_ID}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
+        )}
+
         {/* =========================================
            CLIENT-SIDE STORE HYDRATION
         ========================================== */}
@@ -136,9 +137,7 @@ export default function RootLayout({
         {/* =========================================
            PAGE CONTENT
         ========================================== */}
-        <main id="app-content">
-          {children}
-        </main>
+        <main id="app-content">{children}</main>
       </body>
     </html>
   );

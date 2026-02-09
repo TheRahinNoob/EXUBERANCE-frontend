@@ -12,18 +12,51 @@ type CheckoutState = "idle" | "submitting" | "failed";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000";
 
+/* ==================================================
+   BANGLADESH DISTRICTS
+================================================== */
+const BD_CITIES = [
+  "Dhaka",
+  "Chattogram",
+  "Sylhet",
+  "Khulna",
+  "Rajshahi",
+  "Barishal",
+  "Rangpur",
+  "Mymensingh",
+  "Cumilla",
+  "Narayanganj",
+  "Gazipur",
+  "Bogura",
+  "Jessore",
+];
+
+/* ==================================================
+   COMPONENT
+================================================== */
 export default function CheckoutPage() {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const totalPrice = useCartStore((s) => s.getTotalPrice());
   const clearCart = useCartStore((s) => s.clearCart);
 
-  const [name, setName] = useState("");
+  /* ------------------------------
+     FORM STATE
+  ------------------------------ */
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [altPhone, setAltPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [note, setNote] = useState("");
+
   const [state, setState] = useState<CheckoutState>("idle");
   const [error, setError] = useState<string | null>(null);
 
+  /* ------------------------------
+     EMPTY CART CHECK
+  ------------------------------ */
   if (!items.length) {
     return (
       <main className={styles.empty}>
@@ -35,9 +68,14 @@ export default function CheckoutPage() {
     );
   }
 
+  /* ==================================================
+     PLACE ORDER
+  ================================================== */
   const handlePlaceOrder = async () => {
     if (state === "submitting") return;
-    if (!name || !phone || !address) {
+
+    // Validation
+    if (!fullName || !phone || !address || !city) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -45,11 +83,63 @@ export default function CheckoutPage() {
     setState("submitting");
     setError(null);
 
+    /* ==================================================
+       META — INITIATE CHECKOUT (ONCE)
+    ================================================== */
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      const metaKey = "meta_initiate_checkout_fired";
+
+      if (!sessionStorage.getItem(metaKey)) {
+        sessionStorage.setItem(metaKey, "1");
+
+        const [fn, ...rest] = fullName.trim().split(" ");
+        const ln = rest.join(" ");
+
+        // Store user data + order total for Purchase page
+        sessionStorage.setItem(
+          "meta_user_data",
+          JSON.stringify({
+            fn: fn || undefined,
+            ln: ln || undefined,
+            em: email || undefined,
+            ph: phone,
+            ct: city,
+            total: totalPrice,
+          })
+        );
+
+        // Fire InitiateCheckout event
+        (window as any).fbq(
+          "track",
+          "InitiateCheckout",
+          {
+            value: totalPrice,
+            currency: "BDT",
+            content_name: "Checkout Form",
+          },
+          {
+            fn: fn || undefined,
+            ln: ln || undefined,
+            em: email || undefined,
+            ph: phone,
+            ad: address,
+            ct: city,
+            country: "bd",
+          }
+        );
+      }
+    }
+
     try {
+      // Payload for backend
       const payload = {
-        name,
+        name: fullName,
+        email,
         phone,
+        alt_phone: altPhone,
         address,
+        city,
+        note,
         items: items.map<CheckoutItemPayload>((i) => ({
           variant_id: i.variant_id,
           quantity: i.quantity,
@@ -58,14 +148,19 @@ export default function CheckoutPage() {
 
       const res = await fetch(`${API_BASE}/api/orders/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(payload),
       });
 
       const raw = await res.text();
       if (!res.ok) throw new Error(raw);
+
       const data: OrderSuccessResponse = JSON.parse(raw);
 
+      // Clear cart and redirect
       clearCart();
       router.replace(`/order-success?ref=${data.reference}`);
     } catch (err) {
@@ -74,6 +169,9 @@ export default function CheckoutPage() {
     }
   };
 
+  /* ==================================================
+     RENDER
+  ================================================== */
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>Checkout</h1>
@@ -82,24 +180,62 @@ export default function CheckoutPage() {
         {/* Customer Info Card */}
         <section className={styles.section}>
           <h2>Customer Information</h2>
+
           <input
             className={styles.input}
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name *"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
           />
+
           <input
             className={styles.input}
-            placeholder="Phone Number"
+            placeholder="Email (optional)"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            className={styles.input}
+            placeholder="Phone Number *"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
+
+          <input
+            className={styles.input}
+            placeholder="Alternative Phone (optional)"
+            value={altPhone}
+            onChange={(e) => setAltPhone(e.target.value)}
+          />
+
           <textarea
             className={styles.textarea}
-            placeholder="Delivery Address"
+            placeholder="Detailed Address *"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
           />
+
+          <select
+            className={styles.input}
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          >
+            <option value="">Select City / District *</option>
+            {BD_CITIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+
+          <textarea
+            className={styles.textarea}
+            placeholder="Delivery Note (optional)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+          />
+
           {error && <p className={styles.error}>{error}</p>}
         </section>
 
@@ -107,15 +243,18 @@ export default function CheckoutPage() {
         <aside className={styles.summaryWrapper}>
           <div className={styles.summary}>
             <h2>Order Summary</h2>
+
             {items.map((item) => (
               <div key={item.variant_id} className={styles.item}>
-                <span className={styles.itemName}>
+                <span>
                   {item.product_name} ({item.variant_label}) × {item.quantity}
                 </span>
-                <span className={styles.itemPrice}>৳ {item.price * item.quantity}</span>
+                <span>৳ {item.price * item.quantity}</span>
               </div>
             ))}
+
             <div className={styles.total}>Total: ৳ {totalPrice}</div>
+
             <button
               className={styles.button}
               disabled={state === "submitting"}
