@@ -1,176 +1,294 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;600&display=swap");
 
-/* ========== BASE ========= */
-.page {
+/* ===================== BASE PAGE ===================== */
+.checkoutPage {
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111;
-  padding: 48px 24px;
-  max-width: 1140px;
+  background: #f9f9f9;
+  padding: 40px 20px;
+  max-width: 1240px;
   margin: 0 auto;
-  background: #f5f5f5;
 }
 
-.title {
-  font-size: 32px;
+.pageTitle {
+  font-size: 36px;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
+  color: #1a1a1a;
 }
 
-.layout {
+/* ===================== CONTAINER ===================== */
+.checkoutContainer {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 40px;
+  align-items: flex-start;
 }
 
-/* ========== CUSTOMER INFO ========= */
-.section {
+@media (max-width: 1024px) {
+  .checkoutContainer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+/* ===================== CUSTOMER INFO ===================== */
+.customerSection {
   background: #fff;
-  padding: 28px;
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  transition: all 0.2s ease;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  transition: all 0.3s ease;
 }
 
-.section h2 {
-  font-size: 20px;
-  margin-bottom: 18px;
-  font-weight: 600;
+.customerSection:hover {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
-.input, .textarea {
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.inputField,
+.textareaField,
+.selectField {
   width: 100%;
-  padding: 14px;
-  margin-top: 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 16px;
   font-size: 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
   outline: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  background: #fff;
 }
 
-.input:focus, .textarea:focus {
-  border-color: #000;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
+.inputField:focus,
+.textareaField:focus,
+.selectField:focus {
+  border-color: #2575fc;
+  box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.15);
 }
 
-.textarea {
+.textareaField {
   min-height: 120px;
   resize: vertical;
 }
 
-.error {
-  margin-top: 12px;
+.errorText {
   color: #dc2626;
   font-size: 14px;
+  margin-top: 6px;
 }
 
-/* ========== ORDER SUMMARY ========= */
-.summaryWrapper {
+/* ===================== ORDER SUMMARY ===================== */
+.orderSummarySection {
   position: relative;
 }
 
-.summary {
+.orderSummaryCard {
   background: #fff;
-  padding: 28px;
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   position: sticky;
-  top: 20px;
-  transition: all 0.2s ease;
+  top: 24px;
+  transition: all 0.3s ease;
 }
 
-.summary h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 20px;
+.orderSummaryCard:hover {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
-.item {
+.summaryTitle {
+  font-size: 22px;
+  font-weight: 700;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 18px;
+  color: #1a1a1a;
+}
+
+.itemsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.summaryItem {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 15px;
-  margin-bottom: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
+  padding: 10px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.summaryItem:last-child {
+  border-bottom: none;
 }
 
 .itemName {
   flex: 1;
-  margin-right: 8px;
+  margin-right: 12px;
+  font-weight: 500;
+  color: #333;
 }
 
 .itemPrice {
   font-weight: 600;
+  color: #111;
 }
 
-.total {
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 500;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  color: #555;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 18px;
   font-weight: 700;
-  margin-top: 18px;
-  border-top: 1px solid #eee;
-  padding-top: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #ddd;
+  color: #111;
 }
 
-/* ========== BUTTON ========= */
-.button {
+.totalLabel {
+  font-size: 17px;
+}
+
+.totalValue {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===================== PLACE ORDER BUTTON ===================== */
+.placeOrderButton {
   width: 100%;
-  padding: 16px;
-  margin-top: 20px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
+  padding: 18px;
   font-size: 16px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #fff;
-  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 }
 
-.button:hover:not(:disabled) {
+.placeOrderButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
 }
 
-.button:disabled {
+.placeOrderButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ========== EMPTY CART ========= */
-.empty {
+/* ===================== EMPTY CART ===================== */
+.emptyCart {
   text-align: center;
-  padding: 60px 20px;
+  padding: 80px 20px;
+}
+
+.emptyTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
 .backLink {
-  margin-top: 16px;
-  display: inline-block;
   font-weight: 600;
   text-decoration: underline;
   color: #2575fc;
 }
 
-/* ========== RESPONSIVE ========== */
-@media (max-width: 1024px) {
-  .layout { grid-template-columns: 1fr; gap: 28px; }
-  .summary { position: relative; top: 0; }
+/* ===================== SCROLLBARS ===================== */
+.itemsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.itemsList::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 3px;
+}
+
+.itemsList::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 3px;
+}
+
+.itemsList::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+/* ===================== EXTREME RESPONSIVENESS ===================== */
+@media (max-width: 768px) {
+  .checkoutPage { padding: 28px 16px; }
+  .pageTitle { font-size: 28px; }
+  .customerSection, .orderSummaryCard { padding: 24px; border-radius: 14px; }
+  .sectionTitle, .summaryTitle { font-size: 20px; }
+  .inputField, .textareaField, .selectField { font-size: 14px; padding: 14px; }
+  .summaryItem { font-size: 14px; }
+  .summaryTotal { font-size: 17px; }
+  .totalValue { font-size: 20px; }
+  .placeOrderButton { font-size: 15px; padding: 16px; }
 }
 
 @media (max-width: 480px) {
-  .page { padding: 32px 16px; }
-  .title { font-size: 26px; }
-  .section, .summary { padding: 20px; border-radius: 12px; }
-  .input, .textarea { font-size: 14px; padding: 12px; }
-  .item { font-size: 14px; }
-  .total { font-size: 16px; }
-  .button { font-size: 15px; padding: 14px; }
+  .checkoutPage { padding: 24px 12px; }
+  .pageTitle { font-size: 24px; }
+  .customerSection, .orderSummaryCard { padding: 20px; border-radius: 12px; }
+  .inputField, .textareaField, .selectField { font-size: 13px; padding: 12px; }
+  .summaryItem { font-size: 13px; }
+  .summaryTotal { font-size: 16px; }
+  .totalValue { font-size: 18px; }
+  .placeOrderButton { font-size: 14px; padding: 14px; }
 }
 
 @media (max-width: 360px) {
-  .title { font-size: 22px; }
-  .input, .textarea { font-size: 13px; padding: 10px; }
-  .item { font-size: 13px; }
-  .total { font-size: 14px; }
-  .button { font-size: 14px; padding: 12px; }
+  .pageTitle { font-size: 22px; }
+  .inputField, .textareaField, .selectField { font-size: 12px; padding: 10px; }
+  .summaryItem { font-size: 12px; }
+  .summaryTotal { font-size: 15px; }
+  .totalValue { font-size: 16px; }
+  .placeOrderButton { font-size: 13px; padding: 12px; }
+}
+
+@media (max-width: 320px) {
+  .pageTitle { font-size: 20px; }
+  .inputField, .textareaField, .selectField { font-size: 11px; padding: 10px; }
+  .summaryItem { font-size: 11px; }
+  .summaryTotal { font-size: 14px; }
+  .totalValue { font-size: 15px; }
+  .placeOrderButton { font-size: 12px; padding: 10px; }
 }
