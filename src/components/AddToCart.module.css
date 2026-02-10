@@ -1,11 +1,11 @@
 /* ==================================================
-   ADD TO CART (REFERENCE MATCH)
+   ADD TO CART WRAPPER
 ================================================== */
-
 .wrapper {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  position: relative; /* needed for toast positioning */
 }
 
 /* ==================================================
@@ -15,6 +15,7 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 /* ==================================================
@@ -23,12 +24,13 @@
 .qtyBox {
   display: flex;
   align-items: center;
-  height: 30px;
+  height: 36px;
 
   border: 1px solid #d1d5db;
-  border-radius: 2px;
+  border-radius: 6px;
   overflow: hidden;
   background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .qtyBtn {
@@ -36,9 +38,14 @@
   height: 100%;
   border: none;
   background: transparent;
-  font-size: 18px;
+  font-size: 20px;
   line-height: 1;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qtyBtn:hover:not(:disabled) {
+  background: #f3f4f6;
 }
 
 .qtyBtn:disabled {
@@ -49,42 +56,48 @@
 .qtyValue {
   width: 36px;
   text-align: center;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: #111827;
 }
 
 /* ==================================================
    ADD TO CART BUTTON
 ================================================== */
-/* ==================================================
-   ADD TO CART BUTTON (FIXED BUT RESPONSIVE)
-================================================== */
 .addBtn {
-  width: 160px;          /* 🔒 base fixed width */
-  max-width: 100%;      /* responsive safety */
-  height: 30px;
+  width: 160px;
+  max-width: 100%;
+  height: 36px;
 
-  background: #111827;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #ffffff;
 
   border: none;
-  border-radius: 2px;
-
-  font-size: 14px;
-  font-weight: 600;
-
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
 
-  flex-shrink: 0;        /* 🔥 prevents flex stretch */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.addBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
 }
 
 .addBtn:disabled {
   background: #9ca3af;
   cursor: not-allowed;
+  box-shadow: none;
 }
-
 
 /* ==================================================
    HELPER TEXT
@@ -92,4 +105,119 @@
 .helper {
   font-size: 12px;
   color: #dc2626;
+  margin-top: 4px;
+}
+
+/* ==================================================
+   TOAST NOTIFICATION
+================================================== */
+.toast {
+  position: absolute;
+  top: -48px;
+  right: 0;
+  background: #111827;
+  color: #ffffff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  animation: slideIn 0.3s ease-out, fadeOut 0.5s 2s forwards;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.toastIcon {
+  font-size: 16px;
+}
+
+/* ==================================================
+   TOAST ANIMATIONS
+================================================== */
+@keyframes slideIn {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+@media (max-width: 480px) {
+  .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .addBtn {
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .qtyBox {
+    height: 32px;
+  }
+
+  .qtyValue {
+    font-size: 14px;
+  }
+
+  .qtyBtn {
+    font-size: 18px;
+    width: 32px;
+  }
+
+  .toast {
+    top: -50px;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .toastIcon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  .addBtn {
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .qtyBox {
+    height: 28px;
+  }
+
+  .qtyBtn {
+    width: 28px;
+  }
+
+  .qtyValue {
+    width: 28px;
+    font-size: 13px;
+  }
+
+  .toast {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  .toastIcon {
+    font-size: 12px;
+  }
 }

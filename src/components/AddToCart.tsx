@@ -30,6 +30,8 @@ export default function AddToCart({
 }: Props) {
   const addItem = useCartStore((s) => s.addItem);
   const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   /* ==================================================
      DERIVED STATE
@@ -62,7 +64,9 @@ export default function AddToCart({
   const handleAdd = () => {
     if (!variant || isDisabled) return;
 
-    // 1️⃣ Add item to cart (ONLY responsibility of this component)
+    setLoading(true);
+
+    // 1️⃣ Add item to cart
     addItem({
       product_id: product.id,
       product_slug: productSlug,
@@ -77,7 +81,12 @@ export default function AddToCart({
     // 2️⃣ Reset quantity
     setQty(1);
 
-    // 3️⃣ Notify parent (Meta Pixel handled in wrapper)
+    // 3️⃣ Show toast & button feedback
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2500); // toast disappears after 2.5s
+    setLoading(false);
+
+    // 4️⃣ Notify parent
     onClick?.();
   };
 
@@ -117,10 +126,10 @@ export default function AddToCart({
         <button
           type="button"
           onClick={handleAdd}
-          disabled={isDisabled}
+          disabled={isDisabled || loading}
           className={styles.addBtn}
         >
-          + Add To Cart
+          {loading ? "Adding…" : added ? "✔ Added" : "+ Add To Cart"}
         </button>
       </div>
 
@@ -129,6 +138,14 @@ export default function AddToCart({
         <p className={styles.helper}>
           {disabledReason ?? "Please select size and color"}
         </p>
+      )}
+
+      {/* TOAST NOTIFICATION */}
+      {added && (
+        <div className={styles.toast}>
+          <span className={styles.toastIcon}>✅</span>
+          <span>Added to cart!</span>
+        </div>
       )}
     </div>
   );
