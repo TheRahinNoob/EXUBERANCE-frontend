@@ -103,19 +103,7 @@ export default function CheckoutPage() {
 
       setBackendTotal(data.total_price);
 
-      // Meta Pixel InitiateCheckout
-      const [fn, ...rest] = fullName.trim().split(" ");
-      const ln = rest.join(" ");
-      const metaData = { fn, ln, em: email || undefined, ph: phone, ct: city, total: data.total_price };
-      sessionStorage.setItem("meta_user_data", JSON.stringify(metaData));
-      if (typeof window !== "undefined" && (window as any).fbq) {
-        (window as any).fbq(
-          "track",
-          "InitiateCheckout",
-          { value: data.total_price, currency: "BDT", content_name: "Checkout Form" },
-          { ...metaData, ad: address, country: "bd" }
-        );
-      }
+      // Removed Meta Pixel InitiateCheckout code as requested
 
       clearCart();
       Object.keys(sessionStorage)

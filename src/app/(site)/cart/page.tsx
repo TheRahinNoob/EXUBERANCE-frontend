@@ -40,25 +40,42 @@ export default function CartPage() {
   /* =========================
      EMPTY STATE
   ========================= */
-if (items.length === 0) {
-  return (
-    <main className={styles.empty}>
-      <h1 className={styles.emptyTitle}>
-        Your cart is currently empty
-      </h1>
+  if (items.length === 0) {
+    return (
+      <main className={styles.empty}>
+        <h1 className={styles.emptyTitle}>
+          Your cart is currently empty
+        </h1>
 
-      <p className={styles.emptyText}>
-        Looks like you haven’t added any products yet.
-        Start exploring and find something you’ll love.
-      </p>
+        <p className={styles.emptyText}>
+          Looks like you haven’t added any products yet.
+          Start exploring and find something you’ll love.
+        </p>
 
-      <Link href="/" className={styles.primaryBtn}>
-        Continue Shopping
-      </Link>
-    </main>
-  );
-}
+        <Link href="/" className={styles.primaryBtn}>
+          Continue Shopping
+        </Link>
+      </main>
+    );
+  }
 
+  /* =========================
+     FIRE INITIATE CHECKOUT EVENT
+  ========================= */
+  const handleInitiateCheckout = () => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      try {
+        (window as any).fbq("track", "InitiateCheckout", {
+          value: totalPrice,
+          currency: "BDT",
+          content_ids: items.map((i) => i.variant_id),
+          content_type: "product",
+        });
+      } catch (err) {
+        console.warn("fbq InitiateCheckout error:", err);
+      }
+    }
+  };
 
   /* =========================
      CART PAGE
@@ -147,6 +164,7 @@ if (items.length === 0) {
         <Link
           href="/checkout"
           className={styles.primaryBtn}
+          onClick={handleInitiateCheckout} // 🔥 InitiateCheckout fired here
         >
           Place Order
         </Link>
@@ -162,57 +180,53 @@ if (items.length === 0) {
       {/* =========================
          RELATED PRODUCTS
       ========================= */}
-{/* =========================
-   RELATED PRODUCTS
-========================= */}
-{relatedProducts.length > 0 && (
-  <section className={styles.related}>
-    <h2 className={styles.relatedTitle}>
-      You may also like
-    </h2>
+      {relatedProducts.length > 0 && (
+        <section className={styles.related}>
+          <h2 className={styles.relatedTitle}>
+            You may also like
+          </h2>
 
-    <div className={styles.relatedGrid}>
-      {relatedProducts.map((item) => (
-        <Link
-          key={item.id}
-          href={`/products/${item.slug}`}
-          className={styles.productCard}
-        >
-          {/* IMAGE */}
-          <div className={styles.cardImageWrap}>
-            <img
-              src={item.main_image}
-              alt={item.name}
-              loading="lazy"
-            />
+          <div className={styles.relatedGrid}>
+            {relatedProducts.map((item) => (
+              <Link
+                key={item.id}
+                href={`/products/${item.slug}`}
+                className={styles.productCard}
+              >
+                {/* IMAGE */}
+                <div className={styles.cardImageWrap}>
+                  <img
+                    src={item.main_image}
+                    alt={item.name}
+                    loading="lazy"
+                  />
+                </div>
+
+                {/* INFO */}
+                <div className={styles.cardBody}>
+                  <h3 className={styles.cardTitle}>
+                    {item.name}
+                  </h3>
+
+                  <div className={styles.cardSub}>
+                    Starts from
+                  </div>
+
+                  <div className={styles.cardPrice}>
+                    ৳ {item.price}
+                  </div>
+                </div>
+
+                {/* FOOTER */}
+                <div className={styles.cardFooter}>
+                  <span>♡ Save</span>
+                  <span>↗ Share</span>
+                </div>
+              </Link>
+            ))}
           </div>
-
-          {/* INFO */}
-          <div className={styles.cardBody}>
-            <h3 className={styles.cardTitle}>
-              {item.name}
-            </h3>
-
-            <div className={styles.cardSub}>
-              Starts from
-            </div>
-
-            <div className={styles.cardPrice}>
-              ৳ {item.price}
-            </div>
-          </div>
-
-          {/* FOOTER (OPTIONAL UI, NO LOGIC) */}
-          <div className={styles.cardFooter}>
-            <span>♡ Save</span>
-            <span>↗ Share</span>
-          </div>
-        </Link>
-      ))}
-    </div>
-  </section>
-)}
-
+        </section>
+      )}
     </main>
   );
 }

@@ -20,6 +20,24 @@ export default function CartDrawer() {
   const totalPrice = useCartStore((s) => s.getTotalPrice());
 
   /* -----------------------------
+     FIRE INITIATE CHECKOUT EVENT
+  ------------------------------ */
+  const handleInitiateCheckout = () => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      try {
+        (window as any).fbq("track", "InitiateCheckout", {
+          value: totalPrice,
+          currency: "BDT",
+          content_ids: items.map((i) => i.variant_id),
+          content_type: "product",
+        });
+      } catch (err) {
+        console.warn("fbq InitiateCheckout error:", err);
+      }
+    }
+  };
+
+  /* -----------------------------
      VISIBILITY
   ------------------------------ */
   if (!isCartOpen) return null;
@@ -150,7 +168,10 @@ export default function CartDrawer() {
 
               <Link
                 href="/checkout"
-                onClick={closeCart}
+                onClick={() => {
+                  closeCart();
+                  handleInitiateCheckout(); // 🔥 InitiateCheckout fired here
+                }}
                 className={styles.checkout}
               >
                 Checkout
