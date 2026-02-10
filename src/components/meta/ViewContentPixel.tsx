@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 interface ViewContentPixelProps {
   productId: number;
@@ -9,21 +10,24 @@ interface ViewContentPixelProps {
 }
 
 /**
- * Fires a Meta "ViewContent" event safely.
- * Deduplicates by product ID using sessionStorage to avoid multiple events.
+ * Meta ViewContent – fires ONCE per product page view
+ * ✅ Works with Next.js App Router client-side navigation
  */
 export default function ViewContentPixel({
   productId,
   price,
   currency = "BDT",
 }: ViewContentPixelProps) {
-  useEffect(() => {
-    // TypeScript-safe check for fbq
-    if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  const pathname = usePathname();
+  const firedRef = useRef<Set<number>>(new Set());
 
-    // 🔒 Deduplicate: fire only once per product per session
-    const lastFiredId = sessionStorage.getItem("lastViewContentId");
-    if (lastFiredId === String(productId)) return;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (typeof window.fbq !== "function") return;
+
+    // Prevent double firing for the same product
+    if (firedRef.current.has(productId)) return;
+    firedRef.current.add(productId);
 
     try {
       window.fbq("track", "ViewContent", {
@@ -32,16 +36,18 @@ export default function ViewContentPixel({
         value: price,
         currency,
       });
-      sessionStorage.setItem("lastViewContentId", String(productId));
+      console.log(`[Meta Pixel] ViewContent fired for product ${productId}`);
     } catch (err) {
-      console.error("[Meta Pixel] ViewContent tracking error:", err);
+      console.error("[Meta Pixel] ViewContent error:", err);
     }
-  }, [productId, price, currency]);
+  }, [pathname, productId, price, currency]);
 
   return null;
 }
 
-// Extend Window type for fbq
+/* --------------------------------------------------
+   Global typing for Meta Pixel
+-------------------------------------------------- */
 declare global {
   interface Window {
     fbq?: (...args: any[]) => void;

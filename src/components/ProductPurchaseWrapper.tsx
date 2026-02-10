@@ -3,43 +3,12 @@
 import { useState, useCallback, useMemo } from "react";
 import ProductPurchase from "./ProductPurchase";
 import type { ProductDetail, ProductVariant } from "@/types/product";
+import { fireAddToCartPixel } from "@/utils/metaPixel";
 
 /* ==================================================
-   HELPER: Meta Pixel tracking for AddToCart
-   ✅ Deduplicated by productId + click
-================================================== */
-const trackAddToCart = ({
-  productId,
-  value,
-  currency = "BDT",
-  contentName,
-}: {
-  productId: number;
-  value: number;
-  currency?: string;
-  contentName?: string;
-}) => {
-  if (typeof window === "undefined") return;
-  const fbq = (window as any).fbq;
-  if (!fbq) return;
-
-  const lastFired = sessionStorage.getItem(`addToCartFired-${productId}`);
-  if (lastFired === "true") return;
-
-  fbq("track", "AddToCart", {
-    content_ids: [productId],
-    content_type: "product",
-    value,
-    currency,
-    content_name: contentName,
-  });
-
-  sessionStorage.setItem(`addToCartFired-${productId}`, "true");
-};
-
-/* ==================================================
-   ProductPurchaseWrapper
-   ✅ Wraps ProductPurchase with AddToCart tracking
+   ProductPurchaseWrapper Component
+   ✅ Wraps ProductPurchase
+   ✅ Fires AddToCart Meta Pixel safely
 ================================================== */
 type Props = {
   product: ProductDetail;
@@ -53,12 +22,14 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
      Derived states
   ------------------------------ */
   const isOutOfStock = useMemo(() => {
-    // Safe: treat undefined stock as 0
     if (!selectedVariant) return false;
     return (selectedVariant.stock ?? 0) <= 0;
   }, [selectedVariant]);
 
-  const isAddToCartDisabled = useMemo(() => !selectedVariant || isOutOfStock, [selectedVariant, isOutOfStock]);
+  const isAddToCartDisabled = useMemo(
+    () => !selectedVariant || isOutOfStock,
+    [selectedVariant, isOutOfStock]
+  );
 
   const disabledReason = useMemo(() => {
     if (!selectedVariant) return "Please select size and color";
@@ -76,17 +47,16 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
   const handleAddToCartClick = useCallback(() => {
     if (!selectedVariant) return;
 
-    const priceToTrack = Number(product.price);
-
-    // ✅ Fire Meta Pixel safely (deduplicated per product + click)
-    trackAddToCart({
+    // Fire AddToCart Meta Pixel
+    fireAddToCartPixel({
       productId: product.id,
-      value: priceToTrack,
-      currency: "BDT",
+      variantId: selectedVariant.id,
+      value: Number(product.price),
       contentName: product.name,
+      currency: "BDT",
     });
 
-    // Actual cart addition logic is handled in ProductPurchase component
+    // Actual cart logic is handled in ProductPurchase component
   }, [selectedVariant, product]);
 
   /* -----------------------------

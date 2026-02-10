@@ -14,67 +14,120 @@ type MetaUserData = {
   total?: number;
 };
 
+type OrderDetailResponse = {
+  reference: string;
+  total: number;
+  name?: string;
+  email?: string;
+  phone?: string;
+  city?: string;
+};
+
+/* ==================================================
+   Order Success Client - Production Ready
+================================================== */
 export default function OrderSuccessClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const reference = searchParams.get("ref");
-  const [copied, setCopied] = useState(false);
 
-  /* ==================================================
-     SAFETY GUARD — INVALID ACCESS
-  ================================================== */
+  const [copied, setCopied] = useState(false);
+  const [orderTotal, setOrderTotal] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  /* -----------------------------
+     SAFETY: Redirect if no reference
+  ----------------------------- */
   useEffect(() => {
     if (!reference) router.replace("/");
   }, [reference, router]);
 
-  /* ==================================================
-     META — PURCHASE (ADVANCED MATCHING, ONCE)
-  ================================================== */
+  /* -----------------------------
+     Fire Meta Purchase Event (deduplicated)
+  ----------------------------- */
   useEffect(() => {
-    if (!reference || typeof window === "undefined" || !(window as any).fbq)
-      return;
+    if (!reference || typeof window === "undefined" || !(window as any).fbq) return;
 
     const firedKey = `meta_purchase_fired_${reference}`;
     if (sessionStorage.getItem(firedKey)) return;
 
-    // Load saved checkout data
-    const rawMeta = sessionStorage.getItem("meta_user_data");
-    const metaUser: MetaUserData | null = rawMeta ? JSON.parse(rawMeta) : null;
-
-    // Mark this order as fired
-    sessionStorage.setItem(firedKey, "1");
-
-    // Fire the Purchase event
-    (window as any).fbq(
-      "track",
-      "Purchase",
-      {
-        value: metaUser?.total ?? 0.0, // ✅ Real order total
-        currency: "BDT",
-        content_name: "Checkout Form",
-      },
-      {
-        external_id: reference, // strongest dedupe key
-        fn: metaUser?.fn,
-        ln: metaUser?.ln,
-        em: metaUser?.em,
-        ph: metaUser?.ph,
-        ct: metaUser?.ct,
-        country: "bd",
+    const firePurchase = (metaUser: MetaUserData) => {
+      try {
+        (window as any).fbq(
+          "track",
+          "Purchase",
+          {
+            value: metaUser.total ?? 0,
+            currency: "BDT",
+            content_name: "Checkout Form",
+          },
+          {
+            external_id: reference,
+            fn: metaUser.fn,
+            ln: metaUser.ln,
+            em: metaUser.em,
+            ph: metaUser.ph,
+            ct: metaUser.ct,
+            country: "bd",
+          }
+        );
+        sessionStorage.setItem(firedKey, "1");
+        console.log(`[Meta Pixel] Purchase fired for reference ${reference}`);
+      } catch (err) {
+        console.error("[Meta Pixel] Purchase error:", err);
       }
-    );
+    };
 
-    // Cleanup stored data (optional)
-    sessionStorage.removeItem("meta_user_data");
+    // 1️⃣ Use sessionStorage first
+    const rawMeta = sessionStorage.getItem("meta_user_data");
+    if (rawMeta) {
+      const metaUser: MetaUserData = JSON.parse(rawMeta);
+      setOrderTotal(metaUser.total ?? null);
+      firePurchase(metaUser);
+      sessionStorage.removeItem("meta_user_data");
+      setLoading(false);
+      return;
+    }
+
+    // 2️⃣ Fallback: fetch order from frontend API route
+    const fetchOrder = async () => {
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(reference)}`);
+        if (!res.ok) throw new Error("Failed to fetch order");
+        const data: OrderDetailResponse = await res.json();
+
+        setOrderTotal(data.total ?? null);
+
+        const [fn, ...rest] = data.name?.trim().split(" ") || [];
+        const ln = rest.join(" ");
+
+        const metaUser: MetaUserData = {
+          fn: fn || undefined,
+          ln: ln || undefined,
+          em: data.email || undefined,
+          ph: data.phone,
+          ct: data.city,
+          total: data.total,
+        };
+
+        firePurchase(metaUser);
+      } catch (err) {
+        console.error("[OrderSuccessClient] Failed to fetch order", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrder();
   }, [reference]);
 
-  /* ==================================================
+  /* -----------------------------
      COPY ORDER REFERENCE
-  ================================================== */
+  ----------------------------- */
   const copyReference = useCallback(async () => {
+    if (!reference) return;
     try {
-      await navigator.clipboard.writeText(reference || "");
+      await navigator.clipboard.writeText(reference);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -90,9 +143,6 @@ export default function OrderSuccessClient() {
     );
   }
 
-  /* ==================================================
-     RENDER
-  ================================================== */
   return (
     <main className={styles.wrapper}>
       <section className={styles.card}>
@@ -116,6 +166,14 @@ export default function OrderSuccessClient() {
           </div>
         </div>
 
+        {loading ? (
+          <p className={styles.loading}>Loading order details…</p>
+        ) : orderTotal !== null ? (
+          <p className={styles.total}>Order Total: ৳ {orderTotal}</p>
+        ) : (
+          <p className={styles.error}>Failed to load order total.</p>
+        )}
+
         <div className={styles.nextSteps}>
           <h3>What happens next?</h3>
           <ul>
@@ -132,7 +190,6 @@ export default function OrderSuccessClient() {
           >
             Track Order
           </Link>
-
           <Link href="/" className={styles.secondaryBtn}>
             Continue Shopping
           </Link>

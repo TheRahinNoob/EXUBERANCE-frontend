@@ -7,7 +7,7 @@ import { persist } from "zustand/middleware";
 export type CartItem = {
   variant_id: number;
   product_id: number;
-  product_slug: string;      // ✅ REQUIRED for product link
+  product_slug: string;
   product_name: string;
   image: string;
   price: number;
@@ -16,126 +16,91 @@ export type CartItem = {
 };
 
 type CartState = {
-  /* -----------------------------
-     STATE
-  ------------------------------ */
   items: CartItem[];
-
-  /* -----------------------------
-     ACTIONS
-  ------------------------------ */
   addItem: (item: CartItem) => void;
   removeItem: (variant_id: number) => void;
   updateQuantity: (variant_id: number, quantity: number) => void;
   clearCart: () => void;
-
-  /* -----------------------------
-     DERIVED (SYNC, FAST)
-  ------------------------------ */
   getTotalItems: () => number;
   getTotalPrice: () => number;
 };
 
 /* ==================================================
+   HELPER: Reset AddToCart deduplication
+================================================== */
+const resetAddToCartDeduplication = () => {
+  if (typeof window === "undefined") return;
+  try {
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith("addToCartFired-"))
+      .forEach((key) => sessionStorage.removeItem(key));
+    console.log("[Meta Pixel] AddToCart deduplication reset");
+  } catch (err) {
+    console.error("[Meta Pixel] Failed to reset AddToCart deduplication", err);
+  }
+};
+
+/* ==================================================
    STORE
-   - App Router safe
-   - Persisted
-   - Hydration controlled manually
 ================================================== */
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
-      /* -----------------------------
-         INITIAL STATE
-      ------------------------------ */
       items: [],
 
-      /* -----------------------------
-         ADD ITEM
-         - Merges by variant_id
-         - Increments quantity safely
-      ------------------------------ */
       addItem: (item) => {
         set((state) => {
           const existing = state.items.find(
             (i) => i.variant_id === item.variant_id
           );
-
           if (existing) {
             return {
               items: state.items.map((i) =>
                 i.variant_id === item.variant_id
-                  ? {
-                      ...i,
-                      quantity: i.quantity + item.quantity,
-                    }
+                  ? { ...i, quantity: i.quantity + item.quantity }
                   : i
               ),
             };
           }
-
-          return {
-            items: [...state.items, item],
-          };
+          return { items: [...state.items, item] };
         });
       },
 
-      /* -----------------------------
-         REMOVE ITEM
-      ------------------------------ */
       removeItem: (variant_id) => {
         set((state) => ({
-          items: state.items.filter(
-            (item) => item.variant_id !== variant_id
-          ),
+          items: state.items.filter((item) => item.variant_id !== variant_id),
         }));
       },
 
-      /* -----------------------------
-         UPDATE QUANTITY
-         - Guards against invalid values
-      ------------------------------ */
       updateQuantity: (variant_id, quantity) => {
         if (quantity <= 0) return;
-
         set((state) => ({
           items: state.items.map((item) =>
-            item.variant_id === variant_id
-              ? { ...item, quantity }
-              : item
+            item.variant_id === variant_id ? { ...item, quantity } : item
           ),
         }));
       },
 
-      /* -----------------------------
-         CLEAR CART
-      ------------------------------ */
       clearCart: () => {
         set({ items: [] });
+        resetAddToCartDeduplication();
       },
 
-      /* -----------------------------
-         DERIVED VALUES
-         - Computed on demand
-         - No extra renders
-      ------------------------------ */
       getTotalItems: () =>
-        get().items.reduce(
-          (total, item) => total + item.quantity,
-          0
-        ),
+        get().items.reduce((total, item) => total + item.quantity, 0),
 
       getTotalPrice: () =>
-        get().items.reduce(
-          (total, item) =>
-            total + item.price * item.quantity,
-          0
-        ),
+        get().items.reduce((total, item) => total + item.price * item.quantity, 0),
     }),
     {
       name: "cart-storage",
-      skipHydration: true, // ✅ correct for App Router
-      version: 2,         // 🔥 bumped because CartItem shape changed
+      skipHydration: true,
+      version: 3, // version bump
+      migrate: (persistedState, version) => {
+        console.log("[CartStore] migrate called", version, persistedState);
+        // Return persisted state if exists, otherwise default
+        return persistedState ?? { items: [] };
+      },
     }
   )
 );

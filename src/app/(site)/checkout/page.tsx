@@ -16,19 +16,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"
    BANGLADESH DISTRICTS
 ================================================== */
 const BD_CITIES = [
-  "Dhaka",
-  "Chattogram",
-  "Sylhet",
-  "Khulna",
-  "Rajshahi",
-  "Barishal",
-  "Rangpur",
-  "Mymensingh",
-  "Cumilla",
-  "Narayanganj",
-  "Gazipur",
-  "Bogura",
-  "Jessore",
+  "Dhaka","Chattogram","Sylhet","Khulna","Rajshahi",
+  "Barishal","Rangpur","Mymensingh","Cumilla","Narayanganj",
+  "Gazipur","Bogura","Jessore",
 ];
 
 /* ==================================================
@@ -40,9 +30,6 @@ export default function CheckoutPage() {
   const totalPrice = useCartStore((s) => s.getTotalPrice());
   const clearCart = useCartStore((s) => s.clearCart);
 
-  /* ------------------------------
-     FORM STATE
-  ------------------------------ */
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -54,9 +41,9 @@ export default function CheckoutPage() {
   const [state, setState] = useState<CheckoutState>("idle");
   const [error, setError] = useState<string | null>(null);
 
-  /* ------------------------------
-     EMPTY CART CHECK
-  ------------------------------ */
+  /* -----------------------------
+     Empty cart guard
+  ----------------------------- */
   if (!items.length) {
     return (
       <main className={styles.empty}>
@@ -83,53 +70,6 @@ export default function CheckoutPage() {
     setState("submitting");
     setError(null);
 
-    /* ==================================================
-       META — INITIATE CHECKOUT (ONCE)
-    ================================================== */
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      const metaKey = "meta_initiate_checkout_fired";
-
-      if (!sessionStorage.getItem(metaKey)) {
-        sessionStorage.setItem(metaKey, "1");
-
-        const [fn, ...rest] = fullName.trim().split(" ");
-        const ln = rest.join(" ");
-
-        // Store user data + order total for Purchase page
-        sessionStorage.setItem(
-          "meta_user_data",
-          JSON.stringify({
-            fn: fn || undefined,
-            ln: ln || undefined,
-            em: email || undefined,
-            ph: phone,
-            ct: city,
-            total: totalPrice,
-          })
-        );
-
-        // Fire InitiateCheckout event
-        (window as any).fbq(
-          "track",
-          "InitiateCheckout",
-          {
-            value: totalPrice,
-            currency: "BDT",
-            content_name: "Checkout Form",
-          },
-          {
-            fn: fn || undefined,
-            ln: ln || undefined,
-            em: email || undefined,
-            ph: phone,
-            ad: address,
-            ct: city,
-            country: "bd",
-          }
-        );
-      }
-    }
-
     try {
       // Payload for backend
       const payload = {
@@ -148,10 +88,7 @@ export default function CheckoutPage() {
 
       const res = await fetch(`${API_BASE}/api/orders/`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -160,8 +97,53 @@ export default function CheckoutPage() {
 
       const data: OrderSuccessResponse = JSON.parse(raw);
 
-      // Clear cart and redirect
+      // -------------------------------
+      // Meta Pixel InitiateCheckout
+      // -------------------------------
+      const [fn, ...rest] = fullName.trim().split(" ");
+      const ln = rest.join(" ");
+
+      const metaData = {
+        fn: fn || undefined,
+        ln: ln || undefined,
+        em: email || undefined,
+        ph: phone,
+        ct: city,
+        total: totalPrice,
+      };
+
+      sessionStorage.setItem("meta_user_data", JSON.stringify(metaData));
+
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq(
+          "track",
+          "InitiateCheckout",
+          {
+            value: totalPrice,
+            currency: "BDT",
+            content_name: "Checkout Form",
+          },
+          {
+            ...metaData,
+            ad: address,
+            country: "bd",
+          }
+        );
+      }
+
+      // -------------------------------
+      // Clear cart
+      // -------------------------------
       clearCart();
+
+      // -------------------------------
+      // Clear AddToCart deduplication keys
+      // -------------------------------
+      Object.keys(sessionStorage)
+        .filter((k) => k.startsWith("addToCartFired-"))
+        .forEach((k) => sessionStorage.removeItem(k));
+
+      // Redirect to order success page
       router.replace(`/order-success?ref=${data.reference}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Order failed.");
@@ -177,89 +159,36 @@ export default function CheckoutPage() {
       <h1 className={styles.title}>Checkout</h1>
 
       <div className={styles.layout}>
-        {/* Customer Info Card */}
+        {/* Customer Info */}
         <section className={styles.section}>
           <h2>Customer Information</h2>
 
-          <input
-            className={styles.input}
-            placeholder="Full Name *"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-          />
-
-          <input
-            className={styles.input}
-            placeholder="Email (optional)"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <input
-            className={styles.input}
-            placeholder="Phone Number *"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-
-          <input
-            className={styles.input}
-            placeholder="Alternative Phone (optional)"
-            value={altPhone}
-            onChange={(e) => setAltPhone(e.target.value)}
-          />
-
-          <textarea
-            className={styles.textarea}
-            placeholder="Detailed Address *"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-
-          <select
-            className={styles.input}
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          >
+          <input className={styles.input} placeholder="Full Name *" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <input className={styles.input} placeholder="Email (optional)" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className={styles.input} placeholder="Phone Number *" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <input className={styles.input} placeholder="Alternative Phone (optional)" value={altPhone} onChange={(e) => setAltPhone(e.target.value)} />
+          <textarea className={styles.textarea} placeholder="Detailed Address *" value={address} onChange={(e) => setAddress(e.target.value)} />
+          <select className={styles.input} value={city} onChange={(e) => setCity(e.target.value)}>
             <option value="">Select City / District *</option>
-            {BD_CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
+            {BD_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-
-          <textarea
-            className={styles.textarea}
-            placeholder="Delivery Note (optional)"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
+          <textarea className={styles.textarea} placeholder="Delivery Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} />
 
           {error && <p className={styles.error}>{error}</p>}
         </section>
 
-        {/* Order Summary Card */}
+        {/* Order Summary */}
         <aside className={styles.summaryWrapper}>
           <div className={styles.summary}>
             <h2>Order Summary</h2>
-
             {items.map((item) => (
               <div key={item.variant_id} className={styles.item}>
-                <span>
-                  {item.product_name} ({item.variant_label}) × {item.quantity}
-                </span>
+                <span>{item.product_name} ({item.variant_label}) × {item.quantity}</span>
                 <span>৳ {item.price * item.quantity}</span>
               </div>
             ))}
-
             <div className={styles.total}>Total: ৳ {totalPrice}</div>
-
-            <button
-              className={styles.button}
-              disabled={state === "submitting"}
-              onClick={handlePlaceOrder}
-            >
+            <button className={styles.button} disabled={state === "submitting"} onClick={handlePlaceOrder}>
               {state === "submitting" ? "Placing Order…" : "Place Order"}
             </button>
           </div>
