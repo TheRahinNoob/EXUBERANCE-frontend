@@ -16,16 +16,13 @@ type MetaUserData = {
 
 type OrderDetailResponse = {
   reference: string;
-  total: number;
+  total_price: number;
   name?: string;
   email?: string;
   phone?: string;
   city?: string;
 };
 
-/* ==================================================
-   Order Success Client - Production Ready
-================================================== */
 export default function OrderSuccessClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -35,16 +32,12 @@ export default function OrderSuccessClient() {
   const [orderTotal, setOrderTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /* -----------------------------
-     SAFETY: Redirect if no reference
-  ----------------------------- */
+  // Redirect if no reference
   useEffect(() => {
     if (!reference) router.replace("/");
   }, [reference, router]);
 
-  /* -----------------------------
-     Fire Meta Purchase Event (deduplicated)
-  ----------------------------- */
+  // Fire Meta Pixel Purchase (deduplicated)
   useEffect(() => {
     if (!reference || typeof window === "undefined" || !(window as any).fbq) return;
 
@@ -78,7 +71,7 @@ export default function OrderSuccessClient() {
       }
     };
 
-    // 1️⃣ Use sessionStorage first
+    // 1️⃣ Check sessionStorage first
     const rawMeta = sessionStorage.getItem("meta_user_data");
     if (rawMeta) {
       const metaUser: MetaUserData = JSON.parse(rawMeta);
@@ -89,15 +82,16 @@ export default function OrderSuccessClient() {
       return;
     }
 
-    // 2️⃣ Fallback: fetch order from frontend API route
+    // 2️⃣ Fallback: fetch order from backend
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`/api/orders/${encodeURIComponent(reference)}`);
+        const res = await fetch(`/api/orders/public/by-ref/${encodeURIComponent(reference)}`);
         if (!res.ok) throw new Error("Failed to fetch order");
         const data: OrderDetailResponse = await res.json();
 
-        setOrderTotal(data.total ?? null);
+        setOrderTotal(data.total_price ?? null);
 
+        // Split name into first and last
         const [fn, ...rest] = data.name?.trim().split(" ") || [];
         const ln = rest.join(" ");
 
@@ -107,7 +101,7 @@ export default function OrderSuccessClient() {
           em: data.email || undefined,
           ph: data.phone,
           ct: data.city,
-          total: data.total,
+          total: data.total_price,
         };
 
         firePurchase(metaUser);
@@ -121,9 +115,7 @@ export default function OrderSuccessClient() {
     fetchOrder();
   }, [reference]);
 
-  /* -----------------------------
-     COPY ORDER REFERENCE
-  ----------------------------- */
+  // Copy order reference
   const copyReference = useCallback(async () => {
     if (!reference) return;
     try {
