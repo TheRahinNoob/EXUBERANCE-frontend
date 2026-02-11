@@ -170,7 +170,7 @@ export default function CheckoutPage() {
             </div>
 
             <button className={styles.placeOrderButton} disabled={state === "submitting"} onClick={handlePlaceOrder}>
-              {state === "submitting" ? "Placing Order…" : "Place Order"}
+              {state === "submitting" ? "Placing Order…" : "Checkout"}
             </button>
           </div>
         </aside>
