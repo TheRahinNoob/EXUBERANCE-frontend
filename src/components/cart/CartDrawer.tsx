@@ -174,7 +174,7 @@ export default function CartDrawer() {
                 }}
                 className={styles.checkout}
               >
-                Checkout
+                Place Order
               </Link>
             </div>
           </footer>
