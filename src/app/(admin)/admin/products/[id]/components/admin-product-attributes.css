@@ -107,3 +107,94 @@
 .admin-action-danger:hover {
   background: rgba(239, 68, 68, 0.08);
 }
+
+/* =========================================
+   VARIANTS — BULK ADD "BOX" UI
+   Works with your existing markup/classes
+========================================= */
+
+/* Make each form-row look like a card */
+.admin-section .admin-form-row {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Slightly stronger "primary box" feel for the first row (bulk row) */
+.admin-section .admin-form-row:first-of-type {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Labels */
+.admin-form-group label {
+  display: block;
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 6px;
+}
+
+/* Inputs + textarea consistent styling */
+.admin-form-group input,
+.admin-form-group textarea {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus {
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+}
+
+/* Bulk textarea: nicer feel */
+.admin-form-group textarea {
+  min-height: 90px;
+  line-height: 1.35;
+  resize: vertical;
+}
+
+/* Parsed sizes line (you used className="mono") */
+.admin-section .mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+.admin-form-group .mono {
+  margin-top: 8px;
+  font-size: 12px;
+  opacity: 0.75;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px dashed rgba(255, 255, 255, 0.10);
+}
+
+/* Buttons look aligned inside the box */
+.admin-actions-bar,
+.admin-form-group button {
+  white-space: nowrap;
+}
+
+/* Small responsive tweak: make form groups breathe on narrow screens */
+@media (max-width: 900px) {
+  .admin-section .admin-form-row {
+    padding: 12px;
+  }
+
+  .admin-form-group {
+    flex: 1 1 240px;
+  }
+}
