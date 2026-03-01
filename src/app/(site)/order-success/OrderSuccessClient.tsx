@@ -6,21 +6,15 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./OrderSuccess.module.css";
 
 type MetaUserData = {
-  fn?: string;
-  ln?: string;
-  em?: string;
-  ph?: string;
-  ct?: string;
   total?: number;
 };
 
 type OrderDetailResponse = {
   reference: string;
+  subtotal?: number;
+  delivery_charge?: number;
   total_price: number;
-  name?: string;
-  email?: string;
-  phone?: string;
-  city?: string;
+  currency?: string;
 };
 
 export default function OrderSuccessClient() {
@@ -39,12 +33,20 @@ export default function OrderSuccessClient() {
 
   // Fire Meta Pixel Purchase (deduplicated)
   useEffect(() => {
-    if (!reference || typeof window === "undefined" || !(window as any).fbq) return;
+    // If ref missing, do nothing (redirect effect will run)
+    if (!reference) return;
+
+    // If fbq not available, still try to fetch total for UI
+    const hasFbq = typeof window !== "undefined" && Boolean((window as any).fbq);
 
     const firedKey = `meta_purchase_fired_${reference}`;
-    if (sessionStorage.getItem(firedKey)) return;
 
     const firePurchase = (metaUser: MetaUserData) => {
+      if (!hasFbq) return;
+
+      // Deduplicate
+      if (sessionStorage.getItem(firedKey)) return;
+
       try {
         (window as any).fbq(
           "track",
@@ -56,55 +58,47 @@ export default function OrderSuccessClient() {
           },
           {
             external_id: reference,
-            fn: metaUser.fn,
-            ln: metaUser.ln,
-            em: metaUser.em,
-            ph: metaUser.ph,
-            ct: metaUser.ct,
             country: "bd",
           }
         );
+
         sessionStorage.setItem(firedKey, "1");
-        console.log(`[Meta Pixel] Purchase fired for reference ${reference}`);
+        // console.log(`[Meta Pixel] Purchase fired for reference ${reference}`);
       } catch (err) {
         console.error("[Meta Pixel] Purchase error:", err);
       }
     };
 
-    // 1️⃣ Check sessionStorage first
+    // 1) Check sessionStorage first (if your checkout saved it)
     const rawMeta = sessionStorage.getItem("meta_user_data");
     if (rawMeta) {
-      const metaUser: MetaUserData = JSON.parse(rawMeta);
-      setOrderTotal(metaUser.total ?? null);
-      firePurchase(metaUser);
-      sessionStorage.removeItem("meta_user_data");
-      setLoading(false);
+      try {
+        const metaUser: MetaUserData = JSON.parse(rawMeta);
+        setOrderTotal(metaUser.total ?? null);
+        firePurchase(metaUser);
+      } catch (err) {
+        console.error("[OrderSuccessClient] meta_user_data parse error:", err);
+      } finally {
+        sessionStorage.removeItem("meta_user_data");
+        setLoading(false);
+      }
       return;
     }
 
-    // 2️⃣ Fallback: fetch order from backend
+    // 2) Fallback: fetch order total from backend (public endpoint returns NO PII)
     const fetchOrder = async () => {
       try {
-        const res = await fetch(`/api/orders/public/by-ref/${encodeURIComponent(reference)}`);
-        if (!res.ok) throw new Error("Failed to fetch order");
+        const res = await fetch(
+          `/api/orders/public/by-ref/${encodeURIComponent(reference)}`,
+          { cache: "no-store" }
+        );
+
+        if (!res.ok) throw new Error(`Failed to fetch order (${res.status})`);
+
         const data: OrderDetailResponse = await res.json();
 
         setOrderTotal(data.total_price ?? null);
-
-        // Split name into first and last
-        const [fn, ...rest] = data.name?.trim().split(" ") || [];
-        const ln = rest.join(" ");
-
-        const metaUser: MetaUserData = {
-          fn: fn || undefined,
-          ln: ln || undefined,
-          em: data.email || undefined,
-          ph: data.phone,
-          ct: data.city,
-          total: data.total_price,
-        };
-
-        firePurchase(metaUser);
+        firePurchase({ total: data.total_price });
       } catch (err) {
         console.error("[OrderSuccessClient] Failed to fetch order", err);
       } finally {
@@ -148,11 +142,7 @@ export default function OrderSuccessClient() {
           <span className={styles.label}>Order Reference</span>
           <div className={styles.referenceRow}>
             <strong className={styles.mono}>{reference}</strong>
-            <button
-              type="button"
-              onClick={copyReference}
-              aria-label="Copy order reference"
-            >
+            <button type="button" onClick={copyReference} aria-label="Copy order reference">
               {copied ? "Copied!" : "Copy"}
             </button>
           </div>
@@ -176,10 +166,7 @@ export default function OrderSuccessClient() {
         </div>
 
         <div className={styles.actions}>
-          <Link
-            href={`/order-track?ref=${encodeURIComponent(reference)}`}
-            className={styles.primaryBtn}
-          >
+          <Link href={`/order-track?ref=${encodeURIComponent(reference)}`} className={styles.primaryBtn}>
             Track Order
           </Link>
           <Link href="/" className={styles.secondaryBtn}>

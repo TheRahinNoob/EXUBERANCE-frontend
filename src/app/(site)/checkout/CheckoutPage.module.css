@@ -253,42 +253,872 @@
 
 /* ===================== EXTREME RESPONSIVENESS ===================== */
 @media (max-width: 768px) {
-  .checkoutPage { padding: 28px 16px; }
-  .pageTitle { font-size: 28px; }
-  .customerSection, .orderSummaryCard { padding: 24px; border-radius: 14px; }
-  .sectionTitle, .summaryTitle { font-size: 20px; }
-  .inputField, .textareaField, .selectField { font-size: 14px; padding: 14px; }
-  .summaryItem { font-size: 14px; }
-  .summaryTotal { font-size: 17px; }
-  .totalValue { font-size: 20px; }
-  .placeOrderButton { font-size: 15px; padding: 16px; }
+  .checkoutPage {
+    padding: 28px 16px;
+  }
+  .pageTitle {
+    font-size: 28px;
+  }
+  .customerSection,
+  .orderSummaryCard {
+    padding: 24px;
+    border-radius: 14px;
+  }
+  .sectionTitle,
+  .summaryTitle {
+    font-size: 20px;
+  }
+  .inputField,
+  .textareaField,
+  .selectField {
+    font-size: 14px;
+    padding: 14px;
+  }
+  .summaryItem {
+    font-size: 14px;
+  }
+  .summaryTotal {
+    font-size: 17px;
+  }
+  .totalValue {
+    font-size: 20px;
+  }
+  .placeOrderButton {
+    font-size: 15px;
+    padding: 16px;
+  }
 }
 
 @media (max-width: 480px) {
-  .checkoutPage { padding: 24px 12px; }
-  .pageTitle { font-size: 24px; }
-  .customerSection, .orderSummaryCard { padding: 20px; border-radius: 12px; }
-  .inputField, .textareaField, .selectField { font-size: 13px; padding: 12px; }
-  .summaryItem { font-size: 13px; }
-  .summaryTotal { font-size: 16px; }
-  .totalValue { font-size: 18px; }
-  .placeOrderButton { font-size: 14px; padding: 14px; }
+  .checkoutPage {
+    padding: 24px 12px;
+  }
+  .pageTitle {
+    font-size: 24px;
+  }
+  .customerSection,
+  .orderSummaryCard {
+    padding: 20px;
+    border-radius: 12px;
+  }
+  .inputField,
+  .textareaField,
+  .selectField {
+    font-size: 13px;
+    padding: 12px;
+  }
+  .summaryItem {
+    font-size: 13px;
+  }
+  .summaryTotal {
+    font-size: 16px;
+  }
+  .totalValue {
+    font-size: 18px;
+  }
+  .placeOrderButton {
+    font-size: 14px;
+    padding: 14px;
+  }
 }
 
 @media (max-width: 360px) {
-  .pageTitle { font-size: 22px; }
-  .inputField, .textareaField, .selectField { font-size: 12px; padding: 10px; }
-  .summaryItem { font-size: 12px; }
-  .summaryTotal { font-size: 15px; }
-  .totalValue { font-size: 16px; }
-  .placeOrderButton { font-size: 13px; padding: 12px; }
+  .pageTitle {
+    font-size: 22px;
+  }
+  .inputField,
+  .textareaField,
+  .selectField {
+    font-size: 12px;
+    padding: 10px;
+  }
+  .summaryItem {
+    font-size: 12px;
+  }
+  .summaryTotal {
+    font-size: 15px;
+  }
+  .totalValue {
+    font-size: 16px;
+  }
+  .placeOrderButton {
+    font-size: 13px;
+    padding: 12px;
+  }
 }
 
 @media (max-width: 320px) {
-  .pageTitle { font-size: 20px; }
-  .inputField, .textareaField, .selectField { font-size: 11px; padding: 10px; }
-  .summaryItem { font-size: 11px; }
-  .summaryTotal { font-size: 14px; }
-  .totalValue { font-size: 15px; }
-  .placeOrderButton { font-size: 12px; padding: 10px; }
+  .pageTitle {
+    font-size: 20px;
+  }
+  .inputField,
+  .textareaField,
+  .selectField {
+    font-size: 11px;
+    padding: 10px;
+  }
+  .summaryItem {
+    font-size: 11px;
+  }
+  .summaryTotal {
+    font-size: 14px;
+  }
+  .totalValue {
+    font-size: 15px;
+  }
+  .placeOrderButton {
+    font-size: 12px;
+    padding: 10px;
+  }
+}
+
+/* =======================================================
+   NEW: MOBILE WIZARD + STICKY CTA + SUMMARY DRAWER
+   (NO scroll needed to reach Confirm button)
+======================================================= */
+
+/* Mobile shell uses viewport height; reserve bottom space for sticky bar */
+.mobileShell {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 92px; /* sticky bar height + breathing room */
+}
+
+/* Top bar: steps + summary button */
+.mobileTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.stepPills {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.pill {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  padding: 9px 11px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill:hover {
+  border-color: rgba(37, 117, 252, 0.35);
+}
+
+.pillActive {
+  border-color: rgba(37, 117, 252, 0.55);
+  box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.12);
+}
+
+.summaryBtn {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  padding: 9px 11px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summaryBtn:hover {
+  border-color: rgba(106, 17, 203, 0.35);
+}
+
+/* Panel area: no scrolling needed to finish checkout */
+.panelArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 14px;
+  overflow: hidden;
+}
+
+/* Confirm card used in step 3 */
+.confirmCard {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.confirmRow:last-child {
+  border-bottom: none;
+}
+
+.confirmLabel {
+  opacity: 0.72;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.confirmValue {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  max-width: 64%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+}
+
+.summaryOpenButton {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Sticky action bar (always visible on mobile) */
+.stickyBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.totalBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 90px;
+}
+
+.totalMiniLabel {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.totalMiniValue {
+  font-size: 15px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.primaryAction,
+.secondaryAction {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 110px;
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.primaryAction:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.secondaryAction {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  color: #111;
+}
+
+.primaryAction:disabled,
+.secondaryAction:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Summary drawer (bottom sheet) */
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.drawer {
+  width: 100%;
+  background: #fff;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  max-height: 78dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawerTitle {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.closeBtn {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.drawerBody {
+  padding: 10px 14px;
+  overflow: auto; /* drawer can scroll; checkout completion doesn't require it */
+}
+
+.drawerList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawerItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drawerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawerName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+}
+
+.drawerMeta {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.drawerRight {
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.drawerLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drawerTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.drawerFooter {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.primaryWide {
+  width: 100%;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+/* Extra: When on very small screens, tighten the wizard a bit */
+@media (max-width: 420px) {
+  .mobileTopBar {
+    padding: 10px 10px;
+  }
+  .pill {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .summaryBtn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .primaryAction,
+  .secondaryAction {
+    min-width: 104px;
+    padding: 11px 12px;
+    font-size: 13px;
+  }
+}
+
+/* ===================== USER FRIENDLY HELPERS ===================== */
+.helperText {
+  margin-top: -10px;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+.trustNote {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #1a1a1a;
+  background: #f6f8ff;
+  border: 1px solid rgba(37, 117, 252, 0.15);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* ===================== DELIVERY AREA RADIO (FAMILIAR) ===================== */
+.deliveryAreaCard {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deliveryAreaTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+.radioRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  background: #fafafa;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.radioRow input {
+  transform: scale(1.1);
+}
+
+.radioPrice {
+  font-weight: 900;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ===================== MOBILE WIZARD SHELL ===================== */
+.mobileShell {
+  position: relative;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 92px;
+}
+
+.mobileTopBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px;
+  background: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-radius: 14px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.stepHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stepTitle {
+  font-size: 15px;
+  font-weight: 900;
+  color: #111;
+}
+
+.stepSubTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+}
+
+.summaryBtn {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.summaryBtn:hover {
+  border-color: rgba(106, 17, 203, 0.35);
+}
+
+.panelArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 14px;
+  overflow: hidden;
+}
+
+/* Confirm card */
+.confirmCard {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.confirmRow:last-child {
+  border-bottom: none;
+}
+
+.confirmLabel {
+  opacity: 0.75;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.confirmValue {
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+  max-width: 64%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #111;
+}
+
+.summaryOpenButton {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  background: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* Sticky action bar */
+.stickyBar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 -12px 26px rgba(0, 0, 0, 0.1);
+}
+
+.totalBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 90px;
+}
+
+.totalMiniLabel {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 700;
+}
+
+.totalMiniValue {
+  font-size: 15px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.primaryAction,
+.secondaryAction {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.primaryAction {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+.primaryAction:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.secondaryAction {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  color: #111;
+}
+
+.primaryAction:disabled,
+.secondaryAction:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Drawer */
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.42);
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.drawer {
+  width: 100%;
+  background: #fff;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  max-height: 78dvh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.22);
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.drawerTitle {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.closeBtn {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.drawerBody {
+  padding: 10px 14px;
+  overflow: auto;
+}
+
+.drawerList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawerItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drawerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.drawerName {
+  font-size: 13px;
+  font-weight: 800;
+  color: #111;
+}
+
+.drawerMeta {
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 700;
+}
+
+.drawerRight {
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.drawerLine {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 800;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drawerTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.drawerFooter {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.primaryWide {
+  width: 100%;
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 900;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+}
+
+@media (max-width: 420px) {
+  .primaryAction,
+  .secondaryAction {
+    min-width: 110px;
+    padding: 11px 12px;
+    font-size: 13px;
+  }
 }
