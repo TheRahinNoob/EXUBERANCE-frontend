@@ -14,16 +14,6 @@ export type OrderStatus =
   | "delivered"
   | "cancelled";
 
-export type AdminOrder = {
-  id: number;
-  reference: string;
-  customer_name: string;
-  customer_phone: string;
-  status: string;
-  total: string;
-  created_at: string;
-};
-
 export type AdminOrderItem = {
   id: number;
   product_name: string;
@@ -32,6 +22,25 @@ export type AdminOrderItem = {
   price: string;
   quantity: number;
   subtotal: string;
+};
+
+export type AdminOrder = {
+  id: number;
+  reference: string;
+  customer_name: string;
+  customer_phone: string;
+  status: string;
+  total: string;
+  created_at: string;
+
+  /**
+   * Optional line items returned by:
+   * - GET /api/admin/orders/ (list) ✅ (we added on backend)
+   *
+   * Keep optional to remain backward-compatible in case
+   * older environments / caches still serve without items.
+   */
+  items?: AdminOrderItem[];
 };
 
 export type AdminOrderDetail = {
@@ -146,7 +155,6 @@ export type AdminCategoryTreeNode = {
   children: AdminCategoryTreeNode[];
 };
 
-
 /* ==================================================
    PRODUCTS — ADMIN (LIST)
 ================================================== */
@@ -242,4 +250,3 @@ export type AdminProductDetail = {
    */
   categories: AdminCategory[];
 };
-

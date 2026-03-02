@@ -32,16 +32,39 @@ type OrderStatus =
 
 const PAGE_SIZE = 20;
 
-const STATUS_OPTIONS: {
-  value: OrderStatus;
-  label: string;
-}[] = [
+const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: "pending", label: "Pending" },
   { value: "confirmed", label: "Confirmed" },
   { value: "shipped", label: "Shipped" },
   { value: "delivered", label: "Delivered" },
   { value: "cancelled", label: "Cancelled" },
 ];
+
+/* ==================================================
+   HELPERS
+================================================== */
+
+function formatDate(value: string) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
+function compactMoney(value: string) {
+  // Keep it simple + safe: backend already sends string.
+  // If you later want currency formatting, we can add Intl.NumberFormat
+  // once you confirm currency + locale rules.
+  return value ?? "—";
+}
+
+function makeVariantLabel(size?: string, color?: string) {
+  const parts = [size, color].filter(Boolean);
+  return parts.length ? parts.join(" / ") : "";
+}
 
 /* ==================================================
    PAGE
@@ -56,8 +79,7 @@ export default function AdminOrdersPage() {
   const [meta, setMeta] =
     useState<PaginatedResponse<AdminOrder>["meta"] | null>(null);
 
-  const [statusFilter, setStatusFilter] =
-    useState<OrderStatus | undefined>();
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | undefined>();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
@@ -94,22 +116,14 @@ export default function AdminOrdersPage() {
         page_size: PAGE_SIZE,
       });
 
-      if (
-        !response ||
-        !Array.isArray(response.items) ||
-        !response.meta
-      ) {
+      if (!response || !Array.isArray(response.items) || !response.meta) {
         throw new Error("Invalid orders response format");
       }
 
       setOrders(response.items);
       setMeta(response.meta);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load orders"
-      );
+      setError(err instanceof Error ? err.message : "Failed to load orders");
     } finally {
       setLoading(false);
     }
@@ -125,14 +139,49 @@ export default function AdminOrdersPage() {
 
   const handleStatusChange = (value: string) => {
     setPage(1);
-    setStatusFilter(
-      value ? (value as OrderStatus) : undefined
-    );
+    setStatusFilter(value ? (value as OrderStatus) : undefined);
   };
 
   const handleSearchChange = (value: string) => {
     setPage(1);
     setSearch(value);
+  };
+
+  /* ================= RENDER HELPERS ================= */
+
+  const renderItemsCell = (order: AdminOrder) => {
+    const items = order.items ?? [];
+
+    if (items.length === 0) {
+      return <span className="cell-muted">—</span>;
+    }
+
+    return (
+      <div className="order-items">
+        {items.map((item) => {
+          const variant = makeVariantLabel(item.size, item.color);
+
+          return (
+            <div key={item.id} className="order-item">
+              <div className="order-item-top">
+                <span className="order-item-name">{item.product_name}</span>
+                <span className="order-item-price">
+                  {compactMoney(item.price)}
+                </span>
+              </div>
+
+              <div className="order-item-meta">
+                {variant ? <span className="order-item-variant">{variant}</span> : null}
+                <span className="order-item-qty">×{item.quantity}</span>
+                <span className="order-item-subtotal">
+                  Subtotal: {compactMoney(item.subtotal)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   /* ================= RENDER ================= */
@@ -156,19 +205,22 @@ export default function AdminOrdersPage() {
       <AdminTable>
         <thead>
           <tr>
-            <th>Reference</th>
-            <th>Customer</th>
-            <th>Status</th>
-            <th>Total</th>
-            <th>Date</th>
-            <th className="align-right">Actions</th>
+            <th style={{ width: 150 }}>Reference</th>
+            <th style={{ width: 220 }}>Customer</th>
+            <th>Products</th>
+            <th style={{ width: 140 }}>Status</th>
+            <th style={{ width: 120 }}>Total</th>
+            <th style={{ width: 130 }}>Date</th>
+            <th className="align-right" style={{ width: 120 }}>
+              Actions
+            </th>
           </tr>
         </thead>
 
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={6} className="admin-table-state">
+              <td colSpan={7} className="admin-table-state">
                 Loading orders…
               </td>
             </tr>
@@ -176,10 +228,7 @@ export default function AdminOrdersPage() {
 
           {!loading && error && (
             <tr>
-              <td
-                colSpan={6}
-                className="admin-table-state admin-table-error"
-              >
+              <td colSpan={7} className="admin-table-state admin-table-error">
                 {error}
               </td>
             </tr>
@@ -187,7 +236,7 @@ export default function AdminOrdersPage() {
 
           {isEmpty && (
             <tr>
-              <td colSpan={6} className="admin-table-state">
+              <td colSpan={7} className="admin-table-state">
                 No orders found
               </td>
             </tr>
@@ -197,52 +246,35 @@ export default function AdminOrdersPage() {
             !error &&
             orders.map((order) => (
               <tr key={order.id}>
-                <td data-label="Reference" className="mono">
+                <td data-label="Reference" className="mono cell-strong">
                   {order.reference}
                 </td>
 
                 <td data-label="Customer">
-                  <div className="cell-primary">
-                    {order.customer_name}
-                  </div>
-                  <div className="cell-secondary">
-                    {order.customer_phone}
-                  </div>
+                  <div className="cell-primary">{order.customer_name}</div>
+                  <div className="cell-secondary">{order.customer_phone}</div>
                 </td>
+
+                <td data-label="Products">{renderItemsCell(order)}</td>
 
                 <td data-label="Status">
                   <AdminStatusBadge status={order.status} />
                 </td>
 
-                <td
-                  data-label="Total"
-                  data-numeric="true"
-                  className="cell-strong"
-                >
-                  {order.total}
+                <td data-label="Total" data-numeric="true" className="cell-strong">
+                  {compactMoney(order.total)}
                 </td>
 
-                <td
-                  data-label="Date"
-                  className="cell-muted"
-                >
-                  {new Date(
-                    order.created_at
-                  ).toLocaleDateString()}
+                <td data-label="Date" className="cell-muted">
+                  {formatDate(order.created_at)}
                 </td>
 
-                <td
-                  data-label="Actions"
-                  className="align-right"
-                >
+                <td data-label="Actions" className="align-right">
                   <AdminRowActions
                     actions={[
                       {
                         label: "View",
-                        onClick: () =>
-                          router.push(
-                            `/admin/orders/${order.id}`
-                          ),
+                        onClick: () => router.push(`/admin/orders/${order.id}`),
                       },
                     ]}
                   />
@@ -255,24 +287,18 @@ export default function AdminOrdersPage() {
       {meta && !loading && showingRange && (
         <div className="admin-pagination">
           <div>
-            Showing {showingRange.start}–{showingRange.end} of{" "}
-            {meta.total}
+            Showing {showingRange.start}–{showingRange.end} of {meta.total}
           </div>
 
           <div className="admin-pagination-actions">
             <button
               disabled={!meta.has_prev}
-              onClick={() =>
-                setPage((p) => Math.max(1, p - 1))
-              }
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               Prev
             </button>
 
-            <button
-              disabled={!meta.has_next}
-              onClick={() => setPage((p) => p + 1)}
-            >
+            <button disabled={!meta.has_next} onClick={() => setPage((p) => p + 1)}>
               Next
             </button>
           </div>

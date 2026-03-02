@@ -1647,3 +1647,290 @@ button[aria-pressed="true"] {
     text-align: center;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   Admin Orders Page Styles (drop-in)
+   - Targets the classnames used in your /admin/orders page
+   - Uses !important everywhere (as requested)
+   - Put this into ONE of these places:
+     ✅ frontend/src/app/globals.css  (recommended)
+     OR
+     ✅ your existing admin global stylesheet
+   ========================================================= */
+
+/* ---------- Page base ---------- */
+.admin-page {
+  padding: 18px !important;
+}
+
+.admin-page * {
+  box-sizing: border-box !important;
+}
+
+/* ---------- Toolbar spacing polish (works even if toolbar has no class) ---------- */
+.admin-page > *:not(:first-child) {
+  margin-top: 14px !important;
+}
+
+/* ---------- Table container + table ---------- */
+.admin-page table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: #0b1220 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+}
+
+/* header row */
+.admin-page thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+
+  text-align: left !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+
+  padding: 14px 14px !important;
+
+  color: rgba(255, 255, 255, 0.78) !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.03)
+  ) !important;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+/* body rows */
+.admin-page tbody tr {
+  transition: background 140ms ease, transform 140ms ease !important;
+}
+
+.admin-page tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.admin-page tbody td {
+  padding: 14px 14px !important;
+  vertical-align: top !important;
+
+  color: rgba(255, 255, 255, 0.86) !important;
+  font-size: 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* last row border remove */
+.admin-page tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* alignment helpers */
+.align-right {
+  text-align: right !important;
+}
+
+/* numeric cell slight emphasis */
+[data-numeric="true"] {
+  font-variant-numeric: tabular-nums !important;
+}
+
+/* ---------- Typography helpers used in your components ---------- */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace !important;
+  letter-spacing: 0.01em !important;
+}
+
+.cell-primary {
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  line-height: 1.2 !important;
+}
+
+.cell-secondary {
+  margin-top: 4px !important;
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  line-height: 1.2 !important;
+}
+
+.cell-muted {
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.58) !important;
+}
+
+.cell-strong {
+  font-weight: 800 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* ---------- Loading / error / empty row states ---------- */
+.admin-table-state {
+  text-align: center !important;
+  padding: 22px 14px !important;
+  color: rgba(255, 255, 255, 0.70) !important;
+  font-size: 14px !important;
+}
+
+.admin-table-error {
+  color: #ff8a8a !important;
+}
+
+/* ---------- Products cell mini list (new) ---------- */
+.order-items {
+  display: grid !important;
+  gap: 10px !important;
+  min-width: 260px !important;
+}
+
+.order-item {
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.order-item-top {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.order-item-name {
+  font-weight: 800 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  line-height: 1.2 !important;
+}
+
+.order-item-price {
+  font-weight: 800 !important;
+  font-variant-numeric: tabular-nums !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  white-space: nowrap !important;
+}
+
+.order-item-meta {
+  margin-top: 6px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  align-items: center !important;
+
+  font-size: 12px !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+.order-item-variant {
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+.order-item-qty {
+  padding: 4px 8px !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.order-item-subtotal {
+  margin-left: auto !important;
+  font-variant-numeric: tabular-nums !important;
+  opacity: 0.95 !important;
+}
+
+/* ---------- Pagination (your page already uses these class names) ---------- */
+.admin-pagination {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+
+  padding: 12px 14px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 14px !important;
+
+  color: rgba(255, 255, 255, 0.72) !important;
+  font-size: 13px !important;
+}
+
+.admin-pagination-actions {
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.admin-pagination-actions button {
+  appearance: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.90) !important;
+
+  padding: 8px 12px !important;
+  border-radius: 12px !important;
+
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease !important;
+}
+
+.admin-pagination-actions button:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  transform: translateY(-1px) !important;
+}
+
+.admin-pagination-actions button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.45 !important;
+  transform: none !important;
+}
+
+/* ---------- Mobile responsiveness ---------- */
+@media (max-width: 980px) {
+  .admin-page {
+    padding: 12px !important;
+  }
+
+  /* allow horizontal scroll for wide tables */
+  .admin-page table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .order-items {
+    min-width: 220px !important;
+  }
+}
