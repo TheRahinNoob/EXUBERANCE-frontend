@@ -1,4 +1,4 @@
-// SERVER COMPONENT — DO NOT USE "use client" HERE
+// SERVER COMPONENT — DO NOT USE 'use client' HERE
 import type { Metadata } from "next";
 import styles from "./page.module.css";
 
@@ -38,9 +38,7 @@ function buildProductSchema(product: ProductDetail, slug: string) {
       url: `${SITE_BASE_URL}/products/${slug}`,
       priceCurrency: "BDT",
       price: product.price,
-      availability: product.variants.some(
-        (v) => (v.stock ?? 0) > 0
-      )
+      availability: product.variants.some((v) => (v.stock ?? 0) > 0)
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
       itemCondition: "https://schema.org/NewCondition",
@@ -104,8 +102,7 @@ export default async function ProductPage({
     );
   }
 
-  const relatedProducts: Product[] =
-    await getRelatedProducts(slug, 8);
+  const relatedProducts: Product[] = await getRelatedProducts(slug, 8);
 
   return (
     <main className={styles.page}>
@@ -120,27 +117,19 @@ export default async function ProductPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            buildProductSchema(product, slug)
-          ),
+          __html: JSON.stringify(buildProductSchema(product, slug)),
         }}
       />
 
       {/* PDP MAIN */}
       <section className={styles.pdpMain}>
-        <ProductGallery
-          images={product.images}
-          name={product.name}
-        />
+        <ProductGallery images={product.images} name={product.name} />
 
         <div className={styles.right}>
           <ProductInfo product={product} />
 
           {/* Add-to-cart wrapper */}
-          <ProductPurchaseWrapper
-            product={product}
-            productSlug={slug}
-          />
+          <ProductPurchaseWrapper product={product} productSlug={slug} />
 
           <ProductAttributes
             description={product.description}
@@ -152,9 +141,7 @@ export default async function ProductPage({
       {/* RELATED PRODUCTS */}
       {relatedProducts.length > 0 && (
         <section className={styles.related}>
-          <h2 className={styles.relatedTitle}>
-            You may also like
-          </h2>
+          <h2 className={styles.relatedTitle}>You may also like</h2>
 
           <div className={styles.relatedGrid}>
             {relatedProducts.map(
@@ -166,26 +153,15 @@ export default async function ProductPage({
                     className={styles.card}
                   >
                     <div className={styles.imageWrap}>
-                      <img
-                        src={item.main_image}
-                        alt={item.name}
-                      />
-                      <span className={styles.actionIcon}>
-                        ✎
-                      </span>
+                      <img src={item.main_image} alt={item.name} />
+                      <span className={styles.actionIcon}>✎</span>
 
                       <div className={styles.priceBar}>
-                        <div
-                          className={styles.priceBarInner}
-                        >
-                          <span className={styles.price}>
-                            ৳ {item.price}
-                          </span>
+                        <div className={styles.priceBarInner}>
+                          <span className={styles.price}>৳ {item.price}</span>
 
                           {item.old_price && (
-                            <span
-                              className={styles.oldPrice}
-                            >
+                            <span className={styles.oldPrice}>
                               ৳ {item.old_price}
                             </span>
                           )}
@@ -193,11 +169,7 @@ export default async function ProductPage({
                       </div>
                     </div>
 
-                    <button
-                      className={styles.addToCart}
-                    >
-                      + Add To Cart
-                    </button>
+                    <button className={styles.addToCart}>+ Add To Cart</button>
                   </a>
                 )
             )}

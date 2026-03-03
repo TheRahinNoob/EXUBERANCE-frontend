@@ -22,11 +22,13 @@ export type AdminProductVariant = Readonly<{
   id: number;
   size: string;
   color: string;
+  color_hex: string; // "#RRGGBB" or ""
   stock: number;
 }>;
 
 export type AdminBulkVariantCreateResult = Readonly<{
   color: string;
+  color_hex: string; // ✅ backend returns it
   default_stock: number;
   created: AdminProductVariant[];
   skipped_existing: string[];
@@ -36,10 +38,7 @@ export type AdminBulkVariantCreateResult = Readonly<{
    INTERNAL HELPERS
 ================================================== */
 
-function assertFiniteId(
-  value: unknown,
-  label = "id"
-): asserts value is number {
+function assertFiniteId(value: unknown, label = "id"): asserts value is number {
   if (!Number.isFinite(value)) {
     throw new Error(`Invalid ${label}`);
   }
@@ -63,14 +62,35 @@ function coerceNonNegativeInt(value: unknown, field: string): number {
   return int;
 }
 
+/**
+ * Accepts: "", "#RRGGBB" (case-insensitive, we will uppercase)
+ * Rejects: anything else
+ */
+function normalizeHexColor(value: unknown): string {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const upper = raw.toUpperCase();
+
+  if (!/^#[0-9A-F]{6}$/.test(upper)) {
+    throw new Error("Color hex must be in the format #RRGGBB");
+  }
+
+  return upper;
+}
+
 function isAdminProductVariant(v: unknown): v is AdminProductVariant {
   if (!v || typeof v !== "object") return false;
   const o = v as Record<string, unknown>;
+
+  const hex = typeof o.color_hex === "string" ? o.color_hex : null;
+  const hexOk = hex !== null && (hex === "" || /^#[0-9A-Fa-f]{6}$/.test(hex));
+
   return (
     typeof o.id === "number" &&
     Number.isFinite(o.id) &&
     typeof o.size === "string" &&
     typeof o.color === "string" &&
+    hexOk &&
     typeof o.stock === "number" &&
     Number.isFinite(o.stock)
   );
@@ -85,9 +105,7 @@ export async function fetchAdminProductVariants(
 ): Promise<AdminProductVariant[]> {
   assertFiniteId(productId, "product id");
 
-  const res = await adminFetch(
-    `${API_BASE}/api/admin/products/${productId}/variants/`
-  );
+  const res = await adminFetch(`${API_BASE}/api/admin/products/${productId}/variants/`);
 
   if (!res.ok) {
     throw new Error(`Failed to load variants (${res.status})`);
@@ -100,7 +118,6 @@ export async function fetchAdminProductVariants(
     throw new Error("Invalid variant response format");
   }
 
-  // Hard-validate the contract
   const validated: AdminProductVariant[] = [];
   for (const item of items) {
     if (!isAdminProductVariant(item)) {
@@ -121,6 +138,7 @@ export async function createAdminProductVariant(
   payload: {
     size: string;
     color: string;
+    color_hex?: string;
     stock: number;
   }
 ): Promise<AdminProductVariant> {
@@ -128,15 +146,13 @@ export async function createAdminProductVariant(
 
   const size = ensureNonEmptyString(payload?.size, "Size");
   const color = ensureNonEmptyString(payload?.color, "Color");
+  const color_hex = normalizeHexColor(payload?.color_hex ?? "");
   const stock = coerceNonNegativeInt(payload?.stock ?? 0, "Stock");
 
-  const res = await adminFetch(
-    `${API_BASE}/api/admin/products/${productId}/variants/`,
-    {
-      method: "POST",
-      body: JSON.stringify({ size, color, stock }),
-    }
-  );
+  const res = await adminFetch(`${API_BASE}/api/admin/products/${productId}/variants/`, {
+    method: "POST",
+    body: JSON.stringify({ size, color, color_hex, stock }),
+  });
 
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));
@@ -159,6 +175,7 @@ export async function bulkCreateAdminProductVariants(
   productId: number,
   payload: {
     color: string;
+    color_hex?: string;
     sizes: string[];
     default_stock?: number;
   }
@@ -166,12 +183,12 @@ export async function bulkCreateAdminProductVariants(
   assertFiniteId(productId, "product id");
 
   const color = ensureNonEmptyString(payload?.color, "Color");
+  const color_hex = normalizeHexColor(payload?.color_hex ?? "");
 
   if (!Array.isArray(payload?.sizes)) {
     throw new Error("Sizes must be a list");
   }
 
-  // Normalize + de-dupe sizes client-side (keeps request clean; backend still validates)
   const seen = new Set<string>();
   const sizes = payload.sizes
     .map((s) => normalizeToken(s))
@@ -182,18 +199,12 @@ export async function bulkCreateAdminProductVariants(
     throw new Error("Sizes must be a non-empty list");
   }
 
-  const default_stock = coerceNonNegativeInt(
-    payload?.default_stock ?? 0,
-    "Default stock"
-  );
+  const default_stock = coerceNonNegativeInt(payload?.default_stock ?? 0, "Default stock");
 
-  const res = await adminFetch(
-    `${API_BASE}/api/admin/products/${productId}/variants/bulk/`,
-    {
-      method: "POST",
-      body: JSON.stringify({ color, sizes, default_stock }),
-    }
-  );
+  const res = await adminFetch(`${API_BASE}/api/admin/products/${productId}/variants/bulk/`, {
+    method: "POST",
+    body: JSON.stringify({ color, color_hex, sizes, default_stock }),
+  });
 
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));
@@ -211,7 +222,10 @@ export async function bulkCreateAdminProductVariants(
     throw new Error("Invalid bulk create response: color");
   }
 
-  // NOTE: backend returns int; safeJson preserves number
+  if (typeof obj.color_hex !== "string") {
+    throw new Error("Invalid bulk create response: color_hex");
+  }
+
   if (typeof obj.default_stock !== "number" || !Number.isFinite(obj.default_stock)) {
     throw new Error("Invalid bulk create response: default_stock");
   }
@@ -238,6 +252,7 @@ export async function bulkCreateAdminProductVariants(
 
   return {
     color: obj.color,
+    color_hex: obj.color_hex,
     default_stock: obj.default_stock,
     created,
     skipped_existing: skipped_existing_raw as string[],
@@ -245,43 +260,72 @@ export async function bulkCreateAdminProductVariants(
 }
 
 /* ==================================================
-   UPDATE VARIANT STOCK
+   UPDATE VARIANT (PATCH)
+   - supports stock
+   - supports color_hex
 ================================================== */
 
-export async function updateAdminVariantStock(
+export async function updateAdminVariant(
   variantId: number,
-  stock: number
-): Promise<void> {
+  payload: { stock?: number; color_hex?: string }
+): Promise<Pick<AdminProductVariant, "id" | "stock" | "color_hex">> {
   assertFiniteId(variantId, "variant id");
 
-  const stockInt = coerceNonNegativeInt(stock, "Stock");
+  const body: Record<string, unknown> = {};
 
-  const res = await adminFetch(
-    `${API_BASE}/api/admin/product-variants/${variantId}/`,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ stock: stockInt }),
-    }
-  );
+  if (payload.stock !== undefined) {
+    body.stock = coerceNonNegativeInt(payload.stock, "Stock");
+  }
+
+  if (payload.color_hex !== undefined) {
+    body.color_hex = normalizeHexColor(payload.color_hex);
+  }
+
+  if (Object.keys(body).length === 0) {
+    throw new Error("Nothing to update");
+  }
+
+  const res = await adminFetch(`${API_BASE}/api/admin/product-variants/${variantId}/`, {
+    method: "PATCH",
+    body: JSON.stringify(body),
+  });
 
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));
   }
+
+  const data = await safeJson<unknown>(res);
+
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid update variant response");
+  }
+
+  const o = data as Record<string, unknown>;
+  if (typeof o.id !== "number" || !Number.isFinite(o.id)) throw new Error("Invalid update response: id");
+  if (typeof o.stock !== "number" || !Number.isFinite(o.stock)) throw new Error("Invalid update response: stock");
+  if (typeof o.color_hex !== "string") throw new Error("Invalid update response: color_hex");
+
+  return { id: o.id, stock: o.stock, color_hex: o.color_hex };
+}
+
+/* ==================================================
+   BACKWARD-COMPAT: stock-only helper
+================================================== */
+
+export async function updateAdminVariantStock(variantId: number, stock: number): Promise<void> {
+  await updateAdminVariant(variantId, { stock });
 }
 
 /* ==================================================
    DELETE VARIANT
 ================================================== */
 
-export async function deleteAdminVariant(
-  variantId: number
-): Promise<void> {
+export async function deleteAdminVariant(variantId: number): Promise<void> {
   assertFiniteId(variantId, "variant id");
 
-  const res = await adminFetch(
-    `${API_BASE}/api/admin/product-variants/${variantId}/`,
-    { method: "DELETE" }
-  );
+  const res = await adminFetch(`${API_BASE}/api/admin/product-variants/${variantId}/`, {
+    method: "DELETE",
+  });
 
   if (!res.ok) {
     throw new Error(await parseErrorResponse(res));

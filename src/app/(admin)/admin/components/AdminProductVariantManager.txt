@@ -1,0 +1,369 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import AdminTable from "../components/AdminTable";
+
+import {
+  fetchAdminProductVariants,
+  createAdminProductVariant,
+  updateAdminVariantStock,
+  updateAdminVariantColorHex,
+  deleteAdminVariant,
+  type AdminProductVariant,
+} from "@/lib/admin-api/product-variants";
+
+type Props = {
+  productId: number;
+};
+
+function normalizeToken(value: unknown): string {
+  return String(value ?? "").trim().replace(/\s+/g, " ");
+}
+
+/**
+ * Accepts "", "#RRGGBB" (case-insensitive, will uppercase).
+ * Returns normalized uppercase string or throws Error.
+ */
+function normalizeHexOrThrow(value: unknown): string {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const upper = raw.toUpperCase();
+  if (!/^#[0-9A-F]{6}$/.test(upper)) {
+    throw new Error("Hex must be in the format #RRGGBB");
+  }
+  return upper;
+}
+
+export default function AdminProductVariantManager({ productId }: Props) {
+  const [variants, setVariants] = useState<AdminProductVariant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Create form
+  const [size, setSize] = useState("");
+  const [color, setColor] = useState("");
+  const [colorHex, setColorHex] = useState(""); // ✅ NEW
+  const [stock, setStock] = useState<number>(0);
+  const [creating, setCreating] = useState(false);
+
+  // Drafts for controlled inputs (prevents API spam on each keypress)
+  const [stockDrafts, setStockDrafts] = useState<Record<number, string>>({});
+  const [hexDrafts, setHexDrafts] = useState<Record<number, string>>({});
+
+  const requestSeq = useRef(0);
+
+  /* ==================================================
+     LOAD VARIANTS
+  ================================================== */
+
+  const loadVariants = async () => {
+    const seq = ++requestSeq.current;
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await fetchAdminProductVariants(productId);
+      if (seq !== requestSeq.current) return;
+
+      setVariants(data);
+
+      // init drafts
+      const nextStock: Record<number, string> = {};
+      const nextHex: Record<number, string> = {};
+      for (const v of data) {
+        nextStock[v.id] = String(v.stock);
+        nextHex[v.id] = v.color_hex ?? "";
+      }
+      setStockDrafts(nextStock);
+      setHexDrafts(nextHex);
+    } catch (err) {
+      if (seq !== requestSeq.current) return;
+      setError(err instanceof Error ? err.message : "Failed to load variants");
+    } finally {
+      if (seq === requestSeq.current) setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadVariants();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId]);
+
+  /* ==================================================
+     CREATE VARIANT
+  ================================================== */
+
+  const canCreate = useMemo(() => {
+    return !!normalizeToken(size) && !!normalizeToken(color) && !creating;
+  }, [size, color, creating]);
+
+  const handleCreate = async () => {
+    const sizeValue = normalizeToken(size);
+    const colorValue = normalizeToken(color);
+
+    if (!sizeValue || !colorValue) return;
+
+    setCreating(true);
+    setError(null);
+
+    let hex = "";
+    try {
+      hex = normalizeHexOrThrow(colorHex);
+    } catch (e) {
+      setCreating(false);
+      setError(e instanceof Error ? e.message : "Invalid hex");
+      return;
+    }
+
+    try {
+      const variant = await createAdminProductVariant(productId, {
+        size: sizeValue,
+        color: colorValue,
+        color_hex: hex,
+        stock: Math.max(0, Math.trunc(stock || 0)),
+      });
+
+      setVariants((prev) => [...prev, variant]);
+
+      setStockDrafts((prev) => ({ ...prev, [variant.id]: String(variant.stock) }));
+      setHexDrafts((prev) => ({ ...prev, [variant.id]: variant.color_hex ?? "" }));
+
+      setSize("");
+      setColor("");
+      setColorHex("");
+      setStock(0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Create failed");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  /* ==================================================
+     COMMIT STOCK (on blur / enter)
+  ================================================== */
+
+  const commitStock = async (variant: AdminProductVariant) => {
+    const raw = stockDrafts[variant.id] ?? String(variant.stock);
+    const trimmed = normalizeToken(raw);
+
+    if (trimmed === "") {
+      // revert
+      setStockDrafts((p) => ({ ...p, [variant.id]: String(variant.stock) }));
+      return;
+    }
+
+    const n = Number(trimmed);
+    if (!Number.isFinite(n) || Number.isNaN(n)) {
+      alert("Stock must be a number");
+      setStockDrafts((p) => ({ ...p, [variant.id]: String(variant.stock) }));
+      return;
+    }
+
+    const newStock = Math.trunc(n);
+    if (newStock < 0) {
+      alert("Stock cannot be negative");
+      setStockDrafts((p) => ({ ...p, [variant.id]: String(variant.stock) }));
+      return;
+    }
+
+    if (newStock === variant.stock) return;
+
+    // optimistic
+    const snapshot = variants;
+    setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, stock: newStock } : v)));
+
+    try {
+      await updateAdminVariantStock(variant.id, newStock);
+    } catch {
+      alert("Failed to update stock");
+      setVariants(snapshot);
+      setStockDrafts((p) => ({ ...p, [variant.id]: String(variant.stock) }));
+    }
+  };
+
+  /* ==================================================
+     COMMIT COLOR HEX (on blur / enter)
+  ================================================== */
+
+  const commitHex = async (variant: AdminProductVariant) => {
+    const raw = hexDrafts[variant.id] ?? (variant.color_hex ?? "");
+    let hex: string;
+
+    try {
+      hex = normalizeHexOrThrow(raw);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Invalid hex");
+      setHexDrafts((p) => ({ ...p, [variant.id]: variant.color_hex ?? "" }));
+      return;
+    }
+
+    if (hex === (variant.color_hex ?? "")) return;
+
+    // optimistic
+    const snapshot = variants;
+    setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, color_hex: hex } : v)));
+
+    try {
+      await updateAdminVariantColorHex(variant.id, hex);
+    } catch {
+      alert("Failed to update color hex");
+      setVariants(snapshot);
+      setHexDrafts((p) => ({ ...p, [variant.id]: variant.color_hex ?? "" }));
+    }
+  };
+
+  /* ==================================================
+     DELETE VARIANT
+  ================================================== */
+
+  const handleDelete = async (variantId: number) => {
+    if (!confirm("Delete this variant?")) return;
+
+    try {
+      await deleteAdminVariant(variantId);
+      setVariants((prev) => prev.filter((v) => v.id !== variantId));
+
+      setStockDrafts((prev) => {
+        const next = { ...prev };
+        delete next[variantId];
+        return next;
+      });
+      setHexDrafts((prev) => {
+        const next = { ...prev };
+        delete next[variantId];
+        return next;
+      });
+    } catch {
+      alert("Delete failed");
+    }
+  };
+
+  /* ==================================================
+     RENDER
+  ================================================== */
+
+  return (
+    <section style={{ marginBottom: 40 }}>
+      <h3>Variants</h3>
+
+      {error && <div style={{ color: "#f87171", marginBottom: 12 }}>{error}</div>}
+
+      <AdminTable>
+        <thead>
+          <tr>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Color Hex</th>
+            <th>Stock</th>
+            <th />
+          </tr>
+        </thead>
+
+        <tbody>
+          {loading && (
+            <tr>
+              <td colSpan={5}>Loading…</td>
+            </tr>
+          )}
+
+          {!loading && variants.length === 0 && (
+            <tr>
+              <td colSpan={5}>No variants</td>
+            </tr>
+          )}
+
+          {!loading &&
+            variants.map((v) => (
+              <tr key={v.id}>
+                <td>{v.size}</td>
+                <td>{v.color}</td>
+
+                {/* ✅ COLOR HEX (editable) */}
+                <td>
+                  <input
+                    value={hexDrafts[v.id] ?? (v.color_hex ?? "")}
+                    placeholder="#RRGGBB or empty"
+                    onChange={(e) =>
+                      setHexDrafts((p) => ({ ...p, [v.id]: e.target.value }))
+                    }
+                    onBlur={() => commitHex(v)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
+                      if (e.key === "Escape") {
+                        setHexDrafts((p) => ({ ...p, [v.id]: v.color_hex ?? "" }));
+                        (e.currentTarget as HTMLInputElement).blur();
+                      }
+                    }}
+                    style={{ width: 140 }}
+                  />
+                </td>
+
+                {/* ✅ STOCK (editable) */}
+                <td>
+                  <input
+                    type="number"
+                    min={0}
+                    value={stockDrafts[v.id] ?? String(v.stock)}
+                    onChange={(e) =>
+                      setStockDrafts((p) => ({ ...p, [v.id]: e.target.value }))
+                    }
+                    onBlur={() => commitStock(v)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
+                      if (e.key === "Escape") {
+                        setStockDrafts((p) => ({ ...p, [v.id]: String(v.stock) }));
+                        (e.currentTarget as HTMLInputElement).blur();
+                      }
+                    }}
+                    style={{ width: 80 }}
+                  />
+                </td>
+
+                <td>
+                  <button onClick={() => handleDelete(v.id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </AdminTable>
+
+      {/* CREATE */}
+      <div style={{ marginTop: 16 }}>
+        <h4>Add Variant</h4>
+
+        <input
+          placeholder="Size (S, M, L...)"
+          value={size}
+          onChange={(e) => setSize(e.target.value)}
+        />
+
+        <input
+          placeholder="Color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+        />
+
+        <input
+          placeholder="Color Hex (#RRGGBB) optional"
+          value={colorHex}
+          onChange={(e) => setColorHex(e.target.value)}
+          style={{ width: 190 }}
+        />
+
+        <input
+          type="number"
+          min={0}
+          value={stock}
+          onChange={(e) => setStock(Number(e.target.value))}
+          style={{ width: 90 }}
+        />
+
+        <button onClick={handleCreate} disabled={!canCreate}>
+          {creating ? "Adding…" : "Add Variant"}
+        </button>
+      </div>
+    </section>
+  );
+}

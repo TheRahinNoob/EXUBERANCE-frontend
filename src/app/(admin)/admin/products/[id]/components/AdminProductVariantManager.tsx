@@ -9,7 +9,7 @@ import {
   fetchAdminProductVariants,
   createAdminProductVariant,
   bulkCreateAdminProductVariants,
-  updateAdminVariantStock,
+  updateAdminVariant,
   deleteAdminVariant,
   type AdminProductVariant,
   type AdminBulkVariantCreateResult,
@@ -45,11 +45,6 @@ function uniqPreserveOrder(items: string[]): string[] {
 }
 
 function parseSizesInput(input: string): string[] {
-  // Accept: "38 40 42", "38,40,42", "38\n40\n42", and mixes.
-  // Strategy:
-  // 1) split by newlines/commas/semicolons
-  // 2) split each chunk by whitespace
-  // 3) normalize + dedupe
   const chunks = input.split(/[\n,;]+/g);
 
   const parts = chunks.flatMap((chunk) =>
@@ -63,8 +58,6 @@ function parseSizesInput(input: string): string[] {
 }
 
 function sortVariantsStable(items: AdminProductVariant[]): AdminProductVariant[] {
-  // Deterministic sort: color -> size -> id
-  // Avoid locale pitfalls by using localeCompare with base sensitivity
   return [...items].sort((a, b) => {
     const c = a.color.localeCompare(b.color, undefined, { sensitivity: "base" });
     if (c !== 0) return c;
@@ -76,18 +69,56 @@ function sortVariantsStable(items: AdminProductVariant[]): AdminProductVariant[]
   });
 }
 
-function mergeVariants(
-  prev: AdminProductVariant[],
-  incoming: AdminProductVariant[]
-): AdminProductVariant[] {
+function mergeVariants(prev: AdminProductVariant[], incoming: AdminProductVariant[]): AdminProductVariant[] {
   if (incoming.length === 0) return prev;
 
   const map = new Map<number, AdminProductVariant>();
   for (const v of prev) map.set(v.id, v);
-
   for (const v of incoming) map.set(v.id, v);
 
   return sortVariantsStable(Array.from(map.values()));
+}
+
+/**
+ * Returns:
+ * - "" if empty
+ * - "#RRGGBB" if valid (upper)
+ * - "__INVALID__" if invalid
+ */
+function normalizeHexColorInput(value: unknown): string {
+  const raw = String(value ?? "").trim();
+  if (!raw) return "";
+  const upper = raw.toUpperCase();
+  if (!/^#[0-9A-F]{6}$/.test(upper)) return "__INVALID__";
+  return upper;
+}
+
+function isValidHexOrEmpty(value: string): boolean {
+  if (!value) return true;
+  return /^#[0-9A-F]{6}$/.test(value.toUpperCase());
+}
+
+function Swatch({ hex }: { hex: string }) {
+  const valid = isValidHexOrEmpty(hex);
+  const bg = valid && hex ? hex : undefined;
+
+  return (
+    <span
+      title={hex ? hex : "No hex"}
+      aria-label={hex ? `Color ${hex}` : "No color hex"}
+      style={{
+        display: "inline-block",
+        width: 14,
+        height: 14,
+        borderRadius: 3,
+        border: "1px solid rgba(0,0,0,0.25)",
+        background: bg ?? "transparent",
+        verticalAlign: "middle",
+        marginRight: 8,
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.15)",
+      }}
+    />
+  );
 }
 
 /* ==================================================
@@ -97,30 +128,30 @@ function mergeVariants(
 export default function AdminProductVariantManager({ productId }: Props) {
   const { showToast } = useAdminToast();
 
-  /* ==================================================
-     STATE
-  ================================================== */
+  /* ================= STATE ================= */
 
   const [variants, setVariants] = useState<AdminProductVariant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Single create (fallback)
+  // Single create
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
+  const [colorHex, setColorHex] = useState("");
   const [stock, setStock] = useState<number>(0);
   const [creating, setCreating] = useState(false);
 
-  // Bulk create (primary UX)
+  // Bulk create
   const [bulkColor, setBulkColor] = useState("");
-  const [bulkSizes, setBulkSizes] = useState(""); // textarea
+  const [bulkColorHex, setBulkColorHex] = useState("");
+  const [bulkSizes, setBulkSizes] = useState("");
   const [bulkStock, setBulkStock] = useState<number>(0);
   const [bulkCreating, setBulkCreating] = useState(false);
 
-  // Stock inputs: keep controlled drafts so UX is predictable (no defaultValue/onBlur mismatch)
+  // Drafts (controlled inputs)
   const [stockDrafts, setStockDrafts] = useState<Record<number, string>>({});
+  const [hexDrafts, setHexDrafts] = useState<Record<number, string>>({});
 
-  // Avoid race updates when productId changes quickly
   const requestSeq = useRef(0);
 
   const busy = creating || bulkCreating;
@@ -129,20 +160,19 @@ export default function AdminProductVariantManager({ productId }: Props) {
 
   const bulkSummary = useMemo(() => {
     if (bulkSizesParsed.length === 0) return "—";
-    // show first N sizes to avoid huge line
     const N = 24;
-    const preview =
-      bulkSizesParsed.length > N
-        ? `${bulkSizesParsed.slice(0, N).join(", ")} … (+${
-            bulkSizesParsed.length - N
-          })`
-        : bulkSizesParsed.join(", ");
-    return preview;
+    return bulkSizesParsed.length > N
+      ? `${bulkSizesParsed.slice(0, N).join(", ")} … (+${bulkSizesParsed.length - N})`
+      : bulkSizesParsed.join(", ");
   }, [bulkSizesParsed]);
 
-  /* ==================================================
-     LOAD VARIANTS
-  ================================================== */
+  const normalizedSingleHex = useMemo(() => normalizeHexColorInput(colorHex), [colorHex]);
+  const normalizedBulkHex = useMemo(() => normalizeHexColorInput(bulkColorHex), [bulkColorHex]);
+
+  const singleHexInvalid = normalizedSingleHex === "__INVALID__";
+  const bulkHexInvalid = normalizedBulkHex === "__INVALID__";
+
+  /* ================= LOAD ================= */
 
   const loadVariants = useCallback(async () => {
     const seq = ++requestSeq.current;
@@ -157,10 +187,16 @@ export default function AdminProductVariantManager({ productId }: Props) {
       const sorted = sortVariantsStable(data);
       setVariants(sorted);
 
-      // Initialize drafts
-      const drafts: Record<number, string> = {};
-      for (const v of sorted) drafts[v.id] = String(v.stock);
-      setStockDrafts(drafts);
+      const stockNext: Record<number, string> = {};
+      const hexNext: Record<number, string> = {};
+
+      for (const v of sorted) {
+        stockNext[v.id] = String(v.stock);
+        hexNext[v.id] = v.color_hex ?? "";
+      }
+
+      setStockDrafts(stockNext);
+      setHexDrafts(hexNext);
     } catch (err) {
       if (seq !== requestSeq.current) return;
       setError(err instanceof Error ? err.message : "Failed to load variants");
@@ -173,20 +209,25 @@ export default function AdminProductVariantManager({ productId }: Props) {
     loadVariants();
   }, [loadVariants]);
 
-  /* ==================================================
-     CREATE VARIANT (SINGLE)
-  ================================================== */
+  /* ================= CREATE (SINGLE) ================= */
 
   const handleCreate = async () => {
     if (creating || bulkCreating) return;
 
     const sizeValue = normalizeToken(size);
     const colorValue = normalizeToken(color);
+    const hexValue = normalizeHexColorInput(colorHex);
 
     if (!sizeValue || !colorValue) {
       showToast("Size and color are required", "error");
       return;
     }
+
+    if (hexValue === "__INVALID__") {
+      showToast("Color hex must be in the format #RRGGBB (or leave empty)", "error");
+      return;
+    }
+
     if (!Number.isFinite(stock) || stock < 0) {
       showToast("Stock cannot be negative", "error");
       return;
@@ -199,14 +240,17 @@ export default function AdminProductVariantManager({ productId }: Props) {
       const created = await createAdminProductVariant(productId, {
         size: sizeValue,
         color: colorValue,
+        color_hex: hexValue,
         stock: Math.trunc(stock),
       });
 
       setVariants((prev) => mergeVariants(prev, [created]));
       setStockDrafts((prev) => ({ ...prev, [created.id]: String(created.stock) }));
+      setHexDrafts((prev) => ({ ...prev, [created.id]: created.color_hex ?? "" }));
 
       setSize("");
       setColor("");
+      setColorHex("");
       setStock(0);
 
       showToast("Variant created", "success");
@@ -217,23 +261,29 @@ export default function AdminProductVariantManager({ productId }: Props) {
     }
   };
 
-  /* ==================================================
-     BULK CREATE (ONE COLOR + MANY SIZES)
-  ================================================== */
+  /* ================= BULK CREATE ================= */
 
   const handleBulkCreate = async () => {
     if (bulkCreating || creating) return;
 
     const colorValue = normalizeToken(bulkColor);
+    const hexValue = normalizeHexColorInput(bulkColorHex);
 
     if (!colorValue) {
       showToast("Color is required for bulk add", "error");
       return;
     }
+
+    if (hexValue === "__INVALID__") {
+      showToast("Bulk color hex must be #RRGGBB (or leave empty)", "error");
+      return;
+    }
+
     if (!Number.isFinite(bulkStock) || bulkStock < 0) {
       showToast("Stock cannot be negative", "error");
       return;
     }
+
     if (bulkSizesParsed.length === 0) {
       showToast("Add at least one size (comma / space / newline separated)", "error");
       return;
@@ -243,26 +293,29 @@ export default function AdminProductVariantManager({ productId }: Props) {
     setError(null);
 
     try {
-      const result: AdminBulkVariantCreateResult = await bulkCreateAdminProductVariants(
-        productId,
-        {
-          color: colorValue,
-          sizes: bulkSizesParsed,
-          default_stock: Math.trunc(bulkStock),
-        }
-      );
+      const result: AdminBulkVariantCreateResult = await bulkCreateAdminProductVariants(productId, {
+        color: colorValue,
+        color_hex: hexValue,
+        sizes: bulkSizesParsed,
+        default_stock: Math.trunc(bulkStock),
+      });
 
-      // Merge created items
       if (result.created.length > 0) {
         setVariants((prev) => mergeVariants(prev, result.created));
+
         setStockDrafts((prev) => {
           const next = { ...prev };
           for (const v of result.created) next[v.id] = String(v.stock);
           return next;
         });
+
+        setHexDrafts((prev) => {
+          const next = { ...prev };
+          for (const v of result.created) next[v.id] = v.color_hex ?? "";
+          return next;
+        });
       }
 
-      // Toast summary
       const createdCount = result.created.length;
       const skippedCount = result.skipped_existing.length;
 
@@ -274,23 +327,17 @@ export default function AdminProductVariantManager({ productId }: Props) {
         showToast("No new variants added (all already existed)", "success");
       }
 
-      // Reset sizes input (keep color/stock for speed)
       setBulkSizes("");
     } catch (err) {
-      showToast(
-        err instanceof Error ? err.message : "Failed to bulk create variants",
-        "error"
-      );
+      showToast(err instanceof Error ? err.message : "Failed to bulk create variants", "error");
     } finally {
       setBulkCreating(false);
     }
   };
 
-  /* ==================================================
-     STOCK EDITING (CONTROLLED INPUTS)
-================================================== */
+  /* ================= STOCK EDIT ================= */
 
-  const setDraft = (variantId: number, value: string) => {
+  const setStockDraft = (variantId: number, value: string) => {
     setStockDrafts((prev) => ({ ...prev, [variantId]: value }));
   };
 
@@ -299,48 +346,82 @@ export default function AdminProductVariantManager({ productId }: Props) {
     const trimmed = normalizeToken(draft);
 
     if (trimmed === "") {
-      // revert to current
-      setDraft(variant.id, String(variant.stock));
+      setStockDraft(variant.id, String(variant.stock));
       return;
     }
 
     const n = Number(trimmed);
-
     if (!Number.isFinite(n) || Number.isNaN(n)) {
       showToast("Stock must be a number", "error");
-      setDraft(variant.id, String(variant.stock));
+      setStockDraft(variant.id, String(variant.stock));
       return;
     }
 
     const newStock = Math.trunc(n);
-
     if (newStock < 0) {
       showToast("Stock cannot be negative", "error");
-      setDraft(variant.id, String(variant.stock));
+      setStockDraft(variant.id, String(variant.stock));
       return;
     }
 
     if (newStock === variant.stock) return;
 
-    // Optimistic update
     const snapshot = variants;
-    setVariants((prev) =>
-      prev.map((v) => (v.id === variant.id ? { ...v, stock: newStock } : v))
-    );
+
+    setVariants((prev) => prev.map((v) => (v.id === variant.id ? { ...v, stock: newStock } : v)));
 
     try {
-      await updateAdminVariantStock(variant.id, newStock);
+      await updateAdminVariant(variant.id, { stock: newStock });
       showToast("Stock updated", "success");
     } catch (err) {
       setVariants(snapshot);
-      setDraft(variant.id, String(variant.stock));
+      setStockDraft(variant.id, String(variant.stock));
       showToast(err instanceof Error ? err.message : "Failed to update stock", "error");
     }
   };
 
-  /* ==================================================
-     DELETE VARIANT
-================================================== */
+  /* ================= HEX EDIT ================= */
+
+  const setHexDraft = (variantId: number, value: string) => {
+    setHexDrafts((prev) => ({ ...prev, [variantId]: value }));
+  };
+
+  const commitHex = async (variant: AdminProductVariant) => {
+    const draft = hexDrafts[variant.id] ?? (variant.color_hex ?? "");
+    const normalized = normalizeHexColorInput(draft);
+
+    if (normalized === "__INVALID__") {
+      showToast("Hex must be #RRGGBB or empty", "error");
+      setHexDraft(variant.id, variant.color_hex ?? "");
+      return;
+    }
+
+    if (normalized === (variant.color_hex ?? "")) return;
+
+    const snapshot = variants;
+
+    setVariants((prev) =>
+      prev.map((v) => (v.id === variant.id ? { ...v, color_hex: normalized } : v))
+    );
+
+    try {
+      const updated = await updateAdminVariant(variant.id, { color_hex: normalized });
+      // keep in sync with backend normalization
+      setVariants((prev) =>
+        prev.map((v) =>
+          v.id === variant.id ? { ...v, color_hex: updated.color_hex } : v
+        )
+      );
+      setHexDraft(variant.id, updated.color_hex);
+      showToast("Color hex updated", "success");
+    } catch (err) {
+      setVariants(snapshot);
+      setHexDraft(variant.id, variant.color_hex ?? "");
+      showToast(err instanceof Error ? err.message : "Failed to update color hex", "error");
+    }
+  };
+
+  /* ================= DELETE ================= */
 
   const handleDelete = async (variantId: number) => {
     if (busy) return;
@@ -352,7 +433,14 @@ export default function AdminProductVariantManager({ productId }: Props) {
       await deleteAdminVariant(variantId);
 
       setVariants((prev) => prev.filter((v) => v.id !== variantId));
+
       setStockDrafts((prev) => {
+        const next = { ...prev };
+        delete next[variantId];
+        return next;
+      });
+
+      setHexDrafts((prev) => {
         const next = { ...prev };
         delete next[variantId];
         return next;
@@ -364,18 +452,15 @@ export default function AdminProductVariantManager({ productId }: Props) {
     }
   };
 
-  /* ==================================================
-     RENDER
-  ================================================== */
+  /* ================= RENDER ================= */
 
   return (
     <section className="admin-section">
       <div className="admin-section-title">Product Variants</div>
 
-      {/* ERROR */}
       {error && <div className="admin-error">{error}</div>}
 
-      {/* BULK CREATE (PRIMARY UX) */}
+      {/* BULK CREATE */}
       <div className="admin-form-row" style={{ marginBottom: 12 }}>
         <div className="admin-form-group">
           <label>Bulk Color</label>
@@ -387,6 +472,32 @@ export default function AdminProductVariantManager({ productId }: Props) {
           />
         </div>
 
+        <div className="admin-form-group">
+          <label>
+            Bulk Color Hex{" "}
+            <span className="mono" style={{ opacity: 0.7 }}>
+              (#RRGGBB optional)
+            </span>
+          </label>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Swatch hex={bulkHexInvalid ? "" : normalizedBulkHex || ""} />
+            <input
+              placeholder="e.g. #1E90FF"
+              value={bulkColorHex}
+              onChange={(e) => setBulkColorHex(e.target.value)}
+              disabled={bulkCreating || creating}
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          {bulkHexInvalid && (
+            <div className="mono" style={{ fontSize: 12, opacity: 0.75, marginTop: 6 }}>
+              Invalid hex. Use <b>#RRGGBB</b> or leave empty.
+            </div>
+          )}
+        </div>
+
         <div className="admin-form-group" style={{ flex: 2 }}>
           <label>
             Bulk Sizes{" "}
@@ -394,17 +505,15 @@ export default function AdminProductVariantManager({ productId }: Props) {
               (comma / space / newline)
             </span>
           </label>
+
           <textarea
             placeholder={`e.g.\n38 40 42 44\nor\n38,40,42,44`}
             value={bulkSizes}
             onChange={(e) => setBulkSizes(e.target.value)}
             disabled={bulkCreating || creating}
-            style={{
-              width: "100%",
-              minHeight: 80,
-              resize: "vertical",
-            }}
+            style={{ width: "100%", minHeight: 80, resize: "vertical" }}
           />
+
           <div className="mono" style={{ fontSize: 12, opacity: 0.7, marginTop: 6 }}>
             Parsed sizes: {bulkSummary}
           </div>
@@ -426,7 +535,7 @@ export default function AdminProductVariantManager({ productId }: Props) {
           <button
             className="admin-action admin-action-primary"
             onClick={handleBulkCreate}
-            disabled={bulkCreating || creating}
+            disabled={bulkCreating || creating || bulkHexInvalid}
             title="Create all missing variants for this color"
           >
             {bulkCreating ? "Adding…" : "Bulk Add"}
@@ -434,7 +543,7 @@ export default function AdminProductVariantManager({ productId }: Props) {
         </div>
       </div>
 
-      {/* SINGLE CREATE (FALLBACK / EDGE CASES) */}
+      {/* SINGLE CREATE */}
       <div className="admin-form-row">
         <div className="admin-form-group">
           <label>Size</label>
@@ -457,6 +566,32 @@ export default function AdminProductVariantManager({ productId }: Props) {
         </div>
 
         <div className="admin-form-group">
+          <label>
+            Color Hex{" "}
+            <span className="mono" style={{ opacity: 0.7 }}>
+              (#RRGGBB optional)
+            </span>
+          </label>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Swatch hex={singleHexInvalid ? "" : normalizedSingleHex || ""} />
+            <input
+              placeholder="e.g. #000000"
+              value={colorHex}
+              onChange={(e) => setColorHex(e.target.value)}
+              disabled={creating || bulkCreating}
+              style={{ width: "100%" }}
+            />
+          </div>
+
+          {singleHexInvalid && (
+            <div className="mono" style={{ fontSize: 12, opacity: 0.75, marginTop: 6 }}>
+              Invalid hex. Use <b>#RRGGBB</b> or leave empty.
+            </div>
+          )}
+        </div>
+
+        <div className="admin-form-group">
           <label>Stock</label>
           <input
             type="number"
@@ -472,7 +607,7 @@ export default function AdminProductVariantManager({ productId }: Props) {
           <button
             className="admin-action admin-action-primary"
             onClick={handleCreate}
-            disabled={creating || bulkCreating}
+            disabled={creating || bulkCreating || singleHexInvalid}
           >
             {creating ? "Adding…" : "Add Variant"}
           </button>
@@ -485,6 +620,7 @@ export default function AdminProductVariantManager({ productId }: Props) {
           <tr>
             <th align="left">Size</th>
             <th align="left">Color</th>
+            <th align="left">Color Hex</th>
             <th align="left">Stock</th>
             <th />
           </tr>
@@ -493,7 +629,7 @@ export default function AdminProductVariantManager({ productId }: Props) {
         <tbody>
           {loading && (
             <tr>
-              <td colSpan={4} className="admin-table-empty">
+              <td colSpan={5} className="admin-table-empty">
                 Loading variants…
               </td>
             </tr>
@@ -501,50 +637,85 @@ export default function AdminProductVariantManager({ productId }: Props) {
 
           {!loading && variants.length === 0 && (
             <tr>
-              <td colSpan={4} className="admin-table-empty">
+              <td colSpan={5} className="admin-table-empty">
                 No variants added yet
               </td>
             </tr>
           )}
 
           {!loading &&
-            variants.map((variant) => (
-              <tr key={variant.id}>
-                <td>{variant.size}</td>
-                <td>{variant.color}</td>
-                <td>
-                  <input
-                    type="number"
-                    min={0}
-                    className="admin-input-sm"
-                    value={stockDrafts[variant.id] ?? String(variant.stock)}
-                    onChange={(e) => setDraft(variant.id, e.target.value)}
-                    onBlur={() => commitStock(variant)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        // Commit on Enter (and blur to match UX)
-                        (e.currentTarget as HTMLInputElement).blur();
-                      } else if (e.key === "Escape") {
-                        // Revert on Escape
-                        setDraft(variant.id, String(variant.stock));
-                        (e.currentTarget as HTMLInputElement).blur();
-                      }
-                    }}
-                    disabled={busy}
-                    aria-label={`Stock for ${variant.color} ${variant.size}`}
-                  />
-                </td>
-                <td>
-                  <button
-                    className="admin-action admin-action-danger"
-                    onClick={() => handleDelete(variant.id)}
-                    disabled={busy}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            variants.map((variant) => {
+              const hexDraft = hexDrafts[variant.id] ?? (variant.color_hex ?? "");
+              const hexNorm = normalizeHexColorInput(hexDraft);
+              const hexInvalid = hexNorm === "__INVALID__";
+
+              return (
+                <tr key={variant.id}>
+                  <td>{variant.size}</td>
+                  <td>{variant.color}</td>
+
+                  <td>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Swatch hex={hexInvalid ? "" : hexNorm || ""} />
+
+                      <input
+                        className="admin-input-sm mono"
+                        placeholder="—"
+                        value={hexDraft}
+                        onChange={(e) => setHexDraft(variant.id, e.target.value)}
+                        onBlur={() => commitHex(variant)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
+                          else if (e.key === "Escape") {
+                            setHexDraft(variant.id, variant.color_hex ?? "");
+                            (e.currentTarget as HTMLInputElement).blur();
+                          }
+                        }}
+                        disabled={busy}
+                        style={{ width: 120 }}
+                        aria-label={`Color hex for ${variant.color} ${variant.size}`}
+                      />
+                    </div>
+
+                    {hexInvalid && (
+                      <div className="mono" style={{ fontSize: 12, opacity: 0.75, marginTop: 6 }}>
+                        Use <b>#RRGGBB</b> or empty.
+                      </div>
+                    )}
+                  </td>
+
+                  <td>
+                    <input
+                      type="number"
+                      min={0}
+                      className="admin-input-sm"
+                      value={stockDrafts[variant.id] ?? String(variant.stock)}
+                      onChange={(e) => setStockDraft(variant.id, e.target.value)}
+                      onBlur={() => commitStock(variant)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") (e.currentTarget as HTMLInputElement).blur();
+                        else if (e.key === "Escape") {
+                          setStockDraft(variant.id, String(variant.stock));
+                          (e.currentTarget as HTMLInputElement).blur();
+                        }
+                      }}
+                      disabled={busy}
+                      aria-label={`Stock for ${variant.color} ${variant.size}`}
+                    />
+                  </td>
+
+                  <td>
+                    <button
+                      className="admin-action admin-action-danger"
+                      onClick={() => handleDelete(variant.id)}
+                      disabled={busy}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </AdminTable>
     </section>

@@ -25,12 +25,7 @@ async function safeFetch<T>(url: string): Promise<T | null> {
   }
 
   if (!res.ok) {
-    console.error(
-      "[Products API] HTTP error:",
-      res.status,
-      res.statusText,
-      url
-    );
+    console.error("[Products API] HTTP error:", res.status, res.statusText, url);
     return null;
   }
 
@@ -49,6 +44,10 @@ type APIProductVariant = {
   id: number;
   size: string;
   color: string;
+
+  // ✅ New (optional) — may be missing for legacy variants
+  color_hex?: string;
+
   stock: number;
 };
 
@@ -96,8 +95,7 @@ export async function getProducts(params?: {
   if (params?.category) query.set("category", params.category);
   if (params?.featured) query.set("featured", "1");
   if (params?.search) query.set("q", params.search);
-  if (params?.limit !== undefined)
-    query.set("limit", String(params.limit));
+  if (params?.limit !== undefined) query.set("limit", String(params.limit));
 
   const url = query.toString()
     ? `${API_BASE}/api/products/?${query.toString()}`
@@ -113,9 +111,7 @@ export async function getProducts(params?: {
 /* ==================================================
    PRODUCT DETAIL (PDP)
 ================================================== */
-export async function getProduct(
-  slug?: string
-): Promise<ProductDetail | null> {
+export async function getProduct(slug?: string): Promise<ProductDetail | null> {
   if (!slug) return null;
 
   const raw = await safeFetch<APIProduct>(`${API_BASE}/api/products/${slug}/`);
@@ -141,6 +137,7 @@ export async function getProduct(
             id: v.id,
             size: v.size,
             color: v.color,
+            color_hex: typeof v.color_hex === "string" ? v.color_hex : undefined,
             stock: v.stock,
           })
         )
@@ -162,9 +159,7 @@ export async function getProduct(
           ...(Array.isArray(raw.images)
             ? raw.images.map((img) => normalizeMediaUrl(img.image))
             : []),
-        ].filter(
-          (img): img is string => typeof img === "string" && img.length > 0
-        )
+        ].filter((img): img is string => typeof img === "string" && img.length > 0)
       )
     ),
   };

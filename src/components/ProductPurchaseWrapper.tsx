@@ -22,14 +22,12 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
      Derived states
   ------------------------------ */
   const isOutOfStock = useMemo(() => {
-    if (!selectedVariant) return false;
-    return (selectedVariant.stock ?? 0) <= 0;
+    return !selectedVariant || (selectedVariant.stock ?? 0) <= 0;
   }, [selectedVariant]);
 
-  const isAddToCartDisabled = useMemo(
-    () => !selectedVariant || isOutOfStock,
-    [selectedVariant, isOutOfStock]
-  );
+  const isAddToCartDisabled = useMemo(() => {
+    return !selectedVariant || isOutOfStock;
+  }, [selectedVariant, isOutOfStock]);
 
   const disabledReason = useMemo(() => {
     if (!selectedVariant) return "Please select size and color";
@@ -57,7 +55,7 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
     });
 
     // Actual cart logic is handled in ProductPurchase component
-  }, [selectedVariant, product]);
+  }, [selectedVariant, product.id, product.price, product.name]);
 
   /* -----------------------------
      Render

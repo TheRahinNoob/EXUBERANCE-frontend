@@ -18,6 +18,14 @@ export type ProductVariant = {
   id: number;
   size: string;
   color: string;
+
+  /**
+   * Optional hex color code used to render a color swatch in UI.
+   * Format: "#RRGGBB"
+   * May be missing for legacy variants.
+   */
+  color_hex?: string;
+
   stock: number;
 };
 
