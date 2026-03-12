@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "OpenSans-ExtraBoldItalic";
+  src: url("/fonts/OpenSans-ExtraBoldItalic.woff2") format("woff2");
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
 /* ==================================================
    WRAPPER
 ================================================== */
@@ -20,12 +27,13 @@
    LABEL (SIZE ONLY)
 ================================================== */
 .label {
-  width: 80px;
+ 
   line-height: 36px;
 
-  font-family: "Rajdhani", sans-serif;
+  font-family: "OpenSans-ExtraBoldItalic", sans-serif;
   font-size: 14px;
-  font-weight: 600;
+
+  font-style: italic;
   color: #111827;
   margin-top: 10px;
   margin-bottom: -1px;
@@ -144,3 +152,4 @@
     padding: 5px 7px;
   }
 }
+
