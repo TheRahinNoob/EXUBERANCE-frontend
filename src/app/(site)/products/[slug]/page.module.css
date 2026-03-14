@@ -8,7 +8,7 @@
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 14px var(--page-x) 56px;
+  padding: 6px var(--page-x) 56px;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111827;
   background: #ffffff;
@@ -45,6 +45,8 @@
 .galleryCol {
   width: 100%;
   min-width: 0;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .right {
@@ -69,7 +71,7 @@
 @media (min-width: 1024px) {
   .page {
     --page-x: 28px;
-    padding-top: 24px;
+    padding-top: 10px;
     padding-bottom: 80px;
   }
 
@@ -142,6 +144,8 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
   }
+
+
 }
 
 /* =========================
@@ -267,13 +271,24 @@
   }
 }
 
+@media (max-width: 990px) {
+
+
+.galleryCol {
+  width: 100%;
+  min-width: 0;
+  margin-top: -80px;
+  padding-top: 0;
+
+}
+}
 /* =========================
    EXTRA SMALL PHONES
 ========================= */
 @media (max-width: 380px) {
   .page {
     --page-x: 12px;
-    padding-top: 12px;
+    padding-top: 4px;
   }
 
   .pdpMain {
