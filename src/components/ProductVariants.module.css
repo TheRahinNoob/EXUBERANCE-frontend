@@ -53,8 +53,12 @@
 }
 
 /* ==================================================
-   COLOR OPTIONS — ALWAYS ONE ROW
+   COLOR AREA
 ================================================== */
+.colorScroller {
+  position: relative;
+}
+
 .colorOptions {
   display: flex;
   flex-wrap: nowrap;
@@ -64,11 +68,35 @@
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding-bottom: 2px;
+  scroll-snap-type: x proximity;
+  padding: 2px 28px 2px 0;
 }
 
 .colorOptions::-webkit-scrollbar {
   display: none;
+}
+
+/* Right fade cue so users understand there is more */
+.colorScroller::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(249, 250, 251, 0), #f9f9f9 78%);
+  border-radius: 0 999px 999px 0;
+}
+
+/* Small mobile hint */
+.scrollHint {
+  display: none;
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 600;
+  color: #6b7280;
 }
 
 /* ==================================================
@@ -95,16 +123,17 @@
     background-color 0.18s ease,
     color 0.18s ease,
     opacity 0.18s ease,
-    transform 0.18s ease;
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 /* ==================================================
-   COLOR BUTTON — CONTENT WIDTH ONLY
+   COLOR BUTTON
 ================================================== */
 .colorOption {
   flex: 0 0 auto;
+  scroll-snap-align: start;
   min-width: fit-content;
-  max-width: none;
   padding: 0 14px;
   gap: 6px;
 }
@@ -132,6 +161,7 @@
   background: #111827;
   border-color: #111827;
   color: #ffffff;
+  box-shadow: 0 8px 20px rgba(17, 24, 39, 0.12);
 }
 
 .active .swatch {
@@ -195,6 +225,7 @@
 
   .colorOptions {
     gap: 8px;
+    padding-right: 24px;
   }
 
   .option {
@@ -205,9 +236,6 @@
   }
 
   .colorOption {
-    flex: 0 0 auto;
-    min-width: fit-content;
-    max-width: none;
     padding: 0 12px;
     gap: 5px;
   }
@@ -215,5 +243,13 @@
   .swatch {
     width: 12px;
     height: 12px;
+  }
+
+  .scrollHint {
+    display: block;
+  }
+
+  .colorScroller::after {
+    width: 28px;
   }
 }

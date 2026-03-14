@@ -69,6 +69,7 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
       const hx = normalizeHex(match?.color_hex);
       if (hx) return hx;
     }
+
     const any = variants.find((v) => v.color === c);
     return normalizeHex(any?.color_hex);
   };
@@ -97,6 +98,7 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
                 className={`${styles.option} ${size === s ? styles.active : ""} ${
                   disabled ? styles.disabled : ""
                 }`}
+                aria-pressed={size === s}
               >
                 {s}
               </button>
@@ -111,40 +113,47 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
           {color ? <span className={styles.selectedText}>{color}</span> : null}
         </div>
 
-        <div className={`${styles.options} ${styles.colorOptions}`}>
-          {colors.map((c) => {
-            const disabled = isColorDisabled(c);
-            const hex = getColorHex(c);
-            const swatchBg = hex ?? "#E5E7EB";
-            const swatchBorder =
-              (hex ?? "").toUpperCase() === "#FFFFFF"
-                ? "1px solid rgba(0,0,0,0.18)"
-                : "1px solid rgba(0,0,0,0.08)";
+        <div className={styles.colorScroller}>
+          <div className={`${styles.options} ${styles.colorOptions}`}>
+            {colors.map((c) => {
+              const disabled = isColorDisabled(c);
+              const hex = getColorHex(c);
+              const swatchBg = hex ?? "#E5E7EB";
+              const swatchBorder =
+                (hex ?? "").toUpperCase() === "#FFFFFF"
+                  ? "1px solid rgba(0,0,0,0.18)"
+                  : "1px solid rgba(0,0,0,0.08)";
 
-            return (
-              <button
-                key={c}
-                type="button"
-                disabled={disabled}
-                onClick={() => setColor(c)}
-                className={`${styles.option} ${styles.colorOption} ${
-                  color === c ? styles.active : ""
-                } ${disabled ? styles.disabled : ""}`}
-                title={c}
-              >
-                <span
-                  aria-hidden="true"
-                  className={styles.swatch}
-                  style={{
-                    backgroundColor: swatchBg,
-                    border: swatchBorder,
-                  }}
-                />
-                <span className={styles.colorText}>{c}</span>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => setColor(c)}
+                  className={`${styles.option} ${styles.colorOption} ${
+                    color === c ? styles.active : ""
+                  } ${disabled ? styles.disabled : ""}`}
+                  title={c}
+                  aria-pressed={color === c}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={styles.swatch}
+                    style={{
+                      backgroundColor: swatchBg,
+                      border: swatchBorder,
+                    }}
+                  />
+                  <span className={styles.colorText}>{c}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {colors.length > 3 ? (
+          <p className={styles.scrollHint}>Swipe to see more colors</p>
+        ) : null}
       </div>
 
       {size && color && selectedVariant && (
