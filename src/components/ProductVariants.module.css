@@ -58,12 +58,13 @@
 .colorOptions {
   display: flex;
   flex-wrap: nowrap;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  padding-bottom: 2px;
 }
 
 .colorOptions::-webkit-scrollbar {
@@ -89,25 +90,29 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: border-color 0.18s ease, background-color 0.18s ease,
-    color 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
 /* ==================================================
-   COLOR BUTTON — COMPACT BUT CONTROLLED
+   COLOR BUTTON — CONTENT WIDTH ONLY
 ================================================== */
 .colorOption {
-  flex: 1 1 0;
-  min-width: 72px;
-  max-width: 140px; /* prevents ugly full-width single button */
-  padding: 0 12px;
+  flex: 0 0 auto;
+  min-width: fit-content;
+  max-width: none;
+  padding: 0 14px;
   gap: 6px;
 }
 
 .colorText {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 /* ==================================================
@@ -163,7 +168,7 @@
 }
 
 /* ==================================================
-   RESPONSIVE
+   HOVER
 ================================================== */
 @media (hover: hover) {
   .option:not(.disabled):not(.active):hover {
@@ -172,7 +177,26 @@
   }
 }
 
+/* ==================================================
+   MOBILE
+================================================== */
 @media (max-width: 480px) {
+  .wrapper {
+    gap: 14px;
+  }
+
+  .block {
+    gap: 9px;
+  }
+
+  .options {
+    gap: 8px;
+  }
+
+  .colorOptions {
+    gap: 8px;
+  }
+
   .option {
     min-height: 40px;
     min-width: 54px;
@@ -181,11 +205,11 @@
   }
 
   .colorOption {
-    min-width: 64px;
-    max-width: 110px;
-    padding: 0 10px;
+    flex: 0 0 auto;
+    min-width: fit-content;
+    max-width: none;
+    padding: 0 12px;
     gap: 5px;
-    font-size: 12px;
   }
 
   .swatch {
