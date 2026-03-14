@@ -111,7 +111,7 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
           {color ? <span className={styles.selectedText}>{color}</span> : null}
         </div>
 
-        <div className={styles.options}>
+        <div className={`${styles.options} ${styles.colorOptions}`}>
           {colors.map((c) => {
             const disabled = isColorDisabled(c);
             const hex = getColorHex(c);
@@ -127,9 +127,10 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
                 type="button"
                 disabled={disabled}
                 onClick={() => setColor(c)}
-                className={`${styles.option} ${color === c ? styles.active : ""} ${
-                  disabled ? styles.disabled : ""
-                }`}
+                className={`${styles.option} ${styles.colorOption} ${
+                  color === c ? styles.active : ""
+                } ${disabled ? styles.disabled : ""}`}
+                title={c}
               >
                 <span
                   aria-hidden="true"
@@ -139,7 +140,7 @@ export default function ProductVariants({ variants, value, onChange }: Props) {
                     border: swatchBorder,
                   }}
                 />
-                {c}
+                <span className={styles.colorText}>{c}</span>
               </button>
             );
           })}
