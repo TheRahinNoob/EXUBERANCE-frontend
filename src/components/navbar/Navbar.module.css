@@ -59,12 +59,18 @@
   top: 1px;
   transition: opacity 0.15s ease;
 }
-.logo:hover { opacity: 0.85; }
+
+.logo:hover {
+  opacity: 0.85;
+}
 
 /* =========================
    SHOP MENU (DESKTOP)
 ========================= */
-.shop { position: relative; }
+.shop {
+  position: relative;
+}
+
 .shop::after {
   content: "";
   position: absolute;
@@ -73,6 +79,7 @@
   width: calc(100% + 40px);
   height: 22px;
 }
+
 .shopBtn {
   background: none;
   border: none;
@@ -85,7 +92,11 @@
   gap: 6px;
   color: #111827;
 }
-.shopBtn i { font-size: 11px; margin-top: 2px; }
+
+.shopBtn i {
+  font-size: 11px;
+  margin-top: 2px;
+}
 
 /* =========================
    MEGA MENU
@@ -99,7 +110,7 @@
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.14), 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 40px 80px rgba(0, 0, 0, 0.14), 0 8px 20px rgba(0, 0, 0, 0.08);
   padding: 32px 34px;
   opacity: 0;
   visibility: hidden;
@@ -107,14 +118,26 @@
   transform: translateY(10px);
   transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
 }
+
 .megaOpen {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
 }
-.megaGrid { display: grid; grid-template-columns: repeat(4,1fr); gap: 34px; }
-.megaCol { display: flex; flex-direction: column; gap: 10px; }
+
+.megaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 34px;
+}
+
+.megaCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .megaTitle {
   font-family: var(--font-brand);
   font-size: 14px;
@@ -123,6 +146,7 @@
   color: #020617;
   margin-bottom: 6px;
 }
+
 .megaLink {
   font-family: var(--font-ui);
   font-size: 14px;
@@ -132,12 +156,19 @@
   line-height: 1.6;
   transition: color 0.12s ease;
 }
-.megaLink:hover { color: #020617; }
+
+.megaLink:hover {
+  color: #020617;
+}
 
 /* =========================
    SEARCH
 ========================= */
-.center { display: flex; justify-content: center; }
+.center {
+  display: flex;
+  justify-content: center;
+}
+
 .searchForm {
   display: flex;
   width: 540px;
@@ -145,6 +176,7 @@
   background: #fff;
   border-radius: 10px;
 }
+
 .searchInput {
   flex: 1;
   padding: 0 16px;
@@ -154,8 +186,15 @@
   border-radius: 10px 0 0 10px;
   outline: none;
 }
-.searchInput::placeholder { color: #9ca3af; }
-.searchInput:focus { border-color: #020617; }
+
+.searchInput::placeholder {
+  color: #9ca3af;
+}
+
+.searchInput:focus {
+  border-color: #020617;
+}
+
 .searchBtn {
   width: 46px;
   border: 1px solid #d1d5db;
@@ -165,12 +204,19 @@
   cursor: pointer;
   transition: background 0.15s ease;
 }
-.searchBtn:hover { background: #f3f4f6; }
+
+.searchBtn:hover {
+  background: #f3f4f6;
+}
 
 /* =========================
    RIGHT SECTION
 ========================= */
-.right { display: flex; align-items: center; gap: 18px; }
+.right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
 
 /* =========================
    TRACK ORDER
@@ -186,14 +232,31 @@
   gap: 6px;
   transition: color 0.15s ease;
 }
-.trackOrder i { font-size: 20px; color: #64748b; transition: color 0.15s ease; }
-.trackOrder:hover { color: #020617; }
-.trackOrder:hover i { color: #020617; }
+
+.trackOrder i {
+  font-size: 20px;
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.trackOrder:hover {
+  color: #020617;
+}
+
+.trackOrder:hover i {
+  color: #020617;
+}
 
 /* =========================
    CART ICON & BADGE
 ========================= */
-.cart { position: relative; font-size: 22px; color: #020617; text-decoration: none; }
+.cart {
+  position: relative;
+  font-size: 22px;
+  color: #020617;
+  text-decoration: none;
+}
+
 .cartBadge {
   position: absolute;
   top: -6px;
@@ -214,7 +277,15 @@
 /* =========================
    MOBILE BUTTONS
 ========================= */
-.mobileMenuBtn, .mobileSearchBtn { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: #020617; }
+.mobileMenuBtn,
+.mobileSearchBtn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #020617;
+}
 
 /* =========================
    MOBILE SEARCH
@@ -227,8 +298,9 @@
   background: #fff;
   padding: 12px;
   z-index: 999;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
+
 .mobileSearch input {
   width: calc(100% - 24px);
   margin: 0 12px;
@@ -243,7 +315,7 @@
    MOBILE DRAWER
 ========================= */
 .mobileDrawer {
-  width: 50px;          /* reduced for "peek" UX */
+  width: 50px;
   max-width: 85vw;
   min-width: 225px;
   position: fixed;
@@ -252,13 +324,17 @@
   height: 100vh;
   background: #fff;
   transform: translateX(-100%);
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  transition: transform 0.35s cubic-bezier(.4, 0, .2, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  box-shadow: 12px 0 40px rgba(0,0,0,0.22);
+  box-shadow: 12px 0 40px rgba(0, 0, 0, 0.22);
 }
-.mobileDrawerOpen { transform: translateX(0); }
+
+.mobileDrawerOpen {
+  transform: translateX(0);
+}
+
 .mobileDrawerHeader {
   display: flex;
   justify-content: space-between;
@@ -267,7 +343,12 @@
   font-weight: 800;
   border-bottom: 1px solid #e5e7eb;
 }
-.mobileQuickActions { padding: 14px; border-bottom: 1px solid #e5e7eb; }
+
+.mobileQuickActions {
+  padding: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .mobileQuickLink {
   display: block;
   padding: 14px 16px;
@@ -280,7 +361,10 @@
   background: #f1f5f9;
   transition: background 0.15s ease;
 }
-.mobileQuickLink:hover { background: #e5e7eb; }
+
+.mobileQuickLink:hover {
+  background: #e5e7eb;
+}
 
 /* =========================
    BACKDROP
@@ -288,92 +372,103 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   z-index: 999;
 }
 
 /* =========================
    RESPONSIVE MOBILE
 ========================= */
-/* =========================
-   RESPONSIVE MOBILE REFINEMENT
-========================= */
-/* =========================
-   HYPER-COMPACT MOBILE NAVBAR
-========================= */
 @media (max-width: 1020px) {
-  /* navbar height */
-  .nav { 
-    height: 52px; /* ultra-compact */
+  .nav {
+    height: 52px;
     padding: 0 8px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
   }
 
-  /* container layout */
-  .container { 
-    display: flex; 
-    align-items: center; 
+  .container {
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     padding: 0 8px;
   }
 
-  /* hide desktop-only elements */
-  .shop, .center, .trackOrder { display: none; }
+  .shop,
+  .center,
+  .trackOrder {
+    display: none;
+  }
 
-  /* left section spacing */
-  .left { gap: 6px; }
+  .left {
+    gap: 6px;
+  }
 
-  /* ultra-small logo */
-  .logo { 
-    font-size: 16px; 
-    letter-spacing: 0.08em; 
+  .logo {
+    font-size: 16px;
+    letter-spacing: 0.08em;
     top: 0;
     font-weight: 800;
   }
 
-  /* right section */
-  .right { 
-    margin-left: auto; 
+  .right {
+    margin-left: auto;
     gap: 8px;
   }
 
-  /* mobile menu & search buttons */
-  .mobileMenuBtn, .mobileSearchBtn { 
-    display: block; 
-    font-size: 18px; 
-    padding: 4px; 
+  .mobileMenuBtn,
+  .mobileSearchBtn {
+    display: block;
+    font-size: 18px;
+    padding: 4px;
     color: #020617;
     transition: transform 0.15s ease;
   }
-  .mobileMenuBtn:hover, .mobileSearchBtn:hover { transform: scale(1.1); }
 
-  /* mobile search box */
-  .mobileSearch { 
-    top: 52px; /* aligns with navbar */
-    padding: 8px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  .mobileMenuBtn:hover,
+  .mobileSearchBtn:hover {
+    transform: scale(1.1);
   }
+
+  .mobileSearch {
+    top: 52px;
+    padding: 8px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+
   .mobileSearch input {
     width: calc(100% - 16px);
     margin: 0 8px;
-    padding: 10px 12px; /* smaller input */
-    font-size: 12px;     /* small but readable */
+    padding: 10px 12px;
+    font-size: 12px;
     border-radius: 8px;
     border: 1px solid #ccc;
   }
+
   .mobileSearch .searchBtn {
-    width: 36px;         /* small button */
+    width: 36px;
     font-size: 13px;
     border-radius: 0 8px 8px 0;
   }
 
-  /* cart & track icons */
-  .cart { font-size: 18px; }
-  .cartBadge { width: 16px; height: 16px; font-size: 10px; }
-  .trackOrder i { font-size: 16px; }
+  .cart {
+    font-size: 18px;
+  }
 
-  /* subtle transitions for smooth feel */
-  .nav, .mobileSearch, .logo, .mobileMenuBtn, .mobileSearchBtn {
+  .cartBadge {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+  }
+
+  .trackOrder i {
+    font-size: 16px;
+  }
+
+  .nav,
+  .mobileSearch,
+  .logo,
+  .mobileMenuBtn,
+  .mobileSearchBtn {
     transition: all 0.2s ease;
   }
 }
@@ -392,23 +487,25 @@
 @media (max-width: 1020px) {
   .mobileBottomNav {
     position: fixed;
-    left: 10px;
-    right: 10px;
-    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1001;
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: stretch;
-    gap: 4px;
-    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    border-radius: 20px;
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    gap: 0;
+    padding:
+      6px
+      8px
+      calc(8px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.98);
+    border-top: 1px solid rgba(226, 232, 240, 0.95);
+    backdrop-filter: blur(16px) saturate(1.08);
+    -webkit-backdrop-filter: blur(16px) saturate(1.08);
     box-shadow:
-      0 20px 40px rgba(15, 23, 42, 0.12),
-      0 6px 18px rgba(15, 23, 42, 0.08);
+      0 -6px 20px rgba(15, 23, 42, 0.06),
+      0 -1px 0 rgba(255, 255, 255, 0.65) inset;
   }
 
   .mobileBottomItem {
@@ -420,7 +517,7 @@
     gap: 4px;
     text-decoration: none;
     color: #64748b;
-    border-radius: 14px;
+    border-radius: 12px;
     min-height: 56px;
     padding: 7px 4px 6px;
     transition:
@@ -492,7 +589,7 @@
 
   .mobileBottomNavSpacer {
     display: block;
-    height: 92px;
+    height: calc(74px + env(safe-area-inset-bottom));
   }
 }
 
@@ -501,16 +598,16 @@
 ========================= */
 @media (max-width: 420px) {
   .mobileBottomNav {
-    left: 8px;
-    right: 8px;
-    gap: 2px;
-    padding: 7px 4px calc(7px + env(safe-area-inset-bottom));
-    border-radius: 18px;
+    padding:
+      5px
+      6px
+      calc(7px + env(safe-area-inset-bottom));
   }
 
   .mobileBottomItem {
     min-height: 54px;
     padding: 6px 2px 5px;
+    border-radius: 10px;
   }
 
   .mobileBottomIcon {
@@ -533,7 +630,7 @@
   }
 
   .mobileBottomNavSpacer {
-    height: 88px;
+    height: calc(70px + env(safe-area-inset-bottom));
   }
 }
 
@@ -542,9 +639,10 @@
 ========================= */
 @media (max-width: 340px) {
   .mobileBottomNav {
-    left: 6px;
-    right: 6px;
-    padding: 6px 3px calc(6px + env(safe-area-inset-bottom));
+    padding:
+      5px
+      4px
+      calc(6px + env(safe-area-inset-bottom));
   }
 
   .mobileBottomItem {
@@ -563,6 +661,6 @@
   }
 
   .mobileBottomNavSpacer {
-    height: 82px;
+    height: calc(66px + env(safe-area-inset-bottom));
   }
 }
