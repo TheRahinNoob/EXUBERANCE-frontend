@@ -4,14 +4,23 @@
    PAGE WRAPPER
 ========================= */
 .page {
-  --page-x: 16px;
+  --page-x: 14px;
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: 16px var(--page-x) 56px;
+  padding: 14px var(--page-x) 56px;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: #111827;
   background: #ffffff;
+
+  /* critical mobile safety */
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
+/* make all descendants respect box sizing */
+.page :global(*) {
+  box-sizing: border-box;
 }
 
 /* =========================
@@ -28,25 +37,29 @@
 .pdpMain {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
 }
 
 .galleryCol {
   width: 100%;
+  min-width: 0;
 }
 
 .right {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
 }
 
 .infoBlock,
-.purchaseBlock {
-  background: #ffffff;
-}
-
+.purchaseBlock,
 .detailsBlock {
+  width: 100%;
+  min-width: 0;
   background: #ffffff;
 }
 
@@ -55,22 +68,22 @@
 ========================= */
 @media (min-width: 1024px) {
   .page {
-    --page-x: 32px;
-    padding-top: 28px;
+    --page-x: 28px;
+    padding-top: 24px;
     padding-bottom: 80px;
   }
 
   .pdpMain {
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(360px, 430px);
-    gap: 40px;
+    grid-template-columns: minmax(0, 1.08fr) minmax(340px, 430px);
+    gap: 34px;
     align-items: start;
   }
 
   .right {
     position: sticky;
     top: 20px;
-    gap: 20px;
+    gap: 18px;
   }
 }
 
@@ -78,18 +91,22 @@
    RELATED SECTION
 ========================= */
 .related {
-  margin-top: 56px;
+  width: 100%;
+  min-width: 0;
+  margin-top: 52px;
 }
 
 .relatedHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .relatedTitle {
   margin: 0;
+  min-width: 0;
   font-size: 20px;
   line-height: 1.2;
   font-weight: 800;
@@ -103,13 +120,16 @@
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  align-items: start;
 }
 
 @media (min-width: 640px) {
   .relatedGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    gap: 16px;
   }
 }
 
@@ -120,7 +140,7 @@
 
   .relatedGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 22px;
+    gap: 20px;
   }
 }
 
@@ -130,14 +150,18 @@
 .card {
   display: flex;
   flex-direction: column;
+  width: 100%;
   min-width: 0;
   text-decoration: none;
   color: inherit;
   background: #ffffff;
   border: 1px solid #eceff3;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
   box-shadow: 0 6px 20px rgba(17, 24, 39, 0.04);
 }
 
@@ -150,6 +174,7 @@
 .imageWrap {
   position: relative;
   width: 100%;
+  min-width: 0;
   aspect-ratio: 4 / 5;
   background: #f7f8fa;
   overflow: hidden;
@@ -170,14 +195,18 @@
   flex-direction: column;
   gap: 10px;
   padding: 12px 12px 14px;
+  width: 100%;
+  min-width: 0;
 }
 
 .cardName {
   margin: 0;
+  min-width: 0;
   font-size: 13px;
   line-height: 1.45;
   font-weight: 600;
   color: #111827;
+  word-break: break-word;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -190,6 +219,7 @@
   align-items: baseline;
   gap: 8px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .price {
@@ -210,6 +240,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 38px;
   border-radius: 12px;
   background: #111827;
@@ -219,6 +250,7 @@
   letter-spacing: 0.01em;
   padding: 0 14px;
   margin-top: 2px;
+  text-align: center;
 }
 
 @media (min-width: 640px) {
@@ -232,5 +264,50 @@
 
   .price {
     font-size: 16px;
+  }
+}
+
+/* =========================
+   EXTRA SMALL PHONES
+========================= */
+@media (max-width: 380px) {
+  .page {
+    --page-x: 12px;
+    padding-top: 12px;
+  }
+
+  .pdpMain {
+    gap: 16px;
+  }
+
+  .relatedGrid {
+    gap: 10px;
+  }
+
+  .card {
+    border-radius: 14px;
+  }
+
+  .cardBody {
+    padding: 10px 10px 12px;
+    gap: 8px;
+  }
+
+  .cardName {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+
+  .oldPrice {
+    font-size: 11px;
+  }
+
+  .addToCart {
+    min-height: 36px;
+    font-size: 12px;
+    padding: 0 10px;
   }
 }
