@@ -92,7 +92,7 @@ export default function Footer() {
               <Link href="/faq" className={styles.footerLink}>
                 FAQ
               </Link>
-              <Link href="/shipping&returns" className={styles.footerLink}>
+              <Link href="/shipping-and-returns" className={styles.footerLink}>
                 Shipping & Returns
               </Link>
             </nav>

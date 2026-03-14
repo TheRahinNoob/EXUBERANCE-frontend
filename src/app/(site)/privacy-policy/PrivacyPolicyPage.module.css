@@ -1,0 +1,345 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800;900&display=swap");
+
+/* =========================
+   ROOT
+========================= */
+:root {
+  --privacy-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --privacy-brand: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================
+   PAGE
+========================= */
+.page {
+  font-family: var(--privacy-ui);
+  color: #0f172a;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.06), transparent 20%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  min-height: 100vh;
+}
+
+/* =========================
+   SHARED WRAPPERS
+========================= */
+.hero,
+.section {
+  width: min(1180px, calc(100% - 24px));
+  margin: 0 auto;
+}
+
+.section {
+  padding: 22px 0 34px;
+}
+
+/* =========================
+   HERO
+========================= */
+.hero {
+  padding: 18px 0 18px;
+}
+
+.heroCard {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%);
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.08),
+    0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.heroCard::before {
+  content: "";
+  position: absolute;
+  inset: auto -40px -70px auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12), transparent 68%);
+  pointer-events: none;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.title {
+  margin: 14px 0 12px;
+  max-width: 760px;
+  font-family: var(--privacy-brand);
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #020617;
+}
+
+.subtitle {
+  max-width: 720px;
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.primaryBtn {
+  background: #020617;
+  color: #ffffff;
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.14);
+}
+
+.primaryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(2, 6, 23, 0.18);
+}
+
+.secondaryBtn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0f172a;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.secondaryBtn:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+/* =========================
+   CONTENT LAYOUT
+========================= */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.sidebar {
+  order: 2;
+}
+
+.content {
+  order: 1;
+}
+
+.sidebarCard,
+.contentCard {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+}
+
+.sidebarCard {
+  padding: 18px;
+  border-radius: 22px;
+}
+
+.contentCard {
+  padding: 20px 18px;
+  border-radius: 24px;
+}
+
+.sidebarLabel {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #334155;
+}
+
+.sidebarList {
+  margin: 0;
+  padding-left: 18px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+.lastUpdated {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.block + .block {
+  margin-top: 22px;
+}
+
+.heading {
+  margin: 0 0 10px;
+  font-family: var(--privacy-brand);
+  font-size: clamp(1.1rem, 3vw, 1.45rem);
+  line-height: 1.15;
+  color: #020617;
+}
+
+.text {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.78;
+  font-weight: 500;
+}
+
+.text + .text {
+  margin-top: 10px;
+}
+
+/* =========================
+   TABLET
+========================= */
+@media (min-width: 640px) {
+  .hero,
+  .section {
+    width: min(1180px, calc(100% - 36px));
+  }
+
+  .hero {
+    padding: 24px 0 20px;
+  }
+
+  .heroCard {
+    padding: 40px 28px;
+    border-radius: 28px;
+  }
+
+  .contentCard {
+    padding: 26px 24px;
+  }
+
+  .sidebarCard {
+    padding: 20px;
+  }
+
+  .section {
+    padding: 24px 0 40px;
+  }
+}
+
+/* =========================
+   DESKTOP
+========================= */
+@media (min-width: 960px) {
+  .hero,
+  .section {
+    width: min(1180px, calc(100% - 56px));
+  }
+
+  .hero {
+    padding: 30px 0 22px;
+  }
+
+  .heroCard {
+    padding: 54px 40px;
+    border-radius: 32px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .sidebar {
+    order: 1;
+    position: sticky;
+    top: 104px;
+  }
+
+  .content {
+    order: 2;
+  }
+
+  .contentCard {
+    padding: 30px 30px;
+    border-radius: 28px;
+  }
+
+  .subtitle,
+  .text,
+  .sidebarList {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   EXTRA SMALL
+========================= */
+@media (max-width: 420px) {
+  .hero,
+  .section {
+    width: min(1180px, calc(100% - 18px));
+  }
+
+  .heroCard {
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .contentCard {
+    padding: 18px 16px;
+    border-radius: 20px;
+  }
+
+  .sidebarCard {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+}

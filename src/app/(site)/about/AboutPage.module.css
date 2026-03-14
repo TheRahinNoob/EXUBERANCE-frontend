@@ -1,0 +1,435 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800;900&display=swap");
+
+/* =========================
+   ROOT
+========================= */
+:root {
+  --about-ui: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --about-brand: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* =========================
+   PAGE
+========================= */
+.page {
+  font-family: var(--about-ui);
+  color: #0f172a;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.06), transparent 20%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* =========================
+   SHARED LAYOUT
+========================= */
+.hero,
+.section {
+  width: min(1200px, calc(100% - 24px));
+  margin: 0 auto;
+}
+
+.section {
+  padding: 22px 0;
+}
+
+.sectionHead {
+  margin-bottom: 18px;
+}
+
+.sectionTag,
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.sectionTitle,
+.sectionTitleCentered,
+.ctaTitle {
+  margin: 12px 0 0;
+  font-family: var(--about-brand);
+  color: #020617;
+  line-height: 1.08;
+}
+
+.sectionTitle {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+.sectionTitleCentered {
+  font-size: clamp(1.55rem, 4vw, 2.35rem);
+  text-align: center;
+}
+
+.text,
+.ctaText,
+.subtitle,
+.valueText,
+.infoText {
+  margin: 0;
+  color: #475569;
+  line-height: 1.75;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* =========================
+   HERO
+========================= */
+.hero {
+  padding: 18px 0 18px;
+}
+
+.heroInner {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 18px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.98) 100%);
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.08),
+    0 10px 24px rgba(15, 23, 42, 0.04);
+}
+
+.heroInner::before {
+  content: "";
+  position: absolute;
+  inset: auto -40px -70px auto;
+  width: 170px;
+  height: 170px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12), transparent 68%);
+  pointer-events: none;
+}
+
+.title {
+  margin: 14px 0 12px;
+  max-width: 900px;
+  font-family: var(--about-brand);
+  font-size: clamp(2rem, 7vw, 3.9rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: #020617;
+}
+
+.subtitle {
+  max-width: 720px;
+  font-size: 14px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.primaryBtn {
+  background: #020617;
+  color: #ffffff;
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.14);
+}
+
+.primaryBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(2, 6, 23, 0.18);
+}
+
+.secondaryBtn {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0f172a;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.secondaryBtn:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+/* =========================
+   STORY
+========================= */
+.gridTwo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.cardLarge,
+.infoCard,
+.valueCard,
+.highlightCard,
+.cta {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+}
+
+.cardLarge {
+  padding: 20px;
+  border-radius: 22px;
+}
+
+.cardLarge .text + .text {
+  margin-top: 12px;
+}
+
+.stack {
+  display: grid;
+  gap: 14px;
+}
+
+.infoCard {
+  padding: 18px;
+  border-radius: 20px;
+}
+
+.infoNumber {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
+
+.infoTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* =========================
+   VALUES
+========================= */
+.valuesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.valueCard {
+  padding: 20px 18px;
+  border-radius: 22px;
+}
+
+.valueIcon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  border: 1px solid #dbeafe;
+  color: #0f172a;
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.valueTitle {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #020617;
+}
+
+/* =========================
+   HIGHLIGHTS
+========================= */
+.highlightWrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.highlightCard {
+  padding: 20px 18px;
+  border-radius: 22px;
+  text-align: center;
+}
+
+.highlightNumber {
+  margin: 0;
+  font-family: var(--about-brand);
+  font-size: clamp(1.5rem, 5vw, 2.4rem);
+  line-height: 1;
+  color: #020617;
+}
+
+.highlightLabel {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* =========================
+   CTA
+========================= */
+.cta {
+  border-radius: 26px;
+  padding: 24px 18px;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
+}
+
+.ctaText {
+  max-width: 640px;
+  margin: 12px auto 0;
+}
+
+/* =========================
+   TABLET
+========================= */
+@media (min-width: 640px) {
+  .hero,
+  .section {
+    width: min(1200px, calc(100% - 36px));
+  }
+
+  .hero {
+    padding: 24px 0 22px;
+  }
+
+  .heroInner {
+    padding: 42px 28px;
+    border-radius: 28px;
+  }
+
+  .section {
+    padding: 28px 0;
+  }
+
+  .valuesGrid,
+  .highlightWrap {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cardLarge,
+  .valueCard,
+  .highlightCard {
+    padding: 24px;
+  }
+
+  .infoCard {
+    padding: 22px;
+  }
+
+  .cta {
+    padding: 34px 26px;
+  }
+}
+
+/* =========================
+   DESKTOP
+========================= */
+@media (min-width: 960px) {
+  .hero,
+  .section {
+    width: min(1200px, calc(100% - 56px));
+  }
+
+  .hero {
+    padding: 30px 0 26px;
+  }
+
+  .heroInner {
+    padding: 58px 42px;
+    border-radius: 32px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  .section {
+    padding: 34px 0;
+  }
+
+  .gridTwo {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .sectionHead {
+    margin-bottom: 22px;
+  }
+
+  .text,
+  .ctaText,
+  .valueText,
+  .infoText {
+    font-size: 14px;
+  }
+}
+
+/* =========================
+   EXTRA SMALL
+========================= */
+@media (max-width: 420px) {
+  .hero,
+  .section {
+    width: min(1200px, calc(100% - 18px));
+  }
+
+  .heroInner {
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .cardLarge,
+  .infoCard,
+  .valueCard,
+  .highlightCard,
+  .cta {
+    border-radius: 18px;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+}
