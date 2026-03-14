@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getCategories } from "@/lib/api";
 import { useCartStore } from "@/store/cartStore";
 
-import ShopSidebar from "@/components/ShopSidebar"; // 🔥 IMPORTANT
+import ShopSidebar from "@/components/ShopSidebar";
 import styles from "./Navbar.module.css";
 
 type Category = {
@@ -18,6 +18,7 @@ type Category = {
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -33,6 +34,7 @@ export default function Navbar() {
   );
 
   useEffect(() => setMounted(true), []);
+
   useEffect(() => {
     getCategories().then(setCategories).catch(console.error);
   }, []);
@@ -50,10 +52,18 @@ export default function Navbar() {
 
   if (!mounted) return null;
 
+  const whatsappHref = "https://wa.me/8801703572458";
+
+  const isHomeActive = pathname === "/";
+  const isShopActive =
+    pathname === "/shop" || pathname.startsWith("/category/");
+  const isCartActive = pathname === "/cart";
+  const isTrackActive = pathname === "/order-track";
+
   return (
     <>
       {/* =========================
-         NAVBAR
+         TOP NAVBAR
       ========================= */}
       <header className={styles.nav}>
         <div className={styles.container}>
@@ -63,6 +73,7 @@ export default function Navbar() {
               className={styles.mobileMenuBtn}
               onClick={() => setMobileDrawerOpen(true)}
               aria-label="Open menu"
+              type="button"
             >
               <i className="fa fa-bars" />
             </button>
@@ -77,7 +88,7 @@ export default function Navbar() {
               onMouseEnter={() => setMegaOpen(true)}
               onMouseLeave={() => setMegaOpen(false)}
             >
-              <button className={styles.shopBtn}>
+              <button className={styles.shopBtn} type="button">
                 Shop <i className="fa fa-angle-down" />
               </button>
 
@@ -114,19 +125,14 @@ export default function Navbar() {
 
           {/* CENTER (DESKTOP SEARCH) */}
           <div className={styles.center}>
-            <form
-              onSubmit={handleSearchSubmit}
-              className={styles.searchForm}
-            >
+            <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
               <input
                 className={styles.searchInput}
                 placeholder="Search Products by Titles or Tags"
                 value={searchQuery}
-                onChange={(e) =>
-                  setSearchQuery(e.target.value)
-                }
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className={styles.searchBtn}>
+              <button className={styles.searchBtn} type="submit" aria-label="Search">
                 <i className="fa fa-search" />
               </button>
             </form>
@@ -136,29 +142,24 @@ export default function Navbar() {
           <div className={styles.right}>
             <button
               className={styles.mobileSearchBtn}
-              onClick={() =>
-                setMobileSearchOpen((v) => !v)
-              }
+              onClick={() => setMobileSearchOpen((v) => !v)}
+              aria-label="Open search"
+              type="button"
             >
               <i className="fa fa-search" />
             </button>
 
             {/* TRACK ORDER (DESKTOP) */}
-            <Link
-              href="/order-track"
-              className={styles.trackOrder}
-            >
+            <Link href="/order-track" className={styles.trackOrder}>
               <i className="fa fa-map-marker-alt" />
               <span></span>
             </Link>
 
             {/* CART */}
-            <Link href="/cart" className={styles.cart}>
+            <Link href="/cart" className={styles.cart} aria-label="Cart">
               <i className="fa fa-shopping-cart" />
               {totalItems > 0 && (
-                <span className={styles.cartBadge}>
-                  {totalItems}
-                </span>
+                <span className={styles.cartBadge}>{totalItems}</span>
               )}
             </Link>
           </div>
@@ -174,9 +175,7 @@ export default function Navbar() {
             <input
               placeholder="Search products…"
               value={searchQuery}
-              onChange={(e) =>
-                setSearchQuery(e.target.value)
-              }
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
         </div>
@@ -187,9 +186,7 @@ export default function Navbar() {
       ========================= */}
       <aside
         className={`${styles.mobileDrawer} ${
-          mobileDrawerOpen
-            ? styles.mobileDrawerOpen
-            : ""
+          mobileDrawerOpen ? styles.mobileDrawerOpen : ""
         }`}
       >
         <div className={styles.mobileDrawerHeader}>
@@ -197,12 +194,12 @@ export default function Navbar() {
           <button
             onClick={() => setMobileDrawerOpen(false)}
             aria-label="Close menu"
+            type="button"
           >
             <i className="fa fa-times" />
           </button>
         </div>
 
-        {/* ✅ TRACK ORDER (MOBILE) */}
         <div className={styles.mobileQuickActions}>
           <Link
             href="/order-track"
@@ -213,7 +210,6 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* CATEGORIES */}
         <ShopSidebar />
       </aside>
 
@@ -223,6 +219,89 @@ export default function Navbar() {
           onClick={() => setMobileDrawerOpen(false)}
         />
       )}
+
+      {/* =========================
+         MOBILE BOTTOM NAV
+      ========================= */}
+      <nav
+        className={styles.mobileBottomNav}
+        aria-label="Mobile bottom navigation"
+      >
+        <Link
+          href="/"
+          className={`${styles.mobileBottomItem} ${
+            isHomeActive ? styles.mobileBottomItemActive : ""
+          }`}
+          aria-label="Home"
+        >
+          <span className={styles.mobileBottomIcon}>
+            <i className="fa fa-home" />
+          </span>
+          <span className={styles.mobileBottomLabel}>Home</span>
+        </Link>
+
+        <Link
+          href="/shop"
+          className={`${styles.mobileBottomItem} ${
+            isShopActive ? styles.mobileBottomItemActive : ""
+          }`}
+          aria-label="Category"
+        >
+          <span className={styles.mobileBottomIcon}>
+            <i className="fa fa-th-large" />
+          </span>
+          <span className={styles.mobileBottomLabel}>Category</span>
+        </Link>
+
+        <Link
+          href="/cart"
+          className={`${styles.mobileBottomItem} ${
+            isCartActive ? styles.mobileBottomItemActive : ""
+          }`}
+          aria-label="Cart"
+        >
+          <span
+            className={`${styles.mobileBottomIcon} ${styles.mobileBottomCartIcon}`}
+          >
+            <i className="fa fa-shopping-bag" />
+            {totalItems > 0 && (
+              <span className={styles.mobileBottomBadge}>
+                {totalItems > 99 ? "99+" : totalItems}
+              </span>
+            )}
+          </span>
+          <span className={styles.mobileBottomLabel}>Cart</span>
+        </Link>
+
+        <a
+          href={whatsappHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.mobileBottomItem}
+          aria-label="WhatsApp"
+        >
+          <span className={styles.mobileBottomIcon}>
+            <i className="fa-brands fa-whatsapp" />
+          </span>
+          <span className={styles.mobileBottomLabel}>WhatsApp</span>
+        </a>
+
+        <Link
+          href="/order-track"
+          className={`${styles.mobileBottomItem} ${
+            isTrackActive ? styles.mobileBottomItemActive : ""
+          }`}
+          aria-label="Track order"
+        >
+          <span className={styles.mobileBottomIcon}>
+            <i className="fa fa-location-arrow" />
+          </span>
+          <span className={styles.mobileBottomLabel}>Track</span>
+        </Link>
+      </nav>
+
+      {/* spacer so page content doesn't hide behind bottom nav */}
+      <div className={styles.mobileBottomNavSpacer} />
     </>
   );
 }

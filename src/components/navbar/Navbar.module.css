@@ -377,3 +377,192 @@
     transition: all 0.2s ease;
   }
 }
+
+/* =========================
+   MOBILE BOTTOM NAV
+========================= */
+.mobileBottomNav {
+  display: none;
+}
+
+.mobileBottomNavSpacer {
+  display: none;
+}
+
+@media (max-width: 1020px) {
+  .mobileBottomNav {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    z-index: 1001;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 4px;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 20px;
+    backdrop-filter: blur(18px) saturate(1.2);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    box-shadow:
+      0 20px 40px rgba(15, 23, 42, 0.12),
+      0 6px 18px rgba(15, 23, 42, 0.08);
+  }
+
+  .mobileBottomItem {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+    color: #64748b;
+    border-radius: 14px;
+    min-height: 56px;
+    padding: 7px 4px 6px;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      transform 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobileBottomItem:active {
+    transform: scale(0.97);
+  }
+
+  .mobileBottomItem:hover {
+    background: rgba(248, 250, 252, 0.9);
+    color: #0f172a;
+  }
+
+  .mobileBottomItemActive {
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    color: #020617;
+    box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.95);
+  }
+
+  .mobileBottomIcon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .mobileBottomCartIcon {
+    position: relative;
+  }
+
+  .mobileBottomLabel {
+    max-width: 100%;
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mobileBottomBadge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #2563eb;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  .mobileBottomNavSpacer {
+    display: block;
+    height: 92px;
+  }
+}
+
+/* =========================
+   EXTRA SMALL DEVICES
+========================= */
+@media (max-width: 420px) {
+  .mobileBottomNav {
+    left: 8px;
+    right: 8px;
+    gap: 2px;
+    padding: 7px 4px calc(7px + env(safe-area-inset-bottom));
+    border-radius: 18px;
+  }
+
+  .mobileBottomItem {
+    min-height: 54px;
+    padding: 6px 2px 5px;
+  }
+
+  .mobileBottomIcon {
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+  }
+
+  .mobileBottomLabel {
+    font-size: 9px;
+  }
+
+  .mobileBottomBadge {
+    top: -4px;
+    right: -9px;
+    min-width: 15px;
+    height: 15px;
+    font-size: 8px;
+    box-shadow: 0 0 0 1.5px #fff;
+  }
+
+  .mobileBottomNavSpacer {
+    height: 88px;
+  }
+}
+
+/* =========================
+   ULTRA SMALL DEVICES
+========================= */
+@media (max-width: 340px) {
+  .mobileBottomNav {
+    left: 6px;
+    right: 6px;
+    padding: 6px 3px calc(6px + env(safe-area-inset-bottom));
+  }
+
+  .mobileBottomItem {
+    min-height: 50px;
+    gap: 3px;
+    padding: 5px 1px 4px;
+  }
+
+  .mobileBottomIcon {
+    font-size: 15px;
+  }
+
+  .mobileBottomLabel {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+
+  .mobileBottomNavSpacer {
+    height: 82px;
+  }
+}
