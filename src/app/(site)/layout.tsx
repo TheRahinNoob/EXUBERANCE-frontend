@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 
 import Navbar from "../../components/navbar/Navbar";
+import Footer from "@/components/footer/Footer";
 import CartHydration from "@/components/CartHydration";
 
 /* 🔥 GLOBAL UI OVERLAYS */
@@ -138,6 +139,11 @@ export default function RootLayout({
            PAGE CONTENT
         ========================================== */}
         <main id="app-content">{children}</main>
+
+        {/* =========================================
+           GLOBAL FOOTER
+        ========================================== */}
+        <Footer />
       </body>
     </html>
   );
