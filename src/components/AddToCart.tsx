@@ -14,7 +14,7 @@ type Props = {
   variant: ProductVariant | null;
   disabled?: boolean;
   disabledReason?: string;
-  onClick?: () => void; // callback for parent (analytics handled outside)
+  onClick?: () => void;
 };
 
 /* ==================================================
@@ -33,13 +33,9 @@ export default function AddToCart({
   const [added, setAdded] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  /* ==================================================
-     DERIVED STATE
-  ================================================== */
   const maxQty = variant?.stock ?? 1;
   const isDisabled = disabled || !variant || variant.stock <= 0;
 
-  // Ensure product price is always a valid number
   const normalizedPrice = useMemo<number>(() => {
     const price =
       typeof product.price === "string"
@@ -49,9 +45,6 @@ export default function AddToCart({
     return Number.isFinite(price) ? price : 0;
   }, [product.price]);
 
-  /* ==================================================
-     ACTIONS
-  ================================================== */
   const increase = () => {
     if (!variant) return;
     setQty((q) => Math.min(q + 1, maxQty));
@@ -66,7 +59,6 @@ export default function AddToCart({
 
     setLoading(true);
 
-    // 1️⃣ Add item to cart
     addItem({
       product_id: product.id,
       product_slug: productSlug,
@@ -78,26 +70,17 @@ export default function AddToCart({
       quantity: qty,
     });
 
-    // 2️⃣ Reset quantity
     setQty(1);
-
-    // 3️⃣ Show toast & button feedback
     setAdded(true);
-    setTimeout(() => setAdded(false), 2500); // toast disappears after 2.5s
+    setTimeout(() => setAdded(false), 2200);
     setLoading(false);
 
-    // 4️⃣ Notify parent
     onClick?.();
   };
 
-  /* ==================================================
-     RENDER
-  ================================================== */
   return (
     <div className={styles.wrapper}>
-      {/* MAIN ROW */}
       <div className={styles.row}>
-        {/* QUANTITY CONTROLS */}
         <div className={styles.qtyBox}>
           <button
             type="button"
@@ -122,29 +105,26 @@ export default function AddToCart({
           </button>
         </div>
 
-        {/* ADD TO CART BUTTON */}
         <button
           type="button"
           onClick={handleAdd}
           disabled={isDisabled || loading}
           className={styles.addBtn}
         >
-          {loading ? "Adding…" : added ? "✔ Added" : "+ Add To Cart"}
+          {loading ? "Adding..." : added ? "Added to Cart" : "Add to Cart"}
         </button>
       </div>
 
-      {/* HELPER TEXT */}
       {isDisabled && (
         <p className={styles.helper}>
           {disabledReason ?? "Please select size and color"}
         </p>
       )}
 
-      {/* TOAST NOTIFICATION */}
       {added && (
         <div className={styles.toast}>
-          <span className={styles.toastIcon}>✅</span>
-          <span>Added to cart!</span>
+          <span className={styles.toastIcon}>✓</span>
+          <span>Added to cart</span>
         </div>
       )}
     </div>

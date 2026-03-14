@@ -19,9 +19,6 @@ export default function ProductGallery({
   images,
   name,
 }: ProductGalleryProps) {
-  /* -----------------------------
-     STABLE IMAGE NORMALIZATION
-  ------------------------------ */
   const resolvedImages = useMemo(
     () =>
       images
@@ -32,34 +29,27 @@ export default function ProductGallery({
 
   const [active, setActive] = useState<string | null>(null);
 
-  /* -----------------------------
-     INIT ACTIVE IMAGE (ONCE PER CHANGE)
-  ------------------------------ */
   useEffect(() => {
     if (resolvedImages.length > 0) {
       setActive(resolvedImages[0]);
     }
   }, [resolvedImages]);
 
-  /* -----------------------------
-     EMPTY STATE
-  ------------------------------ */
   if (!active) {
     return (
       <div className={styles.wrapper}>
-        <div className={styles.placeholder}>
-          Image unavailable
-        </div>
+        <div className={styles.placeholder}>Image unavailable</div>
       </div>
     );
   }
 
-  /* -----------------------------
-     UI
-  ------------------------------ */
+  const activeIndex = Math.max(
+    0,
+    resolvedImages.findIndex((img) => img === active)
+  );
+
   return (
     <section className={styles.wrapper}>
-      {/* MAIN IMAGE */}
       <div className={styles.mainWrapper}>
         <img
           src={active}
@@ -67,22 +57,25 @@ export default function ProductGallery({
           className={styles.main}
           loading="eager"
         />
+
+        {resolvedImages.length > 1 && (
+          <div className={styles.counter}>
+            {activeIndex + 1} / {resolvedImages.length}
+          </div>
+        )}
       </div>
 
-      {/* THUMBNAILS */}
       {resolvedImages.length > 1 && (
-        <div className={styles.thumbs} role="list">
+        <div className={styles.thumbs} role="list" aria-label="Product images">
           {resolvedImages.map((img, index) => {
             const isActive = img === active;
 
             return (
               <button
-                key={img}
+                key={`${img}-${index}`}
                 type="button"
                 onClick={() => setActive(img)}
-                className={`${styles.thumb} ${
-                  isActive ? styles.active : ""
-                }`}
+                className={`${styles.thumb} ${isActive ? styles.active : ""}`}
                 aria-label={`View image ${index + 1}`}
                 aria-current={isActive}
               >

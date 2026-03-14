@@ -7,8 +7,6 @@ import { fireAddToCartPixel } from "@/utils/metaPixel";
 
 /* ==================================================
    ProductPurchaseWrapper Component
-   ✅ Wraps ProductPurchase
-   ✅ Fires AddToCart Meta Pixel safely
 ================================================== */
 type Props = {
   product: ProductDetail;
@@ -18,9 +16,6 @@ type Props = {
 export default function ProductPurchaseWrapper({ product, productSlug }: Props) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
 
-  /* -----------------------------
-     Derived states
-  ------------------------------ */
   const isOutOfStock = useMemo(() => {
     return !selectedVariant || (selectedVariant.stock ?? 0) <= 0;
   }, [selectedVariant]);
@@ -35,9 +30,6 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
     return undefined;
   }, [selectedVariant, isOutOfStock]);
 
-  /* -----------------------------
-     Handlers
-  ------------------------------ */
   const handleVariantChange = useCallback((variant: ProductVariant | null) => {
     setSelectedVariant(variant);
   }, []);
@@ -45,7 +37,6 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
   const handleAddToCartClick = useCallback(() => {
     if (!selectedVariant) return;
 
-    // Fire AddToCart Meta Pixel
     fireAddToCartPixel({
       productId: product.id,
       variantId: selectedVariant.id,
@@ -53,13 +44,8 @@ export default function ProductPurchaseWrapper({ product, productSlug }: Props) 
       contentName: product.name,
       currency: "BDT",
     });
-
-    // Actual cart logic is handled in ProductPurchase component
   }, [selectedVariant, product.id, product.price, product.name]);
 
-  /* -----------------------------
-     Render
-  ------------------------------ */
   return (
     <ProductPurchase
       product={product}

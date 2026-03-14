@@ -36,10 +36,6 @@ export default function ProductAttributes({
 
   return (
     <section className={styles.wrapper}>
-      {/* ===============================
-         CMS PRODUCT DESCRIPTION
-         (TYPOGRAPHY SANDBOX)
-      ================================ */}
       {hasDescription && (
         <div className={styles.cmsContent}>
           <div
@@ -51,10 +47,6 @@ export default function ProductAttributes({
         </div>
       )}
 
-      {/* ===============================
-         PRODUCT ATTRIBUTE TABLE
-         (FRONTEND-CONTROLLED UI)
-      ================================ */}
       {hasAttributes && (
         <div className={styles.table}>
           {attributes.map((attr, index) => (
@@ -62,12 +54,8 @@ export default function ProductAttributes({
               key={`${attr.label}-${index}`}
               className={styles.row}
             >
-              <div className={styles.label}>
-                {attr.label}
-              </div>
-              <div className={styles.value}>
-                {attr.value}
-              </div>
+              <div className={styles.label}>{attr.label}</div>
+              <div className={styles.value}>{attr.value}</div>
             </div>
           ))}
         </div>

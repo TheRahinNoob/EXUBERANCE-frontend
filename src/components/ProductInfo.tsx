@@ -6,11 +6,6 @@ import type { ProductDetail } from "@/types/product";
 /* ==================================================
    HELPERS
 ================================================== */
-
-/**
- * Convert API price (string | number | null) → number | null
- * This is REQUIRED for safe comparisons.
- */
 function normalizePrice(
   value: string | number | null | undefined
 ): number | null {
@@ -25,15 +20,8 @@ function normalizePrice(
 }
 
 /* ==================================================
-   ProductInfo (MOBILE-FIRST)
-   Responsibility:
-   - Product name
-   - Price (old + current)
-
-   ❌ NO short description
-   ❌ NO full description
+   ProductInfo
 ================================================== */
-
 export default function ProductInfo({
   product,
 }: {
@@ -47,27 +35,32 @@ export default function ProductInfo({
     oldPrice !== null &&
     oldPrice > price;
 
+  const discountPercent =
+    hasDiscount && price !== null && oldPrice !== null
+      ? Math.round(((oldPrice - price) / oldPrice) * 100)
+      : null;
+
   return (
     <section className={styles.wrapper}>
-      {/* =========================
-         PRODUCT NAME
-      ========================= */}
+      {discountPercent ? (
+        <div className={styles.badges}>
+          <span className={styles.badge}>Save {discountPercent}%</span>
+        </div>
+      ) : null}
+
       <h1 className={styles.name}>{product.name}</h1>
 
-      {/* =========================
-         PRICE
-      ========================= */}
       <div className={styles.priceRow}>
-        {hasDiscount && (
-          <span className={styles.oldPrice}>
-            ৳{oldPrice}
-          </span>
-        )}
-
         {price !== null && (
           <span className={styles.price}>
             <span className={styles.currency}>৳</span>
             {price}
+          </span>
+        )}
+
+        {hasDiscount && (
+          <span className={styles.oldPrice}>
+            ৳{oldPrice}
           </span>
         )}
       </div>

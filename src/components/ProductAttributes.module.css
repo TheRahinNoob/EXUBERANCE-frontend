@@ -2,37 +2,22 @@
    WRAPPER
 ========================= */
 .wrapper {
-  margin-top: 40px;
-  padding-top: 28px;
-  border-top: 1px solid #000;
+  margin-top: 8px;
+  padding-top: 22px;
+  border-top: 1px solid #eceff3;
 }
 
 /* ==================================================
-   CMS DESCRIPTION — SAFE TYPOGRAPHY ZONE
+   CMS DESCRIPTION
 ================================================== */
-
-/*
-  RULES:
-  - Admin inline styles MUST work
-  - Frontend does NOT override typography
-  - Only layout spacing is allowed
-*/
-
 .cmsContent {
-  margin-bottom: 28px;
+  margin-bottom: 26px;
 }
 
-/* ⛔ DO NOT RESET TYPOGRAPHY */
-.cmsInner {
-  /* layout only */
-}
-
-/* Allow inline styles to work naturally */
 .cmsInner * {
   max-width: 100%;
 }
 
-/* Spacing safety (NON-TYPOGRAPHY) */
 .cmsInner p {
   margin: 0 0 1em;
 }
@@ -46,74 +31,61 @@
   margin: 1.2em 0 0.6em;
 }
 
-/* Lists spacing only */
 .cmsInner ul,
 .cmsInner ol {
   margin: 0 0 1em 1.2em;
 }
 
 /* ==================================================
-   ATTRIBUTE TABLE (FRONTEND CONTROLLED)
+   ATTRIBUTE TABLE
 ================================================== */
-
 .table {
   display: flex;
   flex-direction: column;
+  border-top: 1px solid #f3f4f6;
 }
 
-/* =========================
-   ROW — LABEL + VALUE
-========================= */
 .row {
   display: grid;
-  grid-template-columns: 160px 1fr;
-  align-items: center;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f1f5f9;
+  grid-template-columns: 112px 1fr;
+  align-items: start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .row:last-child {
   border-bottom: none;
 }
 
-/* =========================
-   LABEL (UI)
-========================= */
 .label {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6b7280;
   white-space: nowrap;
+  padding-top: 2px;
 }
 
-/* =========================
-   VALUE (UI)
-========================= */
 .value {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: #111827;
-  line-height: 1.6;
+  line-height: 1.65;
   word-break: break-word;
 }
 
 /* =========================
    MOBILE
 ========================= */
-@media (max-width: 640px) {
+@media (min-width: 640px) {
   .row {
-    grid-template-columns: 140px 1fr;
-    gap: 12px;
-  }
-
-  .label {
-    font-size: 12px;
+    grid-template-columns: 150px 1fr;
+    gap: 18px;
   }
 
   .value {
-    font-size: 13px;
+    font-size: 14px;
   }
 }

@@ -8,194 +8,133 @@
 }
 
 /* ==================================================
-   MAIN IMAGE AREA
+   MAIN IMAGE STAGE
+   - mobile first
+   - not too huge
 ================================================== */
 .mainWrapper {
-  width: 100%;
-  background: #ffffff;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: min(68vh, 560px);
+  background: linear-gradient(180deg, #fafbfc 0%, #f5f7fa 100%);
+  border: 1px solid #edf1f5;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ==================================================
-   MAIN IMAGE (FLUID BASE)
-================================================== */
 .main {
   width: 100%;
-  max-width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 
 /* ==================================================
-   SMALL MOBILE (≤ 360px)
+   COUNTER
 ================================================== */
-@media (max-width: 360px) {
-  .main {
-    width: 92vw;
-  }
+.counter {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.78);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
 }
 
 /* ==================================================
-   MOBILE (361px – 480px)
-================================================== */
-@media (min-width: 361px) and (max-width: 480px) {
-  .main {
-    width: 88vw;
-  }
-}
-
-/* ==================================================
-   LARGE MOBILE (481px – 603px)
-================================================== */
-@media (min-width: 481px) and (max-width: 603px) {
-  .main {
-    width: 420px;
-    max-width: 90vw;
-  }
-}
-
-/* ==================================================
-   TABLET PORTRAIT (604px – 767px)
-================================================== */
-@media (min-width: 604px) and (max-width: 767px) {
-  .main {
-    width: 460px;
-    max-width: 92%;
-  }
-}
-
-/* ==================================================
-   TABLET LANDSCAPE (768px – 1023px)
-================================================== */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .main {
-    width: 520px;
-    max-width: 100%;
-  }
-}
-
-/* ==================================================
-   SMALL DESKTOP (1024px – 1279px)
-================================================== */
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .main {
-    width: 620px;
-    max-width: 100%;
-  }
-}
-
-/* ==================================================
-   DESKTOP (1280px – 1439px)
-================================================== */
-@media (min-width: 1280px) and (max-width: 1439px) {
-  .main {
-    width: 660px;
-    max-width: 100%;
-  }
-}
-
-/* ==================================================
-   LARGE DESKTOP / PREMIUM (≥ 1440px)
-================================================== */
-@media (min-width: 1440px) {
-  .main {
-    width: 700px; /* 🔥 HERO SIZE LOCKED */
-    max-width: 100%;
-  }
-}
-
-/* ==================================================
-   THUMBNAILS STRIP
+   THUMBNAILS
 ================================================== */
 .thumbs {
   display: flex;
   gap: 10px;
   overflow-x: auto;
-  padding-bottom: 4px;
-  justify-content: flex-start;
-}
-
-/* Hide scrollbar */
-.thumbs::-webkit-scrollbar {
-  display: none;
-}
-.thumbs {
+  padding-bottom: 2px;
+  scroll-snap-type: x proximity;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
 
-/* ==================================================
-   THUMB BUTTON
-================================================== */
+.thumbs::-webkit-scrollbar {
+  display: none;
+}
+
 .thumb {
   flex: 0 0 auto;
-  width: 64px;
-  height: 80px;
-
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid transparent;
-  background: #f3f4f6;
-
-  cursor: pointer;
+  width: 62px;
+  height: 78px;
   padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #f7f8fa;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  scroll-snap-align: start;
 }
 
 .thumb img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  display: block;
 }
 
-/* ACTIVE STATE (NO SHADOW DRAMA) */
-.thumb.active {
+.active {
   border-color: #111827;
+  box-shadow: 0 0 0 1px #111827 inset;
 }
 
 /* ==================================================
-   EMPTY STATE
+   EMPTY
 ================================================== */
 .placeholder {
   width: 100%;
-  padding: 80px 0;
-
-  background: #f3f4f6;
-  border-radius: 12px;
-
+  min-height: 360px;
+  border-radius: 20px;
+  border: 1px solid #edf1f5;
+  background: #f7f8fa;
   display: flex;
-  justify-content: center;
   align-items: center;
-
+  justify-content: center;
   color: #6b7280;
   font-size: 14px;
+  font-weight: 500;
 }
 
 /* ==================================================
-   MOBILE THUMB TWEAKS
+   RESPONSIVE
 ================================================== */
-@media (max-width: 640px) {
-  .thumb {
-    width: 56px;
-    height: 70px;
+@media (min-width: 640px) {
+  .wrapper {
+    gap: 14px;
   }
 
-  .thumbs {
-    justify-content: center;
-    padding-inline: 16px;
+  .thumb {
+    width: 72px;
+    height: 90px;
   }
 }
 
-/* ==================================================
-   ULTRA SMALL DEVICES (≤ 320px)
-================================================== */
-@media (max-width: 320px) {
-  .thumb {
-    width: 50px;
-    height: 64px;
+@media (min-width: 1024px) {
+  .mainWrapper {
+    aspect-ratio: 1 / 1.08;
+    max-height: 720px;
+  }
+
+  .thumb:hover {
+    transform: translateY(-1px);
+    border-color: #cbd5e1;
   }
 }

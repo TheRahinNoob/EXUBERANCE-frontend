@@ -9,11 +9,8 @@ import styles from "./ProductPurchase.module.css";
 type Props = {
   product: ProductDetail;
   productSlug: string;
-
-  // Optional controlled props (for wrapper usage)
   selectedVariant?: ProductVariant | null;
   onVariantChange?: (variant: ProductVariant | null) => void;
-
   onAddToCartClick?: () => void;
   isAddToCartDisabled?: boolean;
   disabledReason?: string;
@@ -28,14 +25,13 @@ export default function ProductPurchase({
   isAddToCartDisabled: controlledDisabled,
   disabledReason: controlledReason,
 }: Props) {
-  // Internal state for variant selection if not controlled
   const [internalVariant, setInternalVariant] = useState<ProductVariant | null>(null);
 
   const selectedVariant = controlledVariant ?? internalVariant;
 
-  const handleVariantChange = onVariantChange ?? ((v: ProductVariant | null) => setInternalVariant(v));
+  const handleVariantChange =
+    onVariantChange ?? ((v: ProductVariant | null) => setInternalVariant(v));
 
-  // Derived states
   const isOutOfStock = useMemo(() => {
     if (!selectedVariant) return false;
     return (selectedVariant.stock ?? 0) <= 0;
@@ -56,21 +52,18 @@ export default function ProductPurchase({
     );
   }, [controlledReason, selectedVariant, isOutOfStock]);
 
-  // AddToCart click handler
   const handleClick = useCallback(() => {
     onAddToCartClick?.();
   }, [onAddToCartClick]);
 
   return (
     <section className={styles.wrapper}>
-      {/* Variant selection */}
       <ProductVariants
         variants={product.variants}
         value={selectedVariant}
         onChange={handleVariantChange}
       />
 
-      {/* Add to Cart button */}
       <div className={styles.cartBox}>
         <AddToCart
           product={product}

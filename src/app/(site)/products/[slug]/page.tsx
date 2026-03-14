@@ -1,10 +1,11 @@
 // SERVER COMPONENT — DO NOT USE 'use client' HERE
 import type { Metadata } from "next";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo from "@/components/ProductInfo";
-import ProductPurchaseWrapper from "@/components/ProductPurchaseWrapper"; // CLIENT
+import ProductPurchaseWrapper from "@/components/ProductPurchaseWrapper";
 import ProductAttributes from "@/components/ProductAttributes";
 
 import ViewContentPixel from "@/components/meta/ViewContentPixel";
@@ -47,7 +48,7 @@ function buildProductSchema(product: ProductDetail, slug: string) {
 }
 
 /* ==================================================
-   METADATA (SERVER-SIDE, PROMISE-SAFE)
+   METADATA
 ================================================== */
 export async function generateMetadata({
   params,
@@ -83,7 +84,7 @@ export async function generateMetadata({
 }
 
 /* ==================================================
-   PAGE COMPONENT (SERVER, PROMISE-SAFE)
+   PAGE COMPONENT
 ================================================== */
 export default async function ProductPage({
   params,
@@ -106,14 +107,12 @@ export default async function ProductPage({
 
   return (
     <main className={styles.page}>
-      {/* Meta Pixel (Client, deduplicated) */}
       <ViewContentPixel
         productId={product.id}
         price={Number(product.price)}
         currency="BDT"
       />
 
-      {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -121,56 +120,64 @@ export default async function ProductPage({
         }}
       />
 
-      {/* PDP MAIN */}
       <section className={styles.pdpMain}>
-        <ProductGallery images={product.images} name={product.name} />
+        <div className={styles.galleryCol}>
+          <ProductGallery images={product.images} name={product.name} />
+        </div>
 
         <div className={styles.right}>
-          <ProductInfo product={product} />
+          <div className={styles.infoBlock}>
+            <ProductInfo product={product} />
+          </div>
 
-          {/* Add-to-cart wrapper */}
-          <ProductPurchaseWrapper product={product} productSlug={slug} />
+          <div className={styles.purchaseBlock}>
+            <ProductPurchaseWrapper product={product} productSlug={slug} />
+          </div>
 
-          <ProductAttributes
-            description={product.description}
-            attributes={product.attributes ?? []}
-          />
+          <div className={styles.detailsBlock}>
+            <ProductAttributes
+              description={product.description}
+              attributes={product.attributes ?? []}
+            />
+          </div>
         </div>
       </section>
 
-      {/* RELATED PRODUCTS */}
       {relatedProducts.length > 0 && (
         <section className={styles.related}>
-          <h2 className={styles.relatedTitle}>You may also like</h2>
+          <div className={styles.relatedHeader}>
+            <h2 className={styles.relatedTitle}>You may also like</h2>
+          </div>
 
           <div className={styles.relatedGrid}>
             {relatedProducts.map(
               (item) =>
                 item.slug && (
-                  <a
+                  <Link
                     key={item.id}
                     href={`/products/${item.slug}`}
                     className={styles.card}
                   >
                     <div className={styles.imageWrap}>
                       <img src={item.main_image} alt={item.name} />
-                      <span className={styles.actionIcon}>✎</span>
-
-                      <div className={styles.priceBar}>
-                        <div className={styles.priceBarInner}>
-                          <span className={styles.price}>৳ {item.price}</span>
-
-                          {item.old_price && (
-                            <span className={styles.oldPrice}>
-                              ৳ {item.old_price}
-                            </span>
-                          )}
-                        </div>
-                      </div>
                     </div>
 
-                    <button className={styles.addToCart}>+ Add To Cart</button>
-                  </a>
+                    <div className={styles.cardBody}>
+                      <h3 className={styles.cardName}>{item.name}</h3>
+
+                      <div className={styles.cardPriceRow}>
+                        <span className={styles.price}>৳ {item.price}</span>
+
+                        {item.old_price && (
+                          <span className={styles.oldPrice}>
+                            ৳ {item.old_price}
+                          </span>
+                        )}
+                      </div>
+
+                      <span className={styles.addToCart}>View Product</span>
+                    </div>
+                  </Link>
                 )
             )}
           </div>

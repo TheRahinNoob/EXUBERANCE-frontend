@@ -1,69 +1,108 @@
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
 /* ==================================================
    WRAPPER
 ================================================== */
 .wrapper {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   width: 100%;
+}
+
+/* ==================================================
+   BADGES
+================================================== */
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* ==================================================
    PRODUCT NAME
 ================================================== */
 .name {
-  font-family: 'Rajdhani', sans-serif; /* 🔥 REQUIRED */
-  font-size: 26px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: #111827;
   margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 24px;
+  line-height: 1.22;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111827;
 }
 
 /* ==================================================
-   PRICE ROW
+   PRICE
 ================================================== */
 .priceRow {
   display: flex;
   align-items: baseline;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
-/* OLD PRICE */
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111827;
+}
+
+.currency {
+  font-size: 15px;
+  font-weight: 700;
+  margin-right: 1px;
+}
+
 .oldPrice {
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 600;
   color: #9ca3af;
   text-decoration: line-through;
 }
 
-/* CURRENT PRICE */
-.price {
-  font-size: 30px;
-  font-weight: 700;
-  color: #111827;
-}
-
-/* CURRENCY SYMBOL */
-.currency {
-  font-size: 14px;
-  font-weight: 50;
-  margin-right: 2px;
-}
-
 /* ==================================================
-   DESKTOP ENHANCEMENT
+   RESPONSIVE
 ================================================== */
-@media (min-width: 1024px) {
-  .wrapper {
-    max-width: 420px;
-  }
-
+@media (min-width: 640px) {
   .name {
-    font-size: 24px;
+    font-size: 28px;
   }
 
   .price {
-    font-size: 24px;
+    font-size: 32px;
+  }
+
+  .oldPrice {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wrapper {
+    gap: 12px;
+  }
+
+  .name {
+    font-size: 30px;
   }
 }
