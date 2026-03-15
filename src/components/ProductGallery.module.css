@@ -9,7 +9,7 @@
   --gallery-shadow:
     0 28px 60px rgba(15, 23, 42, 0.08),
     0 10px 24px rgba(15, 23, 42, 0.06);
-  --thumb-width: 84px;
+  --thumb-size: 88px;
   --ui-font: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --brand-font: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
@@ -174,17 +174,14 @@
 ================================================== */
 .thumbs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--thumb-width), max-content));
+  grid-template-columns: repeat(auto-fit, minmax(var(--thumb-size), 1fr));
   gap: 10px;
-  justify-content: start;
-  align-items: start;
 }
 
 .thumb {
   position: relative;
   width: 100%;
-  max-width: 96px;
-  aspect-ratio: 3 / 4.2;
+  height: var(--thumb-size);
   padding: 6px;
   overflow: hidden;
   border-radius: 16px;
@@ -269,7 +266,7 @@
 @media (max-width: 900px) {
   .wrapper {
     --gallery-radius: 22px;
-    --thumb-width: 76px;
+    --thumb-size: 80px;
     gap: 14px;
   }
 
@@ -306,7 +303,6 @@
   }
 
   .thumb {
-    max-width: 88px;
     padding: 5px;
   }
 
@@ -321,7 +317,7 @@
 @media (max-width: 640px) {
   .wrapper {
     --gallery-radius: 18px;
-    --thumb-width: 64px;
+    --thumb-size: 68px;
     gap: 12px;
   }
 
@@ -358,11 +354,12 @@
   }
 
   .thumbs {
+    grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
     gap: 8px;
   }
 
   .thumb {
-    max-width: 74px;
+    height: 68px;
     padding: 5px;
     border-radius: 14px;
   }
@@ -384,7 +381,7 @@
 @media (max-width: 420px) {
   .wrapper {
     --gallery-radius: 16px;
-    --thumb-width: 56px;
+    --thumb-size: 60px;
     gap: 10px;
   }
 
@@ -421,11 +418,12 @@
   }
 
   .thumbs {
+    grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
     gap: 7px;
   }
 
   .thumb {
-    max-width: 64px;
+    height: 60px;
     padding: 4px;
     border-radius: 12px;
   }
@@ -447,7 +445,7 @@
 @media (max-width: 340px) {
   .wrapper {
     --gallery-radius: 14px;
-    --thumb-width: 48px;
+    --thumb-size: 50px;
   }
 
   .main {
@@ -483,11 +481,12 @@
   }
 
   .thumbs {
+    grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
     gap: 6px;
   }
 
   .thumb {
-    max-width: 56px;
+    height: 50px;
     padding: 3px;
     border-radius: 10px;
   }
